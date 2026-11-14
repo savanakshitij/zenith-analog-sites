@@ -1,15 +1,10 @@
 # docs/
 
-Everything we say to the judges. No code here.
+Everything we send to the judges. Files in this folder:
 
-- **Inputs:** results from `scoring/` (validation table, top candidates), screenshots and recordings of the frontend
-- **Outputs:** the submission
+- pitch slides (7 slides, `pitch-slides.*`)
+- 200-word summary (`summary-200-words.md`)
+- submission checklist (`submission-checklist.md`)
+- AI-use disclosure (`ai-use-disclosure.md`)
 
-| File | Contents |
-|---|---|
-| `pitch.md` | Problem, our approach, the "aha" (lesser-known analog sites), why it matters for Artemis and Mars missions. 1 page max. |
-| `demo-script.md` | Second-by-second script for the demo video (Space Apps limit: check the current rules, usually ≤ 30 s video + slides). |
-| `submission.md` | Final text for the Space Apps project page: summary, how it addresses the challenge, data used (from [SOURCES.md](../data/raw/SOURCES.md)), tools, team. |
-| `limits.md` | Where the analogy breaks: gravity (1/6 g Moon, 0.38 g Mars), vacuum vs. 0.6 % Mars atmosphere, radiation, day length, regolith vs. soil, the coarse 28 km grid, and gaps in the data. Judges reward honesty here. |
-
-Deadline reminder: submissions close at the end of Nov 15 (check the exact local time on the Space Apps site).
+Quote the data version (for example "data v1.2") on every slide and in the summary, so judges can match numbers to a version.

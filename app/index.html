@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zenith mission-plan coverage</title>
+<style>
+  :root { --bg:#0b0f17; --panel:#141a26; --line:#263043; --text:#e6ebf4; --dim:#93a0b8; --accent:#6ea8fe; --good:#4cc38a; --warn:#e5a43b; --bad:#e5604d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  header { padding:20px 24px 12px; border-bottom:1px solid var(--line); }
+  h1 { margin:0; font-size:22px; letter-spacing:.02em; }
+  header p { margin:4px 0 0; color:var(--dim); max-width:70ch; }
+  main { display:grid; grid-template-columns:320px minmax(300px,1fr) minmax(340px,1.2fr); gap:16px; padding:16px 24px 40px; align-items:start; }
+  @media (max-width:1100px) { main { grid-template-columns:1fr; } }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); font-weight:600; }
+  h3 { margin:18px 0 8px; font-size:14px; }
+  button { font:inherit; color:inherit; cursor:pointer; }
+  .preset { display:block; width:100%; text-align:left; background:transparent; border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:8px; }
+  .preset:hover { border-color:var(--accent); }
+  .preset[aria-pressed="true"] { border-color:var(--accent); background:rgba(110,168,254,.12); }
+  .preset b { display:block; }
+  .preset span { color:var(--dim); font-size:13px; }
+  .slider { display:grid; grid-template-columns:1fr 44px; gap:2px 8px; align-items:center; margin-bottom:8px; }
+  .slider label { font-size:13px; }
+  .slider output { text-align:right; font-variant-numeric:tabular-nums; color:var(--dim); font-size:13px; }
+  .slider input { grid-column:1 / -1; width:100%; accent-color:var(--accent); }
+  .tag { display:inline-block; font-size:11px; padding:1px 7px; border-radius:99px; border:1px solid var(--line); color:var(--dim); margin-left:6px; white-space:nowrap; }
+  .tag.space { color:var(--bad); border-color:rgba(229,96,77,.5); }
+  .tag.na { color:var(--warn); border-color:rgba(229,164,59,.5); }
+  .tag.new { color:var(--good); border-color:rgba(76,195,138,.5); margin-left:4px; }
+  .summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .stat { border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  .stat b { display:block; font-size:20px; font-variant-numeric:tabular-nums; }
+  .stat span { color:var(--dim); font-size:12px; }
+  .site { display:grid; grid-template-columns:28px 1fr auto; gap:10px; width:100%; text-align:left; background:transparent; border:1px solid var(--line); border-radius:8px; padding:9px 10px; margin-bottom:6px; align-items:center; }
+  .site:hover { border-color:var(--accent); }
+  .site[aria-pressed="true"] { border-color:var(--accent); background:rgba(110,168,254,.12); }
+  .site .rank { color:var(--dim); font-variant-numeric:tabular-nums; }
+  .site small { display:block; color:var(--dim); }
+  .site .score { font-size:18px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .site.out { opacity:.55; }
+  .bar { display:grid; grid-template-columns:150px 1fr 46px; gap:8px; align-items:center; margin-bottom:7px; font-size:13px; }
+  .track { position:relative; height:12px; background:#0d121c; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .track i { position:absolute; inset:0 auto 0 0; background:var(--good); }
+  .track u { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--text); opacity:.7; }
+  .bar .v { text-align:right; font-variant-numeric:tabular-nums; }
+  .verdict { border-left:3px solid var(--accent); padding:6px 12px; margin:10px 0 4px; background:rgba(110,168,254,.08); border-radius:0 6px 6px 0; }
+  .cant { border:1px solid rgba(229,96,77,.5); border-radius:8px; padding:10px 12px; }
+  .cant div { display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:3px 0; }
+  .cant div span:first-child { color:var(--dim); text-transform:capitalize; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:4px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:500; }
+  td.n { text-align:right; font-variant-numeric:tabular-nums; }
+  .est { color:var(--warn); }
+  .note { color:var(--dim); font-size:12.5px; margin:8px 0 0; }
+  a { color:var(--accent); }
+  label.check { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--dim); margin:10px 0; }
+  .empty { color:var(--dim); padding:12px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Zenith mission-plan coverage</h1>
+  <p>Pick a mission plan. Zenith ranks Earth sites by how much of that plan they can test, and shows which parts can only be tested in space.</p>
+</header>
+<main>
+  <section>
+    <h2>1. Mission plan</h2>
+    <div id="presets"></div>
+    <h3>Where the plan's risk sits</h3>
+    <div id="sliders"></div>
+    <p class="note">Weights are illustrative team assumptions, not NASA figures. Drag them to build your own plan.</p>
+  </section>
+
+  <section>
+    <h2>2. Earth sites that can test it</h2>
+    <div class="summary" id="summary"></div>
+    <input type="checkbox" id="showExcluded" hidden>
+    <div id="sites"></div>
+    <p class="note" id="dataNote"></p>
+  </section>
+
+  <section>
+    <h2>3. Coverage report</h2>
+    <div id="detail"><p class="empty">Select a site.</p></div>
+  </section>
+</main>
+
+<script src="data.js"></script>
+<script src="coverage.js"></script>
+<script>
+(function () {
+  var Z = window.Zenith, DATA = window.ZENITH_DATA;
+  var state = { preset: Z.PRESETS[0].id, target: Z.PRESETS[0].target, weights: copy(Z.PRESETS[0].weights), selected: null, showExcluded: false };
+
+  function copy(o) { var c = {}; Z.SUBSYSTEMS.forEach(function (s) { c[s.id] = o[s.id] || 0; }); return c; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+  function pct(x) { return Math.round(x * 100) + '%'; }
+  function el(id) { return document.getElementById(id); }
+  function key(c) { return c.lat + ',' + c.lon; }
+  function coord(c) { return Math.abs(c.lat).toFixed(2) + '°' + (c.lat >= 0 ? 'N' : 'S') + ', ' + Math.abs(c.lon).toFixed(2) + '°' + (c.lon >= 0 ? 'E' : 'W'); }
+
+  function renderPresets() {
+    el('presets').innerHTML = Z.PRESETS.map(function (p) {
+      return '<button class="preset" data-id="' + p.id + '" aria-pressed="' + (p.id === state.preset) + '"><b>' + esc(p.name) + '</b><span>' +
+        esc(p.summary) + ' Target: ' + esc(p.target) + '.</span></button>';
+    }).join('');
+  }
+
+  function renderSliders() {
+    el('sliders').innerHTML = Z.SUBSYSTEMS.map(function (s) {
+      var tag = s.kind === 'space_only' ? '<span class="tag space">space only</span>' : s.kind === 'not_assessed' ? '<span class="tag na">no data yet</span>' : '';
+      return '<div class="slider"><label for="w_' + s.id + '">' + esc(s.label) + tag + '</label><output id="o_' + s.id + '">' + state.weights[s.id] +
+        '</output><input type="range" id="w_' + s.id + '" data-id="' + s.id + '" min="0" max="40" step="5" value="' + state.weights[s.id] + '"></div>';
+    }).join('');
+  }
+
+  function run() {
+    var out;
+    try { out = Z.assess({ target: state.target, weights: state.weights, includeIneligible: state.showExcluded }, DATA); }
+    catch (e) { el('sites').innerHTML = '<p class="empty">' + esc(e.message) + '</p>'; el('summary').innerHTML = ''; el('detail').innerHTML = ''; return; }
+
+    var best = out.sites.filter(function (s) { return s.cell.eligible === true; })[0];
+    el('summary').innerHTML =
+      '<div class="stat"><b>' + (best ? pct(best.planCoverage) : 'n/a') + '</b><span>best Earth site</span></div>' +
+      '<div class="stat"><b>' + pct(out.ceilingCoverage) + '</b><span>most any Earth site could reach</span></div>' +
+      '<div class="stat"><b>' + pct(out.spaceOnlyShare) + '</b><span>of risk is space only</span></div>';
+
+    if (!out.sites.length) el('sites').innerHTML = '<p class="empty">No eligible cells in the current shortlist for this target. Tick the box above to see what was excluded and why.</p>';
+    else el('sites').innerHTML = out.sites.slice(0, 30).map(function (s, i) {
+      var c = s.cell, ok = c.eligible === true;
+      return '<button class="site' + (ok ? '' : ' out') + '" data-key="' + key(c) + '" aria-pressed="' + (state.selected === key(c)) + '">' +
+        '<span class="rank">' + (i + 1) + '</span><span><b>' + coord(c) + '</b><small>' +
+        (ok ? Math.round(c.km_to_known) + ' km from ' + esc(c.nearest_known) : 'Excluded: ' + esc(c.ineligible_reason)) +
+        (c.lists && c.lists.indexOf('lesser_known') >= 0 ? ' <span class="tag new">candidate</span>' : '') + '</small></span>' +
+        '<span class="score">' + pct(s.planCoverage) + '</span></button>';
+    }).join('');
+
+    var T = DATA.targets[state.target];
+    el('dataNote').textContent = 'Showing the best sites at least 150 km apart, from a shortlist of ' + T.cells.length + ' cells drawn from ' + T.n_eligible_cells.toLocaleString('en') +
+      ' bare-ground cells scored for ' + state.target + '. "Candidate" = a stable match at least 150 km from every known analog site. Data: ' + DATA.version + '.';
+
+    var sel = null;
+    out.sites.forEach(function (s) { if (key(s.cell) === state.selected) sel = s; });
+    if (!sel && out.sites.length) { sel = out.sites[0]; state.selected = key(sel.cell); markSelected(); }
+    renderDetail(sel, out);
+  }
+
+  function markSelected() {
+    Array.prototype.forEach.call(document.querySelectorAll('.site'), function (b) { b.setAttribute('aria-pressed', b.dataset.key === state.selected); });
+  }
+
+  var EARTH_LABELS = [
+    ['temp_min_K', 'Coldest monthly night temp', 'K'], ['temp_daynight_range_K', 'Day/night range', 'K'],
+    ['slope_deg', 'Mean slope', '°'], ['roughness_tri_m', 'Roughness (TRI)', 'm'], ['relief_m', 'Local relief', 'm'],
+    ['albedo_wsa_unitless', 'Albedo', ''], ['precip_mm_per_yr', 'Precipitation', 'mm/yr'],
+    ['ndvi_max_unitless', 'Max NDVI', ''], ['barren_pct', 'Bare ground', '%'], ['ice_flag_bool', 'Snow/ice flag', '']
+  ];
+
+  function renderDetail(s, out) {
+    if (!s) { el('detail').innerHTML = '<p class="empty">Select a site.</p>'; return; }
+    var c = s.cell, html = '';
+    html += '<h3 style="margin-top:0">' + coord(c) + ' <a href="https://www.google.com/maps/@' + c.lat + ',' + c.lon + ',8z" target="_blank" rel="noopener">map</a></h3>';
+    if (c.eligible !== true) html += '<p class="note" style="color:var(--warn)">Excluded from ranking: ' + esc(c.ineligible_reason) + '.</p>';
+    html += '<div class="verdict">' + esc(s.verdict) + '</div>';
+    if (typeof c.stability === 'number') html += '<p class="note">Stability ' + Math.round(c.stability * 100) + '%: share of 200 random weightings in which this cell stays in the top 1% for this target.</p>';
+    html += '<h3>Coverage by subsystem</h3>';
+    s.subsystems.forEach(function (r) {
+      if (r.weight === 0) return;
+      var right = r.kind === 'space_only' ? '<span class="tag space">space only</span>' : r.kind === 'not_assessed' ? '<span class="tag na">no data</span>' : pct(r.coverage);
+      html += '<div class="bar" title="' + esc(r.why) + '"><span>' + esc(r.label) + '</span><span class="track"><i style="width:' + (r.coverage * 100) + '%"></i>' +
+        (r.kind === 'scored' ? '<u style="left:' + (r.ceiling * 100) + '%"></u>' : '') + '</span><span class="v">' + right + '</span></div>';
+    });
+    html += '<p class="note">Green = how much of that subsystem this site can test (match × ceiling). White line = the ceiling, the most any Earth test could validate. Hover a row for the reason.</p>';
+
+    html += '<h3>Cannot be tested here</h3><div class="cant">' + out.notMatchable.map(function (n) {
+      return '<div><span>' + esc(n.feature) + '</span><span>' + esc(n.value) + '</span></div>';
+    }).join('') + '</div>';
+
+    if (c.earth) {
+      html += '<h3>This Earth cell</h3><table><tbody>' + EARTH_LABELS.map(function (l) {
+        var v = c.earth[l[0]];
+        return '<tr><td>' + l[1] + '</td><td class="n">' + (v == null ? 'no data' : v + (l[2] ? ' ' + l[2] : '')) + '</td></tr>';
+      }).join('') + '</tbody></table>';
+    }
+    html += '<h3>' + esc(out.target) + ' (' + esc(out.body) + ')</h3><table><thead><tr><th>Feature</th><th>Value</th><th>Status</th></tr></thead><tbody>' +
+      out.targetValues.map(function (v) {
+        return '<tr title="' + esc(v.note) + '"><td>' + esc(v.feature) + '</td><td class="n">' + (v.value == null ? 'none' : esc(v.value)) + '</td><td class="' + ((v.status === 'estimated' || v.status === 'not scored') ? 'est' : '') + '">' + esc(v.status) + '</td></tr>';
+      }).join('') + '</tbody></table>';
+    html += '<p class="note">Earth and target values use the same definitions. Amber = estimated, not yet from raw data. "not scored" = left out because the definition does not match.</p>';
+
+    html += '<h3>Known analog sites under this plan</h3><table><thead><tr><th>Site</th><th>Plan coverage</th></tr></thead><tbody>' +
+      out.knownSites.slice(0, 8).map(function (k) { return '<tr><td>' + esc(k.site) + '</td><td class="n">' + pct(k.planCoverage) + '</td></tr>'; }).join('') + '</tbody></table>';
+    el('detail').innerHTML = html;
+  }
+
+  el('presets').addEventListener('click', function (e) {
+    var b = e.target.closest('.preset'); if (!b) return;
+    var p = Z.PRESETS.filter(function (x) { return x.id === b.dataset.id; })[0];
+    state.preset = p.id; state.target = p.target; state.weights = copy(p.weights); state.selected = null;
+    renderPresets(); renderSliders(); run();
+  });
+  el('sliders').addEventListener('input', function (e) {
+    var id = e.target.dataset.id; if (!id) return;
+    state.weights[id] = Number(e.target.value); el('o_' + id).textContent = e.target.value; run();
+  });
+  el('sites').addEventListener('click', function (e) {
+    var b = e.target.closest('.site'); if (!b) return;
+    state.selected = b.dataset.key; markSelected(); run();
+  });
+  el('showExcluded').addEventListener('change', function (e) { state.showExcluded = e.target.checked; state.selected = null; run(); });
+
+  renderPresets(); renderSliders(); run();
+})();
+</script>
+</body>
+</html>

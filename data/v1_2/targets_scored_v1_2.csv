@@ -1,0 +1,8 @@
+target_id,name,body,slope_deg,roughness_tri_m,relief_m,temp_min_K,temp_daynight_range_K,albedo_wsa_unitless,precip_mm_per_yr,ice_flag_bool,sun_noon_elev_mean_deg
+shackleton,Shackleton crater rim,Moon,12.25,1113.62,4437.82,150,70,0.11,0.0,1,0.54
+malapert,Malapert Massif,Moon,15.22,1309.37,4890.99,150,70,0.11,0.0,0,4.0
+marius,Marius Hills lava-tube pit,Moon,1.06,102.59,361.31,95,295,0.11,0.0,0,75.9
+arcadia,Arcadia Planitia,Mars,0.5,,,150,60,0.25,0.0,1,50.0
+jezero,Jezero crater,Mars,2.0,,,200,60,0.14,0.0,0,69.49
+gale,Gale crater,Mars,5.0,,,190,60,0.25,0.0,0,73.86
+meridiani,Meridiani Planum,Mars,0.3,,,190,60,0.14,0.0,0,74.09

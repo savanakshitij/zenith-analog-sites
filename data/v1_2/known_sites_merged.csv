@@ -1,0 +1,35 @@
+id,name,country,lat,lon,source,validation,cave
+dryvalleys,McMurdo Dry Valleys,Antarctica,-77.5,162.0,zenith_23,True,False
+concordia,"Concordia Station, Dome C",Antarctica,-75.1,123.3,zenith_23,True,False
+haughton,"Haughton Crater, Devon Island",Canada,75.38,-89.68,zenith_23,True,False
+axelheiberg,Axel Heiberg Island springs,Canada,79.4,-90.8,zenith_23,True,False
+svalbard,"Bockfjorden, Svalbard",Norway,79.4,13.3,zenith_23,True,False
+mistastin,Mistastin Lake crater,Canada,55.88,-63.31,zenith_23,True,False
+sudbury,Sudbury Basin,Canada,46.6,-81.18,zenith_23,True,False
+meteorcrater,Meteor Crater,USA,35.03,-111.02,zenith_23,True,False
+ries,Nördlinger Ries,Germany,48.88,10.56,zenith_23,True,False
+lonar,Lonar Crater,India,19.98,76.51,zenith_23,True,False
+atacama,"Yungay, Atacama Desert",Chile,-24.1,-70.0,zenith_23,True,False
+qaidam,Qaidam Basin,China,38.0,92.5,zenith_23,True,False
+badwater,"Badwater Basin, Death Valley",USA,36.23,-116.77,zenith_23,True,False
+riotinto,Río Tinto,Spain,37.72,-6.55,zenith_23,True,False
+mdrs,Mars Desert Research Station,USA,38.41,-110.79,zenith_23,True,False
+pilbara,Pilbara Craton,Australia,-21.2,119.4,zenith_23,True,False
+maunakea,Mauna Kea,USA (Hawaii),19.76,-155.46,zenith_23,True,False
+hiseas,"HI-SEAS, Mauna Loa",USA (Hawaii),19.6,-155.51,zenith_23,True,False
+cratersmoon,Craters of the Moon,USA,43.42,-113.52,zenith_23,True,False
+blackpoint,Black Point Lava Flow,USA,35.68,-111.42,zenith_23,True,False
+lanzarote,Lanzarote,Spain,29.0,-13.7,zenith_23,True,False
+holuhraun,Holuhraun lava field,Iceland,64.85,-16.83,zenith_23,True,False
+wadirum,Wadi Rum,Jordan,29.57,35.42,zenith_23,True,False
+imm7,Kaunertal Glacier (OeWF AMADEE-15),Austria,46.8632,10.71401,immanuel,False,False
+imm9,Mount Etna,Italy,37.755,14.995,immanuel,False,False
+imm10,Tabernas Desert,Spain,37.0,-2.45,immanuel,False,False
+imm11,"Minas de San Jose, Teide NP, Tenerife","Spain (Canary Islands, geographically Africa)",28.26479,-16.58905,immanuel,False,False
+imm12,Vulcano island (La Fossa / Gran Cratere),Italy,38.4042,14.9658,immanuel,False,False
+imm13,"Balos Cove, Santorini",Greece,36.36315,25.39511,immanuel,False,False
+imm15,"Furnas volcano, Sao Miguel (Azores)",Portugal,37.77,-25.32,immanuel,False,False
+imm18,Dachstein Giant Ice Cave,Austria,47.47569,13.60644,immanuel,False,True
+imm21,Beacon Valley / University Valley,Antarctica,-77.817,160.65,immanuel,False,False
+imm24,"Tso Kar Valley, Ladakh (ISRO HOPE)",India,33.31573,77.95564,immanuel,False,False
+imm25,"Dalangtan playa, Qaidam Basin",China,38.333,91.667,immanuel,False,False

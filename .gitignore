@@ -1,52 +1,30 @@
-# ---------- Python ----------
+# Python
 __pycache__/
 *.py[cod]
-*.egg-info/
 .venv/
 venv/
-env/
-.ipynb_checkpoints/
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
 
-# ---------- Node ----------
+# Node
 node_modules/
-dist/
-build/
-.vite/
 npm-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# ---------- Secrets ----------
+# Secrets
 .env
 .env.*
 !.env.example
 
-# ---------- Big data ----------
-# Raw downloads stay out of git: keep only the docs in data/raw/.
-data/raw/*
-!data/raw/README.md
-!data/raw/SOURCES.md
-
-# Gridded/scientific formats are usually large. Put them on the shared Drive.
-*.nc
-*.nc4
-*.hdf
-*.h5
-*.he5
+# Archives and big scientific formats
 *.zip
-*.tar.gz
-*.7z
+*.nc
+*.hdf
 
-# GeoTIFFs: git can't filter by size, so all .tif files are ignored.
-# A small one (well under 50 MB) can still be committed on purpose:
-#   git add -f path/to/small.tif
-*.tif
-*.tiff
+# GeoTIFFs: .gitignore cannot filter by size. Files over 50 MB are kept out of git
+# by a size check before each commit (see the team workflow). Small GeoTIFFs in
+# case-studies/ may be committed.
 
-# ---------- OS / editors ----------
+# OS and editors
 .DS_Store
 Thumbs.db
 .vscode/

@@ -1,75 +1,60 @@
 # Zenith Analog Sites
 
-**Team Zenith · NASA Space Apps Challenge 2026 (Nov 14–15)**
-Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars*
+Team Zenith, NASA Space Apps 2026. Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars.*
 
-We score every place on Earth by how closely it matches lunar and Martian target sites, using open NASA and space agency data. The result is an interactive map. You set the weight of each dimension with sliders, and you can click any cell to see where the analogy holds and where it breaks. Gravity, vacuum and radiation can't be matched anywhere on Earth, and the tool says so.
+## What Zenith does
 
-## Method in 5 lines
-
-1. Split Earth into one shared coarse grid (0.25°, see [pipeline/GRID.md](pipeline/GRID.md)).
-2. Build a feature vector per land cell: elevation, slope, roughness, surface temperature range, aridity, albedo, ice/permafrost, mineralogy where available.
-3. Build the same vector for each Moon target (LRO LOLA/Diviner) and Mars target (MOLA/THEMIS/TES).
-4. Compute a 0–1 similarity per dimension, then a weighted total the user controls.
-5. Check the method: known analogs (Atacama, Haughton Crater, Death Valley, Iceland) must rank high. Then show the lesser-known candidates.
+1. Scores every 0.25° bare-ground cell on Earth against seven Moon and Mars base sites.
+2. Scores six dimensions: thermal, aridity, terrain, surface, ice and illumination.
+3. Combines them with one fixed scoring method (`scoring/score_v12.py`) and weights.
+4. The mission-plan layer (`app/`) reports which Earth site can test which part of a mission plan.
+5. It also reports what can only be tested in space: gravity, vacuum or atmosphere, and radiation.
 
 ## Folder map
 
-| Folder | What lives there |
+| Folder | What is in it |
 |---|---|
-| [data/raw/](data/raw/) | Downloaded datasets (big files gitignored). [SOURCES.md](data/raw/SOURCES.md) lists every dataset and who downloaded it. |
-| [data/processed/](data/processed/) | Small committed outputs: the cell × feature table, target-site vectors, similarity tables. |
-| [pipeline/](pipeline/) | Python: raw data → processed table on the shared grid. [GRID.md](pipeline/GRID.md) is the grid contract. |
-| [scoring/](scoring/) | Similarity metrics, weighting, validation against known analogs. |
-| [api/](api/) | FastAPI app serving precomputed scores and per-dimension breakdowns. |
-| [frontend/](frontend/) | Map dashboard: heatmap, weight sliders, click-to-inspect panel, Earth vs Moon/Mars view. |
-| [docs/](docs/) | Pitch notes, demo script, submission text, limits of the analogy. |
+| `data/earth/` | Tahir's 11 Earth-layer CSVs and their README (0.25° grid). |
+| `data/v1_2/` | Data v1.2 inputs and targets: `earth_features_v1_2.csv`, `precip_merra2_025deg.csv`, `targets.csv`, `known_sites_merged.csv`, `not_matchable.csv`, `targets_scored_v1_2.csv`. |
+| `scoring/` | `score_v12.py` (the one scoring method) and `SCORING.md` (what v1.2 changed and why). |
+| `results/` | Scores per preset, the plan pool, validation, and run summary for data v1.2. |
+| `app/` | Mission-plan layer and demo page (`index.html`, `coverage.js`, `data.js`, `data.json`, `build_data.py`, `test.js`). |
+| `patches/` | New data layers, one file each. |
+| `case-studies/` | One folder per site: slide, screenshot, GeoTIFFs. |
+| `docs/` | Pitch slides, 200-word summary, submission checklist, AI-use disclosure. |
+| `SOURCES.md` | Every dataset: agency, link, resolution, use, who added it. |
 
-## How to run
+## Open the demo
 
-```bash
-# one-time setup (Python 3.11+)
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+Open `app/index.html` in a browser. Double-click works, no server needed. `app/zenith-plan-demo.html` is the same page in one file, for sharing.
 
-# 1. pipeline: raw rasters -> data/processed/earth_features.parquet + target vectors
-python pipeline/build_features.py
-python pipeline/build_targets.py
-
-# 2. scoring: per-dimension similarity per target + validation report
-python scoring/score.py
-python scoring/validate.py
-
-# 3. API (http://localhost:8000/docs)
-uvicorn api.main:app --reload
-
-# 4. frontend (static, no build step)
-cd frontend && python -m http.server 5173   # open http://localhost:5173
-```
-
-These script names are fixed now so everyone points at the same files. Each folder's README describes what the script takes in and what it writes.
-
-## Contributing
-
-We have 48 hours, so the rules are short:
-
-- **Never push directly to `main`.** Everything goes in through a pull request.
-- **Work on your own branch, `dev/<github-username>`**, and mostly stay inside your own folder to avoid merge conflicts.
-- **Open a small pull request as soon as something works, and merge quickly.** Small and often beats big and late.
-- **Files over 50 MB go on the shared Drive folder, never in git.** Record them in [data/raw/SOURCES.md](data/raw/SOURCES.md).
-- **Everybody resamples to the grid in [pipeline/GRID.md](pipeline/GRID.md).** Same resolution, same CRS, same cell IDs.
-
-### Daily loop
+## Rerun scoring
 
 ```bash
-git checkout dev/<your-username>
-git pull origin main             # pick up what others merged
-# ... work, then:
-git add <your files>
-git commit -m "scoring: add cosine similarity per dimension"
-git push
-gh pr create --base main --fill  # or open the PR on github.com
+python3 scoring/score_v12.py <data v1 folder> data/v1_2/precip_merra2_025deg.csv <output folder>
 ```
 
-After your PR is merged, run `git pull origin main` on your branch again and keep going.
+The script reads the **data v1 folder layout** (its `targets.csv`, `earth` files and so on). That v1 folder is not in this repo yet, so put it on your own disk first. The second argument is the MERRA-2 precipitation file in `data/v1_2/`.
+
+## Rebuild the app data
+
+See [app/README.md](app/README.md). In short: `python3 build_data.py <data v1 folder> <data v1.1 folder> .` from `app/`.
+
+## Run the tests
+
+```bash
+node app/test.js
+```
+
+## Version
+
+Current version: **data v1.2**. Every rescoring gets a new version number. Slides quote the version they used.
+
+## Team workflow
+
+- **Never push to `main`.** Work on your own branch, `dev/<github-username>`, open a small pull request, and Kshitij merges it.
+- **Stay in your folder.** Tahir works in `patches/` and `data/`. Mo works in `app/` (UI). Immanuel and Surya work in `case-studies/` and `docs/`.
+- **One scoring method.** Nobody adds weights or scores outside `scoring/`.
+- **Files over 50 MB go on the shared Drive, not git.** Note the Drive link in `SOURCES.md`.
+
+Built with AI assistance (Claude). All data sources are listed in [SOURCES.md](SOURCES.md).

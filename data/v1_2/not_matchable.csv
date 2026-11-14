@@ -1,0 +1,29 @@
+target_id,body,parameter,value,source
+shackleton,Moon,gravity,1.62 m/s² (Earth 9.81),nssdc_moon
+shackleton,Moon,air_pressure,"~3×10⁻¹⁵ bar, vacuum",nssdc_moon
+shackleton,Moon,surface_radiation,~60 µSv/h (Chang'e-4),zhang2020
+shackleton,Moon,day_length,29.53 Earth days,nssdc_moon
+malapert,Moon,gravity,1.62 m/s² (Earth 9.81),nssdc_moon
+malapert,Moon,air_pressure,"~3×10⁻¹⁵ bar, vacuum",nssdc_moon
+malapert,Moon,surface_radiation,~60 µSv/h (Chang'e-4),zhang2020
+malapert,Moon,day_length,29.53 Earth days,nssdc_moon
+marius,Moon,gravity,1.62 m/s² (Earth 9.81),nssdc_moon
+marius,Moon,air_pressure,"~3×10⁻¹⁵ bar, vacuum",nssdc_moon
+marius,Moon,surface_radiation,~60 µSv/h (Chang'e-4),zhang2020
+marius,Moon,day_length,29.53 Earth days,nssdc_moon
+arcadia,Mars,gravity,3.73 m/s² (Earth 9.81),nssdc_mars
+arcadia,Mars,air_pressure,"6.36 mbar, ≈0.6% of Earth",nssdc_mars
+arcadia,Mars,surface_radiation,0.67 mSv/day (Curiosity),hassler2014
+arcadia,Mars,day_length,24.66 h,nssdc_mars
+jezero,Mars,gravity,3.73 m/s² (Earth 9.81),nssdc_mars
+jezero,Mars,air_pressure,"6.36 mbar, ≈0.6% of Earth",nssdc_mars
+jezero,Mars,surface_radiation,0.67 mSv/day (Curiosity),hassler2014
+jezero,Mars,day_length,24.66 h,nssdc_mars
+gale,Mars,gravity,3.73 m/s² (Earth 9.81),nssdc_mars
+gale,Mars,air_pressure,"6.36 mbar, ≈0.6% of Earth",nssdc_mars
+gale,Mars,surface_radiation,0.67 mSv/day (Curiosity),hassler2014
+gale,Mars,day_length,24.66 h,nssdc_mars
+meridiani,Mars,gravity,3.73 m/s² (Earth 9.81),nssdc_mars
+meridiani,Mars,air_pressure,"6.36 mbar, ≈0.6% of Earth",nssdc_mars
+meridiani,Mars,surface_radiation,0.67 mSv/day (Curiosity),hassler2014
+meridiani,Mars,day_length,24.66 h,nssdc_mars
