@@ -6,7 +6,7 @@ Team Zenith, NASA Space Apps 2026. Challenge: *Identify Earth Locations that Ana
 
 1. Scores every 0.25° bare-ground cell on Earth against seven Moon and Mars base sites.
 2. Scores six dimensions: thermal, aridity, terrain, surface, ice and illumination.
-3. Combines them with one fixed scoring method (`scoring/score_v14.py`) and weights.
+3. Combines them with one fixed scoring method (`scoring/score_v16.py`) and weights.
 4. The mission-plan layer (`app/`) reports which Earth site can test which part of a mission plan.
 5. It also reports what can only be tested in space: gravity, vacuum or atmosphere, and radiation.
 
@@ -15,9 +15,9 @@ Team Zenith, NASA Space Apps 2026. Challenge: *Identify Earth Locations that Ana
 | Folder | What is in it |
 |---|---|
 | `data/earth/` | Tahir's 11 Earth-layer CSVs and their README (0.25° grid). |
-| `data/v1_4/` | Data v1.4 inputs and targets: `earth_features_v1_4.csv.gz` (gzipped, 66 MB unpacked), `precip_merra2_025deg.csv`, `targets.csv`, `known_sites_merged.csv`, `not_matchable.csv`, `targets_v1_4.csv` (every target value with status and source). |
-| `scoring/` | `score_v14.py` (the one scoring method) and `SCORING.md` (what each version changed and why). |
-| `results/` | Scores per preset, the plan pool, validation, and run summary for data v1.4. |
+| `data/v1_6/` | Data v1.6 inputs and targets: `earth_features_v1_6.csv.gz` (gzipped, 66 MB unpacked), `precip_merra2_025deg.csv`, `targets.csv`, `known_sites_merged.csv`, `not_matchable.csv`, `targets_v1_6.csv` (every target value with status and source). |
+| `scoring/` | `score_v16.py` (the one scoring method) and `SCORING.md` (what each version changed and why). |
+| `results/` | Scores per preset, the plan pool, validation, and run summary for data v1.6. |
 | `app/` | Mission-plan layer and demo page (`index.html`, `coverage.js`, `data.js`, `data.json`, `build_data.py`, `test.js`). |
 | `patches/` | New data layers, one file each. |
 | `case-studies/` | One folder per site: slide, screenshot, GeoTIFFs. |
@@ -31,10 +31,10 @@ Open `app/index.html` in a browser. Double-click works, no server needed. `app/z
 ## Rerun scoring
 
 ```bash
-python3 scoring/score_v14.py <data v1 folder> data/v1_4/precip_merra2_025deg.csv <output folder> patches/
+python3 scoring/score_v16.py <data v1 folder> data/v1_6/precip_merra2_025deg.csv <output folder> patches/
 ```
 
-The script reads the **data v1 folder layout** (its `targets.csv`, `earth` files and so on). That v1 folder is not in this repo yet, so put it on your own disk first. The second argument is the MERRA-2 precipitation file in `data/v1_4/`.
+The script reads the **data v1 folder layout** (its `targets.csv`, `earth` files and so on). That v1 folder is not in this repo yet, so put it on your own disk first. The second argument is the MERRA-2 precipitation file in `data/v1_6/`.
 
 ## Rebuild the app data
 
@@ -48,7 +48,7 @@ node app/test.js
 
 ## Version
 
-Current version: **data v1.4**. Every rescoring gets a new version number. Slides quote the version they used.
+Current version: **data v1.6**. Every rescoring gets a new version number. Slides quote the version they used.
 
 ## Team workflow
 

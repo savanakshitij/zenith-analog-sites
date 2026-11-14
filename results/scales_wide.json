@@ -1,0 +1,12 @@
+{
+ "slope_deg": 4.500923469590363,
+ "roughness_tri_m": 4.333830376406491,
+ "relief_m": 4.329144842209932,
+ "temp_min_K": 40.51954119977171,
+ "temp_daynight_range_K": 9.299999999999999,
+ "albedo_wsa_unitless": 0.2857,
+ "precip_mm_per_yr": 264.57809252056217,
+ "ground_ice_frac": 1.0,
+ "sun_noon_elev_mean_deg": 25.059999999999995,
+ "geology_match": 1.0
+}
