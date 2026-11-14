@@ -7,6 +7,9 @@
  *   brightness (albedo) and surface type set the colour, and craters, pits and ice are added
  *   where the data records them. They illustrate those numbers; they are not survey maps.
  * Both blocks share one vertical scale, so the comparison is fair.
+ *
+ * three.js is loaded deferred (see index.html), so this file builds its window right away and the 3D part
+ * starts on DOMContentLoaded. A site shown before that is remembered and built when three.js is ready.
  */
 (function () {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -37,6 +40,7 @@
   const labs = [...win.querySelectorAll(".g-lab")], note = win.querySelector(".g-note");
 
   let userHidden = false, big = false, current = null;
+  let gl3d = null; // { resize, kick, build }, set once three.js is ready
   const inPanel = matchMedia("(max-width: 1100px)");
   function place() {
     // wide screens: a small window floating over the globe; narrower: inside the results panel
@@ -50,7 +54,7 @@
     const on = !!current && document.body.classList.contains("is-result");
     win.hidden = !on || userHidden;
     pill.hidden = !on || !userHidden || inPanel.matches;
-    if (!win.hidden) { resize(); kick(); }
+    if (!win.hidden && gl3d) { gl3d.resize(); gl3d.kick(); }
   }
   new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
   win.addEventListener("click", e => {
@@ -60,17 +64,20 @@
     if (b.dataset.act === "size") {
       big = !big; win.classList.toggle("big", big);
       b.setAttribute("aria-label", big ? "Make smaller" : "Enlarge"); b.title = b.getAttribute("aria-label"); b.textContent = big ? "⤡" : "⤢";
-      requestAnimationFrame(() => { resize(); kick(); });
+      requestAnimationFrame(() => { if (gl3d) { gl3d.resize(); gl3d.kick(); } });
     }
   });
   pill.addEventListener("click", () => { userHidden = false; sync(); });
 
-  if (!window.THREE) {
-    stage.innerHTML = `<p class="g-fallback">The 3D ground view needs an internet connection to load. Everything else works.</p>`;
-    window.ZenithGround = { show(site, target, info) { current = { site, target, info }; sync(); } };
-    place();
-    return;
-  }
+  // public: called by the app for each result
+  window.ZenithGround = {
+    show(site, target, info) {
+      current = { site, target, info };
+      if (gl3d) gl3d.build(); else sync();
+    },
+  };
+  place();
+  document.readyState === "loading" ? addEventListener("DOMContentLoaded", start3d) : start3d();
 
   /* ---------- terrain from measured values ---------- */
   function hash(str) { let h = 2166136261; for (const c of String(str)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
@@ -172,142 +179,161 @@
   }
 
   /* ---------- three.js scene: two blocks, one renderer ---------- */
-  const T = window.THREE;
-  const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = T.PCFSoftShadowMap;
-  renderer.setScissorTest(true);
-
-  const views = [0, 1].map(() => {
-    const scene = new T.Scene();
-    scene.add(new T.HemisphereLight(0xdde6ff, 0x24262e, 0.6));
-    const sun = new T.DirectionalLight(0xffffff, 1.05);
-    sun.position.set(-2.2, 2.6, 1.4); sun.castShadow = true;
-    sun.shadow.mapSize.set(1024, 1024);
-    Object.assign(sun.shadow.camera, { left: -1.6, right: 1.6, top: 1.6, bottom: -1.6, near: 0.1, far: 10 });
-    sun.shadow.bias = -0.0015;
-    scene.add(sun);
-    const camera = new T.PerspectiveCamera(30, 1, 0.1, 50);
-    return { scene, camera, group: null };
-  });
-
-  function block(fd, ve, colour, seed) {
-    const g = new T.Group(), rnd = rng(seed);
-    const toY = m => (m - fd.lo) * ve / PATCH_M * 2; // 12 km across = 2 units
-    const geo = new T.PlaneGeometry(2, 2, N - 1, N - 1);
-    geo.rotateX(-Math.PI / 2);
-    const pos = geo.attributes.position, col = new Float32Array(pos.count * 3);
-    const span = Math.max(1e-6, fd.relief);
-    for (let v = 0; v < pos.count; v++) {
-      const i = v % N, j = Math.floor(v / N), m = fd.h[j * N + i];
-      pos.setY(v, toY(m));
-      const shade = (0.9 + 0.18 * (m - fd.lo) / span) * (1 + (rnd() - 0.5) * 0.06);
-      col[v * 3] = colour[0] * shade; col[v * 3 + 1] = colour[1] * shade; col[v * 3 + 2] = colour[2] * shade;
+  function start3d() {
+    if (!window.THREE) {
+      stage.innerHTML = `<p class="g-fallback">The 3D ground view needs an internet connection to load. Everything else works.</p>`;
+      return;
     }
-    geo.setAttribute("color", new T.BufferAttribute(col, 3));
-    geo.computeVertexNormals();
-    const top = new T.Mesh(geo, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.96, metalness: 0 }));
-    top.castShadow = top.receiveShadow = true;
-    g.add(top);
-    // side walls down to a flat base, like a core sample
-    const base = -0.16, verts = [], idx = [];
-    const edge = (pts) => {
-      const o = verts.length / 3;
-      pts.forEach(([x, z, y]) => { verts.push(x, y, z, x, base, z); });
-      for (let k = 0; k < pts.length - 1; k++) { const a = o + k * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
-    };
-    const at = (i, j) => [-1 + 2 * i / (N - 1), -1 + 2 * j / (N - 1), toY(fd.h[j * N + i])];
-    const r = [...Array(N).keys()];
-    edge(r.map(i => at(i, N - 1)));            // near side
-    edge(r.map(j => at(N - 1, N - 1 - j)));    // right side
-    edge(r.map(i => at(N - 1 - i, 0)));        // far side
-    edge(r.map(j => at(0, j)));                // left side
-    const sg = new T.BufferGeometry();
-    sg.setAttribute("position", new T.Float32BufferAttribute(verts, 3));
-    sg.setIndex(idx); sg.computeVertexNormals();
-    const wall = new T.Color(colour[0] * 0.32, colour[1] * 0.32, colour[2] * 0.32);
-    const sides = new T.Mesh(sg, new T.MeshStandardMaterial({ color: wall, roughness: 1, metalness: 0, side: T.DoubleSide }));
-    sides.castShadow = sides.receiveShadow = true;
-    g.add(sides);
-    g.position.y = -0.35;
-    return g;
-  }
-  function dispose(g) { if (!g) return; g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); }
+    const T = window.THREE;
+    const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = T.PCFSoftShadowMap;
+    renderer.setScissorTest(true);
 
-  /* ---------- camera, drag to turn, slow turn when idle ---------- */
-  let yaw = -0.6, pitch = 0.5, drag = null, lastTouch = 0, raf = 0;
-  function aim(v) {
-    // far enough back that the whole block fits the view's width and height
-    const vf = v.camera.fov * Math.PI / 360, hf = Math.atan(Math.tan(vf) * v.camera.aspect);
-    const r = Math.max(1.55 / Math.tan(hf), 1.25 / Math.tan(vf)) + 1.1;
-    v.camera.position.set(r * Math.cos(pitch) * Math.sin(yaw), r * Math.sin(pitch), r * Math.cos(pitch) * Math.cos(yaw));
-    v.camera.lookAt(0, 0.28, 0); // aim above the block so it sits low, clear of the labels
-  }
-  function render() {
-    const w = stage.clientWidth, h = stage.clientHeight;
-    if (!w || !h) return;
-    const stacked = w < 360; // very narrow: one above the other
-    views.forEach((v, k) => {
-      const vw = stacked ? w : w / 2, vh = stacked ? h / 2 : h;
-      const x = stacked ? 0 : k * vw, y = stacked ? (1 - k) * vh : 0;
-      v.camera.aspect = vw / vh; v.camera.updateProjectionMatrix(); aim(v);
-      renderer.setViewport(x, y, vw, vh); renderer.setScissor(x, y, vw, vh);
-      renderer.render(v.scene, v.camera);
+    // The sun and the blocks never move (only the camera does), so each sun's shadow map is drawn once per
+    // new block (shadow.needsUpdate) instead of on every frame.
+    const views = [0, 1].map(() => {
+      const scene = new T.Scene();
+      scene.add(new T.HemisphereLight(0xdde6ff, 0x24262e, 0.6));
+      const sun = new T.DirectionalLight(0xffffff, 1.05);
+      sun.position.set(-2.2, 2.6, 1.4); sun.castShadow = true;
+      sun.shadow.mapSize.set(1024, 1024);
+      Object.assign(sun.shadow.camera, { left: -1.6, right: 1.6, top: 1.6, bottom: -1.6, near: 0.1, far: 10 });
+      sun.shadow.bias = -0.0015;
+      sun.shadow.autoUpdate = false; sun.shadow.needsUpdate = true;
+      scene.add(sun);
+      const camera = new T.PerspectiveCamera(30, 1, 0.1, 50);
+      return { scene, camera, sun, group: null };
     });
-    win.classList.toggle("stacked", stacked);
-  }
-  function loop() {
-    raf = 0;
-    if (win.hidden || !current) return;
-    const idle = !drag && performance.now() - lastTouch > 2500 && !reduce;
-    if (idle) yaw += 0.0035;
-    render();
-    if (idle || drag) raf = requestAnimationFrame(loop);
-  }
-  function kick() { if (!raf) raf = requestAnimationFrame(loop); }
-  function resize() {
-    const w = stage.clientWidth, h = stage.clientHeight;
-    if (w && h) renderer.setSize(w, h, false);
-  }
-  new ResizeObserver(() => { resize(); kick(); }).observe(stage);
-  canvas.addEventListener("pointerdown", e => {
-    drag = { x: e.clientX, y: e.clientY, yaw, pitch, id: e.pointerId };
-    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
-    kick();
-  });
-  canvas.addEventListener("pointermove", e => {
-    if (!drag || e.pointerId !== drag.id) return;
-    yaw = drag.yaw - (e.clientX - drag.x) * 0.012;
-    pitch = Math.max(0.18, Math.min(1.15, drag.pitch + (e.clientY - drag.y) * 0.006));
-    lastTouch = performance.now();
-  });
-  const end = e => { if (drag && e.pointerId === drag.id) { drag = null; lastTouch = performance.now(); kick(); } };
-  canvas.addEventListener("pointerup", end);
-  canvas.addEventListener("pointercancel", end);
 
-  /* ---------- public: called by the app for each result ---------- */
-  const fmt = (v, d = 0) => (v == null ? "–" : (+v).toFixed(d));
-  function show(site, target, info) {
-    current = { site, target, info };
-    const es = earthSpec(site), ts = targetSpec(target);
-    const fe = field(es), ft = field(ts);
-    // one vertical scale for both, so heights compare directly
-    const ve = Math.max(1, Math.min(10, Math.round(0.3 * PATCH_M / Math.max(1, fe.relief, ft.relief) * 2) / 2));
-    const blocks = [block(fe, ve, surfaceColour("Earth", es.look), es.seed), block(ft, ve, surfaceColour(target.body, ts.look), ts.seed)];
-    views.forEach((v, k) => { if (v.group) { v.scene.remove(v.group); dispose(v.group); } v.group = blocks[k]; v.scene.add(v.group); });
-    const e = site.earth || {}, f = target.features || {};
-    const set = (k, eye, name, slope, rough, alb, relief) => {
-      labs[k].querySelector(".g-eye").textContent = eye;
-      labs[k].querySelector(".g-name").textContent = name;
-      labs[k].querySelector(".g-stats").innerHTML = `<span>${fmt(slope, 1)}° slope</span><span>${fmt(rough)} m rugged</span><span>albedo ${fmt(alb, 2)}</span><span>${fmt(relief)} m relief</span>`;
-    };
-    set(0, "Earth site", info && info.name, e.slope_deg, e.roughness_tri_m, e.albedo_wsa_unitless, fe.relief);
-    set(1, `${target.body} target`, target.name, f.slope_deg, f.roughness_tri_m, f.albedo_wsa_unitless, ft.relief);
-    note.textContent = `12 km squares built from each place's measured slope, ruggedness and brightness, not survey maps. Same scale, height ×${ve}. Drag to turn.`;
-    win.setAttribute("aria-label", `Ground comparison in 3D: ${(info && info.name) || "Earth site"} on Earth beside ${target.name}`);
+    function block(fd, ve, colour, seed) {
+      const g = new T.Group(), rnd = rng(seed);
+      const toY = m => (m - fd.lo) * ve / PATCH_M * 2; // 12 km across = 2 units
+      const geo = new T.PlaneGeometry(2, 2, N - 1, N - 1);
+      geo.rotateX(-Math.PI / 2);
+      const pos = geo.attributes.position, col = new Float32Array(pos.count * 3);
+      const span = Math.max(1e-6, fd.relief);
+      for (let v = 0; v < pos.count; v++) {
+        const i = v % N, j = Math.floor(v / N), m = fd.h[j * N + i];
+        pos.setY(v, toY(m));
+        const shade = (0.9 + 0.18 * (m - fd.lo) / span) * (1 + (rnd() - 0.5) * 0.06);
+        col[v * 3] = colour[0] * shade; col[v * 3 + 1] = colour[1] * shade; col[v * 3 + 2] = colour[2] * shade;
+      }
+      geo.setAttribute("color", new T.BufferAttribute(col, 3));
+      geo.computeVertexNormals();
+      const top = new T.Mesh(geo, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.96, metalness: 0 }));
+      top.castShadow = top.receiveShadow = true;
+      g.add(top);
+      // side walls down to a flat base, like a core sample
+      const base = -0.16, verts = [], idx = [];
+      const edge = (pts) => {
+        const o = verts.length / 3;
+        pts.forEach(([x, z, y]) => { verts.push(x, y, z, x, base, z); });
+        for (let k = 0; k < pts.length - 1; k++) { const a = o + k * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+      };
+      const at = (i, j) => [-1 + 2 * i / (N - 1), -1 + 2 * j / (N - 1), toY(fd.h[j * N + i])];
+      const r = [...Array(N).keys()];
+      edge(r.map(i => at(i, N - 1)));            // near side
+      edge(r.map(j => at(N - 1, N - 1 - j)));    // right side
+      edge(r.map(i => at(N - 1 - i, 0)));        // far side
+      edge(r.map(j => at(0, j)));                // left side
+      const sg = new T.BufferGeometry();
+      sg.setAttribute("position", new T.Float32BufferAttribute(verts, 3));
+      sg.setIndex(idx); sg.computeVertexNormals();
+      const wall = new T.Color(colour[0] * 0.32, colour[1] * 0.32, colour[2] * 0.32);
+      const sides = new T.Mesh(sg, new T.MeshStandardMaterial({ color: wall, roughness: 1, metalness: 0, side: T.DoubleSide }));
+      sides.castShadow = sides.receiveShadow = true;
+      g.add(sides);
+      g.position.y = -0.35;
+      return g;
+    }
+    function dispose(g) { if (!g) return; g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); }
+
+    /* ---------- camera, drag to turn, slow turn when idle ---------- */
+    let yaw = -0.6, pitch = 0.5, drag = null, lastTouch = 0, raf = 0, tick = 0, force = true;
+    function aim(v) {
+      // far enough back that the whole block fits the view's width and height
+      const vf = v.camera.fov * Math.PI / 360, hf = Math.atan(Math.tan(vf) * v.camera.aspect);
+      const r = Math.max(1.55 / Math.tan(hf), 1.25 / Math.tan(vf)) + 1.1;
+      v.camera.position.set(r * Math.cos(pitch) * Math.sin(yaw), r * Math.sin(pitch), r * Math.cos(pitch) * Math.cos(yaw));
+      v.camera.lookAt(0, 0.28, 0); // aim above the block so it sits low, clear of the labels
+    }
+    function render() {
+      const w = stage.clientWidth, h = stage.clientHeight;
+      if (!w || !h) return;
+      const stacked = w < 360; // very narrow: one above the other
+      views.forEach((v, k) => {
+        const vw = stacked ? w : w / 2, vh = stacked ? h / 2 : h;
+        const x = stacked ? 0 : k * vw, y = stacked ? (1 - k) * vh : 0;
+        v.camera.aspect = vw / vh; v.camera.updateProjectionMatrix(); aim(v);
+        renderer.setViewport(x, y, vw, vh); renderer.setScissor(x, y, vw, vh);
+        renderer.render(v.scene, v.camera);
+      });
+      win.classList.toggle("stacked", stacked);
+    }
+    // Draws while the window is showing: every frame when dragging, every other frame during the slow idle turn.
+    // Stops while the tab is hidden or the film flight has the window faded out; sync() restarts it afterwards.
+    function loop() {
+      raf = 0;
+      if (win.hidden || !current || document.hidden || document.body.classList.contains("is-flying")) return;
+      const idle = !drag && performance.now() - lastTouch > 2500 && !reduce;
+      if (idle) yaw += 0.0035;
+      if (force || !idle || (tick++ & 1) === 0) render();
+      force = false;
+      if (idle || drag) raf = requestAnimationFrame(loop);
+    }
+    function kick() { force = true; if (!raf) raf = requestAnimationFrame(loop); }
+    function resize() {
+      const w = stage.clientWidth, h = stage.clientHeight;
+      if (w && h) renderer.setSize(w, h, false);
+    }
+    new ResizeObserver(() => { resize(); kick(); }).observe(stage);
+    document.addEventListener("visibilitychange", kick);
+    canvas.addEventListener("pointerdown", e => {
+      drag = { x: e.clientX, y: e.clientY, yaw, pitch, id: e.pointerId };
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* older browsers */ }
+      kick();
+    });
+    canvas.addEventListener("pointermove", e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      yaw = drag.yaw - (e.clientX - drag.x) * 0.012;
+      pitch = Math.max(0.18, Math.min(1.15, drag.pitch + (e.clientY - drag.y) * 0.006));
+      lastTouch = performance.now();
+    });
+    const end = e => { if (drag && e.pointerId === drag.id) { drag = null; lastTouch = performance.now(); kick(); } };
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+
+    /* ---------- build the blocks for the current site ---------- */
+    const fmt = (v, d = 0) => (v == null ? "–" : (+v).toFixed(d));
+    function build() {
+      const { site, target, info } = current;
+      const es = earthSpec(site), ts = targetSpec(target);
+      const fe = field(es), ft = field(ts);
+      // one vertical scale for both, so heights compare directly
+      const ve = Math.max(1, Math.min(10, Math.round(0.3 * PATCH_M / Math.max(1, fe.relief, ft.relief) * 2) / 2));
+      const blocks = [block(fe, ve, surfaceColour("Earth", es.look), es.seed), block(ft, ve, surfaceColour(target.body, ts.look), ts.seed)];
+      views.forEach((v, k) => {
+        if (v.group) { v.scene.remove(v.group); dispose(v.group); }
+        v.group = blocks[k]; v.scene.add(v.group);
+        v.sun.shadow.needsUpdate = true; // new ground: redraw this sun's shadow map once
+      });
+      const e = site.earth || {}, f = target.features || {};
+      const set = (k, eye, name, slope, rough, alb, relief) => {
+        labs[k].querySelector(".g-eye").textContent = eye;
+        labs[k].querySelector(".g-name").textContent = name;
+        labs[k].querySelector(".g-stats").innerHTML = `<span>${fmt(slope, 1)}° slope</span><span>${fmt(rough)} m rugged</span><span>albedo ${fmt(alb, 2)}</span><span>${fmt(relief)} m relief</span>`;
+      };
+      set(0, "Earth site", info && info.name, e.slope_deg, e.roughness_tri_m, e.albedo_wsa_unitless, fe.relief);
+      set(1, `${target.body} target`, target.name, f.slope_deg, f.roughness_tri_m, f.albedo_wsa_unitless, ft.relief);
+      note.textContent = `12 km squares built from each place's measured slope, ruggedness and brightness, not survey maps. Same scale, height ×${ve}. Drag to turn.`;
+      win.setAttribute("aria-label", `Ground comparison in 3D: ${(info && info.name) || "Earth site"} on Earth beside ${target.name}`);
+      sync();
+    }
+
+    gl3d = { resize, kick, build };
+    if (current) build();
     sync();
   }
-  window.ZenithGround = { show };
-  place();
 })();

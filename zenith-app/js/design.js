@@ -8,6 +8,15 @@
   const FONTS = [["original", "Original", "'Public Sans'"], ["inter", "Inter", "Inter"], ["clean", "Mono digits", "'DejaVu Sans Mono'"],
     ["mission", "Mission", "'Barlow Condensed'"], ["scifi", "Sci-fi", "'Chakra Petch'"], ["orbit", "Orbit", "Orbitron"]];
   const ACCENTS = [["#fc3d21", "Red"], ["#ff9f1c", "Amber"], ["#2ec5ff", "Cyan"], ["#ffffff", "White"]];
+  // index.html loads only Inter, the default. The other families (and the DejaVu Sans Mono in css/fonts.css) are
+  // added once: when the menu is opened (or about to be), or when a saved font needs one.
+  const EXTRA_FONTS = ["https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Chakra+Petch:wght@400;500;600;700&family=Exo+2:wght@400;500;600;700;800&family=Orbitron:wght@500;700;800;900&display=swap", "css/fonts.css"];
+  let extraFonts = false;
+  function loadExtraFonts() {
+    if (extraFonts) return;
+    extraFonts = true;
+    for (const href of EXTRA_FONTS) document.head.append(Object.assign(document.createElement("link"), { rel: "stylesheet", href }));
+  }
   const KEY = "zenith-design-3";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { /* storage blocked */ } };
@@ -38,6 +47,7 @@
   function apply() {
     root.dataset.look = st.look || DEFAULT_LOOK;
     root.dataset.font = st.font || DEFAULT_FONT;
+    if (root.dataset.font !== DEFAULT_FONT) loadExtraFonts();
     const set = (k, v) => (v == null ? root.style.removeProperty(k) : root.style.setProperty(k, v));
     set("--panel-alpha", st.alpha == null ? null : String(1 - st.alpha / 100));
     set("--panel-blur", st.blur == null ? null : st.blur + "px");
@@ -75,8 +85,9 @@
   $("dzRadius").addEventListener("input", e => change({ radius: +e.target.value }));
   $("dzFilm").addEventListener("change", e => change({ film: e.target.checked }));
 
-  const open = on => { pop.hidden = !on; toggle.setAttribute("aria-expanded", on); };
+  const open = on => { if (on) loadExtraFonts(); pop.hidden = !on; toggle.setAttribute("aria-expanded", on); };
   toggle.addEventListener("click", () => open(pop.hidden));
+  for (const ev of ["pointerenter", "focus"]) toggle.addEventListener(ev, loadExtraFonts, { once: true }); // start early so the previews are ready
   addEventListener("keydown", e => { if (e.key === "Escape" && !pop.hidden) { open(false); toggle.focus(); } });
   addEventListener("pointerdown", e => { if (!pop.hidden && !pop.contains(e.target) && !toggle.contains(e.target)) open(false); });
 

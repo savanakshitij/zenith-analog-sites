@@ -1,4 +1,4 @@
-/* The five extra features. Every number comes from the site's data record. */
+/* The extra features (best time of year, hazards, what-if, also-a-fit-for). Every number comes from the site's data record. */
 (function () {
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -19,11 +19,11 @@
       const cold = tHi > tLo ? (tHi - tmin[i]) / (tHi - tLo) : 1;      // 1 = coldest month
       const dry = 1 - pr[i] / pHi;                                     // 1 = driest month
       const dark = polarNight(site.lat, i);
-      return { name, i, tmin: tmin[i], tmax: mo.tmax_C ? mo.tmax_C[i] : null, precip: pr[i], dark, score: dark ? -1 : 0.6 * cold + 0.4 * dry };
+      return { name, i, tmin: tmin[i], precip: pr[i], dark, score: dark ? -1 : 0.6 * cold + 0.4 * dry };
     });
     const best = months.filter(m => !m.dark).sort((a, b) => b.score - a.score).slice(0, 3).map(m => m.i).sort((a, b) => a - b);
     months.forEach(m => (m.best = best.includes(m.i)));
-    return { months, best, label: rangeLabel(best) };
+    return { months, label: rangeLabel(best) };
   }
   function rangeLabel(idx) {
     if (!idx.length) return "none";
@@ -102,5 +102,5 @@
     return 6371 * 2 * Math.asin(Math.sqrt(x));
   }
 
-  window.ZenithFeatures = { bestMonths, hazards, whatIf, alsoFits, km, MONTHS };
+  window.ZenithFeatures = { bestMonths, hazards, whatIf, alsoFits, km };
 })();

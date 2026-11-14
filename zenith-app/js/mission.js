@@ -46,8 +46,7 @@
     const target = best || DEFAULT[body || "Moon"];
     let subsystems = Object.entries(SUB_WORDS).filter(([, ws]) => ws.some(has)).map(([k]) => k);
     if (!subsystems.length) subsystems = (LIBRARY.find(m => m.target === target) || LIBRARY[0]).subsystems.slice();
-    const why = best ? `matched “${TARGET_WORDS[best].find(has)}”` : body ? `default ${body} site` : "no place named, so the default Moon site";
-    return { target, subsystems, why };
+    return { target, subsystems };
   }
 
   window.ZenithMission = { LIBRARY, parse };

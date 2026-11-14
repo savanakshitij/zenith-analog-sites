@@ -12,7 +12,6 @@ Added on top: what-if percentiles (targets made harsher/milder), monthly climate
 Canada close-up values.
 """
 import argparse
-import gzip
 import json
 from pathlib import Path
 

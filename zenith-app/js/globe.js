@@ -7,7 +7,7 @@
  */
 (function () {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let canvas, ctx, starCanvas, earthCanvas, gl = null, prog = null, uni = {}, tex = {}, ready = false;
+  let canvas, ctx, starCanvas, earthCanvas, gl = null, prog = null, uni = {}, ready = false;
   let W = 0, H = 0, dpr = 1;
   const countries = topojson.feature(WORLD_TOPO, WORLD_TOPO.objects.countries).features;
   const borders = topojson.mesh(WORLD_TOPO, WORLD_TOPO.objects.countries, (a, b) => a !== b);
@@ -15,7 +15,13 @@
   let path;
   let rotation = [10, -15, 0], spin = !reduceMotion, flying = null, pulse = 0;
   let zoom = 1, landAt = -1e9, lastT = performance.now(), starScale = 1;
-  let markers = [], selected = null, onPick = null;
+  let markers = [], selected = null, onPick = null, drag = null;
+  // The frame loop runs while something moves. When only the ambient motion is left (twinkling stars, drifting
+  // clouds, the marker's pulse) it draws every other frame; with reduced motion and nothing selected it stops.
+  // wake() restarts it; every change from outside (markers, layout, flights, pointer, theme) calls it.
+  let raf = 0, tick = 0, dirty = true;
+  function wake() { dirty = true; if (canvas && !raf && !document.hidden) raf = requestAnimationFrame(frame); }
+  document.addEventListener("visibilitychange", wake);
   // layout eases toward goal each frame, so the globe glides when the panel opens
   let layout = { cx: 0.5, cy: 0.5, r: 0.36, maxX: 1 }, goal = { ...layout }, placed = false;
   const t0 = performance.now();
@@ -29,7 +35,7 @@
     const cs = getComputedStyle(document.documentElement), v = k => cs.getPropertyValue(k).trim();
     theme = { reticle: v("--reticle-rgb") || theme.reticle, label: v("--label-bg") || theme.label, ink: v("--label-ink") || theme.ink, dot: v("--dot-bg") || theme.dot, font: v("--head-font") || theme.font };
   }
-  addEventListener("zenith:look", readTheme);
+  addEventListener("zenith:look", () => { readTheme(); wake(); });
 
   /* ---------- stars: drawn once per resize ---------- */
   function drawStars() {
@@ -61,6 +67,7 @@
       const x = s.x * W, y = s.y * H;
       if ((x - cx) ** 2 + (y - cy) ** 2 < (r + 8) ** 2) continue; // never in front of Earth
       const a = 0.5 + 0.5 * Math.sin(t * s.sp + s.ph);
+      if (a * a * 0.9 < 0.001) continue; // too faint to show (under 1/255 of full alpha)
       ctx.globalAlpha = a * a * 0.9;
       ctx.beginPath(); ctx.arc(x, y, s.s, 0, 7); ctx.fill();
       if (s.s > 1.5) {
@@ -145,7 +152,7 @@ void main() {
     for (const k of ["uDay", "uNight", "uClouds", "uCenter", "uR", "uLambda", "uPhi", "uTime"]) uni[k] = gl.getUniformLocation(prog, k);
     let loaded = 0;
     ["day", "night", "clouds"].forEach((k, i) => {
-      const t = gl.createTexture(); tex[k] = t;
+      const t = gl.createTexture();
       gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
       const img = new Image();
@@ -157,7 +164,7 @@ void main() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        if (++loaded === 3) { ready = true; document.body.classList.add("globe-photo"); }
+        if (++loaded === 3) { ready = true; document.body.classList.add("globe-photo"); wake(); }
       };
       img.src = window.EARTH_TEX[k];
     });
@@ -197,6 +204,7 @@ void main() {
     W = canvas.clientWidth || innerWidth; H = canvas.clientHeight || innerHeight;
     canvas.width = W * dpr; canvas.height = H * dpr;
     drawStars();
+    wake();
   }
 
   // four corner brackets around a point, like a camera's focus box
@@ -257,12 +265,17 @@ void main() {
   }
 
   function frame() {
+    raf = 0;
     const now = performance.now(), dt = Math.min(64, now - lastT);
     lastT = now;
     pulse++;
     if (canvas.clientWidth !== W || canvas.clientHeight !== H) resize();
     const a = reduceMotion ? 1 : 1 - Math.exp(-dt / 280);
-    for (const k in goal) layout[k] += (goal[k] - layout[k]) * a;
+    let easing = false;
+    for (const k in goal) {
+      layout[k] += (goal[k] - layout[k]) * a;
+      if (Math.abs(goal[k] - layout[k]) < 2e-5) layout[k] = goal[k]; else easing = true;
+    }
     if (flying) {
       // camera move in three beats: pull back, swing round, dive in.
       // Rotation finishes at 80%; the zoom keeps diving and settles at the end.
@@ -276,14 +289,18 @@ void main() {
     // stars drift with the camera for a little depth
     const sc = 1 + (zoom - 1) * 0.05;
     if (starCanvas && Math.abs(sc - starScale) > 0.0005) { starScale = sc; starCanvas.style.transform = `scale(${sc.toFixed(4)})`; }
-    draw();
-    requestAnimationFrame(frame);
+    // calm: nothing but ambient motion is left (the target-lock animation lasts 1.2 s after landing)
+    const calm = !easing && !flying && !spin && !drag && now - landAt > 1300;
+    const ambient = !reduceMotion || selected != null;
+    if (dirty || !calm || !ambient || (tick++ & 1) === 0) draw();
+    dirty = false;
+    if (!raf && !document.hidden && !(calm && !ambient)) raf = requestAnimationFrame(frame); // resize() may already have woken the loop
   }
 
   // Flies the camera to a place and returns the flight time in ms.
   // cinematic: a long pull-back-and-dive for a new search; otherwise a short hop between sites.
   function flyTo(lat, lon, opts = {}) {
-    spin = false;
+    spin = false; wake();
     const z1 = opts.zoom || 2.4, tilt = 8 / z1;
     const from = rotation.slice();
     let lam = -lon;
@@ -309,8 +326,7 @@ void main() {
     readTheme();
     resize(); addEventListener("resize", resize);
     initGL();
-    let drag = null;
-    const stop = () => { if (flying) landAt = performance.now(); flying = null; spin = false; };
+    const stop = () => { if (flying) landAt = performance.now(); flying = null; spin = false; wake(); };
     canvas.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY, r: rotation.slice(), moved: false }; stop(); });
     // mouse wheel zooms on desktop; on phones the page scrolls instead
     canvas.addEventListener("wheel", e => {
@@ -320,6 +336,7 @@ void main() {
     }, { passive: false });
     addEventListener("pointermove", e => {
       if (!drag) return;
+      wake();
       const k = 70 / projection.scale();
       if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) drag.moved = true;
       rotation = [drag.r[0] + (e.clientX - drag.x) * k * 2, Math.max(-85, Math.min(85, drag.r[1] - (e.clientY - drag.y) * k * 2)), 0];
@@ -335,8 +352,9 @@ void main() {
         if (best) onPick(best.id);
       }
       drag = null;
+      wake();
     });
-    requestAnimationFrame(frame);
+    wake();
   }
 
   function countryOf(lat, lon) {
@@ -346,11 +364,9 @@ void main() {
 
   window.ZenithGlobe = {
     init, flyTo, countryOf,
-    isPhotoreal: () => !!(gl && ready),
-    setMarkers: (m) => { markers = m; },
-    select: (id) => { selected = id; },
-    setLayout: (l) => { goal = { ...goal, ...l }; if (!placed || reduceMotion) layout = { ...goal }; placed = true; },
+    setMarkers: (m) => { markers = m; wake(); },
+    select: (id) => { selected = id; wake(); },
+    setLayout: (l) => { goal = { ...goal, ...l }; if (!placed || reduceMotion) layout = { ...goal }; placed = true; wake(); },
     onPick: (fn) => { onPick = fn; },
-    spin: (on) => { spin = on && !reduceMotion; },
   };
 })();

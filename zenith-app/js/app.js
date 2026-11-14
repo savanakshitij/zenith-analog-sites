@@ -3,7 +3,6 @@
   const { LIBRARY, parse } = window.ZenithMission;
   const F = window.ZenithFeatures;
   const G = window.ZenithGlobe;
-  const IMG = window.ANALOG_IMAGES || { BASE_IMAGES: {}, SITE_IMAGES: {} };
   const SUBS = (window.Zenith && window.Zenith.SUBSYSTEMS) || {};
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -29,23 +28,26 @@
       if (n < text.length) requestAnimationFrame(tick);
       else setTimeout(() => { if (el._type === run) el.classList.remove("typing"); }, 700);
     };
-    requestAnimationFrame(tick);
+    // the wait before typing starts is a timer, not a frame callback per frame
+    delay > 0 ? setTimeout(() => requestAnimationFrame(tick), delay) : requestAnimationFrame(tick);
   }
 
   let S = { text: "", plan: null, report: null, idx: 0, tab: "overview", wi: 2 };
 
   /* ---------- engine ---------- */
+  // A plan always gives the same ranking, so each plan is run once. (The Teams card re-runs the other example
+  // missions for every site you step to.) To use another engine, adapt its output to the report shape here.
+  const runs = new Map();
   function runEngine(plan) {
-    const r = window.Zenith.assess(plan, DATA);
-    const target = r.target && r.target.candidates ? r.target : DATA.targets[plan.target];
-    const all = (r.ranked || r.sites || []).map(x => ({
-      site: x.site || x, overall: x.overall != null ? x.overall : x.coverage,
-      subsystems: x.subsystems || x.perSubsystem || {}, stability: x.stability != null ? x.stability : (x.site || x).stability,
-      tag: x.tag || ((x.site || x).kind === "gem" ? "gem" : "known"),
-    }));
-    const ranked = []; // neighbouring cells rank together; keep places 100 km apart
-    for (const x of all) if (ranked.every(y => F.km(x.site.lat, x.site.lon, y.site.lat, y.site.lon) >= 100)) ranked.push(x);
-    return { engine: r.engine || "coverage.js", target, plan: r.plan || plan, ranked: ranked.slice(0, 20), cannotTest: r.cannotTest || r.cannot_test || [] };
+    const key = plan.target + ":" + plan.subsystems.join();
+    let run = runs.get(key);
+    if (!run) {
+      const r = window.Zenith.assess(plan, DATA);
+      const ranked = []; // neighbouring cells rank together; keep places 100 km apart
+      for (const x of r.ranked) if (ranked.every(y => F.km(x.site.lat, x.site.lon, y.site.lat, y.site.lon) >= 100)) ranked.push(x);
+      runs.set(key, run = { target: r.target, ranked: ranked.slice(0, 20), cannotTest: r.cannotTest });
+    }
+    return run;
   }
 
   /* ---------- names ---------- */
@@ -112,7 +114,7 @@
     const base = q.placeholder;
     let mi = 0, ci = 0, dir = 1;
     const step = () => {
-      if (document.activeElement === q || q.value || !document.body.classList.contains("is-home")) {
+      if (document.hidden || document.activeElement === q || q.value || !document.body.classList.contains("is-home")) {
         q.placeholder = base; ci = 0; dir = 1;
         return setTimeout(step, 800);
       }
@@ -145,14 +147,14 @@
     res.classList.toggle("await", cine);
     if (!cine) replay(res);
     layout();
-    G.setMarkers(S.report.ranked.map((r, i) => ({ id: r.site.id, lat: r.site.lat, lon: r.site.lon, rank: i + 1, kind: r.tag, label: `${i + 1}  ${nameOf(r.site)}` })));
+    setMarkers();
     const ms = show(0, { cine }) || 0;
     if (cine && S.report.ranked[0]) {
-      const r = S.report.ranked[0], t = S.report.target, card = ms * 0.55;
+      const r = S.report.ranked[0], t = S.report.target, card = ms * 0.55, name = nameOf(r.site);
       // the title card types itself out in the bottom film bar
       typeText($("#cEyebrow"), `Earth analog for ${t.name} · ${t.body}`, { delay: card, speed: 16 });
-      typeText($("#cName"), nameOf(r.site), { delay: card + 550, speed: 70 });
-      typeText($("#cCoord"), placeOf(r.site), { delay: card + 550 + 70 * nameOf(r.site).length + 150, speed: 18 });
+      typeText($("#cName"), name, { delay: card + 550, speed: 70 });
+      typeText($("#cCoord"), placeOf(r.site), { delay: card + 550 + 70 * name.length + 150, speed: 18 });
       const later = (f, at) => setTimeout(() => { if (id === flight) f(); }, at);
       later(() => body.classList.add("card-in"), card);
       later(() => { res.classList.remove("await"); replay(res); }, ms * 0.8);
@@ -162,8 +164,11 @@
   }
   function rerun() {
     S.report = runEngine(S.plan); S.idx = 0;
-    G.setMarkers(S.report.ranked.map((r, i) => ({ id: r.site.id, lat: r.site.lat, lon: r.site.lon, rank: i + 1, kind: r.tag, label: `${i + 1}  ${nameOf(r.site)}` })));
+    setMarkers();
     show(0);
+  }
+  function setMarkers() {
+    G.setMarkers(S.report.ranked.map((r, i) => ({ id: r.site.id, lat: r.site.lat, lon: r.site.lon, rank: i + 1, kind: r.tag, label: `${i + 1}  ${nameOf(r.site)}` })));
   }
 
   function countUp(el, to, delay = 0) {
@@ -171,13 +176,14 @@
     const run = (el._run = (el._run || 0) + 1);
     if (delay) el.textContent = 0;
     const from = +el.textContent || 0, t0 = performance.now() + delay, ms = 900;
+    let shown = from;
     const tick = t => {
       if (el._run !== run) return; // a newer count took over
-      const k = Math.max(0, Math.min(1, (t - t0) / ms)), e = 1 - Math.pow(1 - k, 3);
-      el.textContent = Math.round(from + (to - from) * e);
+      const k = Math.max(0, Math.min(1, (t - t0) / ms)), e = 1 - Math.pow(1 - k, 3), v = Math.round(from + (to - from) * e);
+      if (v !== shown) el.textContent = shown = v;
       if (k < 1) requestAnimationFrame(tick);
     };
-    requestAnimationFrame(tick);
+    delay > 0 ? setTimeout(() => requestAnimationFrame(tick), delay) : requestAnimationFrame(tick);
   }
 
   // Shows site i and flies the globe to it; returns the flight time in ms.
@@ -198,18 +204,20 @@
     const ms = G.flyTo(s.lat, s.lon, { cinematic: !!opts.cine });
     // a cinematic search holds the panel back until 80% of the flight; text types in as it appears
     const at = opts.cine ? ms * 0.8 : 0;
+    const name = nameOf(s), place = placeOf(s);
     countUp($("#rPct"), Math.round(r.overall * 100), at);
     typeText($("#rTarget"), `${t.body} · ${t.name}`, { delay: at, speed: 18 });
-    typeText($("#rName"), nameOf(s), { delay: at + 200, speed: 45 });
-    typeText($("#rWhere"), placeOf(s), { delay: at + 500, speed: 16 });
+    typeText($("#rName"), name, { delay: at + 200, speed: 45 });
+    typeText($("#rWhere"), place, { delay: at + 500, speed: 16 });
     renderSlides(at);
-    if (window.ZenithGround) window.ZenithGround.show(s, t, { name: nameOf(s), place: placeOf(s) });
+    if (window.ZenithGround) window.ZenithGround.show(s, t, { name, place });
+    if (window.ZenithSound) window.ZenithSound.update(s, t, { name, place, match: r.overall });
     return ms;
   }
   $("#prev").onclick = () => show(S.idx - 1);
   $("#next").onclick = () => show(S.idx + 1);
 
-  /* ---------- tabs ---------- */
+  /* ---------- the eight fact cards (id, title) ---------- */
   const TABS = [
     ["overview", "Overview"], ["similar", "Similar"], ["different", "Different"], ["season", "Season"],
     ["whatif", "What if"], ["hazards", "Hazards"], ["research", "Studies"], ["fits", "Teams"],
@@ -369,7 +377,7 @@
       <span class="meter"><i style="width:${Math.round((x.d || 0) * 100)}%"></i></span></div>`).join("");
 
   const PANELS = {
-    overview(r, t) {
+    overview(r) {
       const opts = ["Moon", "Mars"].map(b => `<optgroup label="${b}">${Object.values(DATA.targets).filter(x => x.body === b).map(x => `<option value="${x.id}" ${x.id === S.plan.target ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`).join("");
       return `
       <div class="sec"><h2>Mission coverage</h2><div class="bars">${Object.entries(r.subsystems).map(([k, v]) => `<div class="bar"><span>${esc((SUBS[k] && SUBS[k].label) || k)}</span><span class="track"><span class="fill" data-v="${(v || 0).toFixed(3)}"></span></span><span class="v">${P(v)}%</span></div>`).join("")}</div></div>
