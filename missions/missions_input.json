@@ -1,0 +1,20 @@
+[
+ {"id":"artemis-iv","mission":"Artemis IV: first crewed Artemis landing","agency":"NASA","body":"Moon","target_id":"malapert",
+  "weights":{"thermal":2,"aridity":1,"terrain":3,"surface":1,"ice":1,"illumination":2,"geology":1}},
+ {"id":"ltv","mission":"Lunar Terrain Vehicles (Astrolab CLV-1, Lunar Outpost Pegasus)","agency":"NASA","body":"Moon","target_id":"shackleton",
+  "weights":{"thermal":1,"aridity":1,"terrain":4,"surface":2,"ice":1,"illumination":1,"geology":1}},
+ {"id":"viper","mission":"VIPER water-ice prospecting rover","agency":"NASA","body":"Moon","target_id":"shackleton",
+  "weights":{"thermal":2,"aridity":1,"terrain":2,"surface":1,"ice":4,"illumination":2,"geology":1}},
+ {"id":"change-7","mission":"Chang'e-7 south pole lander, rover and hopper","agency":"CNSA","body":"Moon","target_id":"shackleton",
+  "weights":{"thermal":2,"aridity":1,"terrain":3,"surface":1,"ice":3,"illumination":2,"geology":1}},
+ {"id":"lupex","mission":"Chandrayaan-5 / LUPEX polar drilling rover","agency":"ISRO and JAXA","body":"Moon","target_id":"shackleton",
+  "weights":{"thermal":2,"aridity":1,"terrain":2,"surface":1,"ice":4,"illumination":1,"geology":2}},
+ {"id":"change-8","mission":"Chang'e-8 resource-use and brick-printing lander","agency":"CNSA","body":"Moon","target_id":"shackleton",
+  "weights":{"thermal":1,"aridity":2,"terrain":2,"surface":3,"ice":1,"illumination":2,"geology":3}},
+ {"id":"rosalind-franklin","mission":"Rosalind Franklin rover (ExoMars), 2 m drill","agency":"ESA with NASA","body":"Mars","target_id":"jezero",
+  "weights":{"thermal":1,"aridity":3,"terrain":2,"surface":2,"ice":1,"illumination":1,"geology":3}},
+ {"id":"tianwen-3","mission":"Tianwen-3 Mars sample return","agency":"CNSA","body":"Mars","target_id":"arcadia",
+  "weights":{"thermal":1,"aridity":2,"terrain":3,"surface":2,"ice":1,"illumination":1,"geology":2}},
+ {"id":"mars-human-ice","mission":"First crewed Mars base: drilling buried ice (SWIM candidate region)","agency":"NASA (concept)","body":"Mars","target_id":"arcadia",
+  "weights":{"thermal":2,"aridity":1,"terrain":2,"surface":1,"ice":4,"illumination":1,"geology":1}}
+]

@@ -1,0 +1,1236 @@
+{
+ "version": "data v1.6",
+ "status_checked": "2026-11-14",
+ "note": "Scores use the v1.6 engine with the mission's dimension weights. Weights are team assumptions about what each mission needs, set before looking at results. Mars Sample Return (NASA/ESA) is left out: Congress gave it no funding for FY2026.",
+ "missions": [
+  {
+   "id": "artemis-iv",
+   "suggestion": "Artemis IV crewed landing at the lunar south pole",
+   "mission": "Artemis IV: first crewed Artemis landing",
+   "agency": "NASA",
+   "body": "Moon",
+   "status": "Planned, early 2028",
+   "about": "Since February 2026, Artemis IV is planned as the first crewed Artemis landing (Artemis III became an Earth-orbit lander test). NASA's nine candidate south-pole landing regions, named in October 2024, include Malapert Massif.",
+   "needs_to_test": "Landing and walking on steep, rough ground, extreme cold and low sun",
+   "target_id": "malapert",
+   "target_name": "Malapert Massif",
+   "target_is_proxy": false,
+   "proxy_note": null,
+   "weights": {
+    "thermal": 2,
+    "aridity": 1,
+    "terrain": 3,
+    "surface": 1,
+    "ice": 1,
+    "illumination": 2,
+    "geology": 1
+   },
+   "best_sites": [
+    {
+     "name": "Karakoram, northern Pakistan",
+     "lat": 36.625,
+     "lon": 74.875,
+     "score": 0.427,
+     "percentile": 100,
+     "good_match": [
+      "terrain"
+     ],
+     "weak_match": [
+      "sunlight",
+      "dryness"
+     ],
+     "rock": "mixed sediment",
+     "coldest_night_K": 253,
+     "mean_slope_deg": 15.12,
+     "rain_mm_per_yr": 131,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1492,
+     "dims": {
+      "thermal": 0.38,
+      "aridity": 0.27,
+      "terrain": 0.92,
+      "surface": 0.54,
+      "ice": 0.42,
+      "illumination": 0.18,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Central Tian Shan, China–Kyrgyzstan border",
+     "lat": 42.125,
+     "lon": 80.625,
+     "score": 0.413,
+     "percentile": 99.99,
+     "good_match": [
+      "terrain"
+     ],
+     "weak_match": [
+      "dryness",
+      "sunlight"
+     ],
+     "rock": "pyroclastics",
+     "coldest_night_K": 253,
+     "mean_slope_deg": 15.18,
+     "rain_mm_per_yr": 181,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1027,
+     "dims": {
+      "thermal": 0.37,
+      "aridity": 0.17,
+      "terrain": 0.95,
+      "surface": 0.39,
+      "ice": 0.42,
+      "illumination": 0.23,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "High Andes, Coquimbo, Chile",
+     "lat": -29.875,
+     "lon": -70.375,
+     "score": 0.401,
+     "percentile": 99.97,
+     "good_match": [
+      "ice"
+     ],
+     "weak_match": [
+      "sunlight",
+      "cold"
+     ],
+     "rock": "granite",
+     "coldest_night_K": 271,
+     "mean_slope_deg": 14.38,
+     "rain_mm_per_yr": 107,
+     "nearest_known_analog": "Yungay, Atacama",
+     "km_to_known_analog": 643,
+     "dims": {
+      "thermal": 0.28,
+      "aridity": 0.35,
+      "terrain": 0.68,
+      "surface": 0.69,
+      "ice": 1,
+      "illumination": 0.14,
+      "geology": 0.37
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "McMurdo Dry Valleys",
+    "score": 0.41,
+    "eligible": false
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "Artemis IV (Wikipedia)",
+     "url": "https://en.wikipedia.org/wiki/Artemis_IV"
+    },
+    {
+     "title": "NASA: update on Artemis landing regions",
+     "url": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/"
+    },
+    {
+     "title": "Artemis III news, NASA",
+     "url": "https://www.nasa.gov/artemis-iii-news-and-updates/"
+    }
+   ],
+   "match_quality": "weak",
+   "match_note": "No robust Earth analog. These are the closest partial matches; test subsystems separately."
+  },
+  {
+   "id": "ltv",
+   "suggestion": "Drive NASA's new lunar terrain vehicles across the south pole",
+   "mission": "Lunar Terrain Vehicles (Astrolab CLV-1, Lunar Outpost Pegasus)",
+   "agency": "NASA",
+   "body": "Moon",
+   "status": "Selected May 2026, for Artemis IV",
+   "about": "NASA picked Astrolab (CLV-1) and Lunar Outpost (Pegasus) in May 2026 to build crewed lunar terrain vehicles, aiming to deploy them before the Artemis IV crew arrives.",
+   "needs_to_test": "Driving on rough, sloped terrain with a crew",
+   "target_id": "shackleton",
+   "target_name": "Shackleton crater rim",
+   "target_is_proxy": false,
+   "proxy_note": null,
+   "weights": {
+    "thermal": 1,
+    "aridity": 1,
+    "terrain": 4,
+    "surface": 2,
+    "ice": 1,
+    "illumination": 1,
+    "geology": 1
+   },
+   "best_sites": [
+    {
+     "name": "Eastern Pamir, Xinjiang, China",
+     "lat": 37.375,
+     "lon": 76.125,
+     "score": 0.525,
+     "percentile": 100,
+     "good_match": [
+      "terrain"
+     ],
+     "weak_match": [
+      "cold",
+      "sunlight"
+     ],
+     "rock": "granite",
+     "coldest_night_K": 262,
+     "mean_slope_deg": 12.53,
+     "rain_mm_per_yr": 80,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1367,
+     "dims": {
+      "thermal": 0.16,
+      "aridity": 0.45,
+      "terrain": 0.83,
+      "surface": 0.72,
+      "ice": 0.77,
+      "illumination": 0.16,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "High Andes near Aconcagua, Chile",
+     "lat": -32.875,
+     "lon": -70.125,
+     "score": 0.459,
+     "percentile": 99.98,
+     "good_match": [
+      "terrain"
+     ],
+     "weak_match": [
+      "dryness",
+      "sunlight"
+     ],
+     "rock": "acid volcanic rock",
+     "coldest_night_K": 261,
+     "mean_slope_deg": 12.44,
+     "rain_mm_per_yr": 201,
+     "nearest_known_analog": "Yungay, Atacama",
+     "km_to_known_analog": 976,
+     "dims": {
+      "thermal": 0.17,
+      "aridity": 0.14,
+      "terrain": 0.87,
+      "surface": 0.7,
+      "ice": 0.59,
+      "illumination": 0.14,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Tian Shan, Kyrgyzstan",
+     "lat": 41.875,
+     "lon": 79.375,
+     "score": 0.431,
+     "percentile": 99.94,
+     "good_match": [],
+     "weak_match": [
+      "dryness",
+      "cold"
+     ],
+     "rock": "carbonate rock",
+     "coldest_night_K": 259,
+     "mean_slope_deg": 12.98,
+     "rain_mm_per_yr": 221,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1116,
+     "dims": {
+      "thermal": 0.16,
+      "aridity": 0.11,
+      "terrain": 0.68,
+      "surface": 0.67,
+      "ice": 0.73,
+      "illumination": 0.2,
+      "geology": 0.37
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "McMurdo Dry Valleys",
+    "score": 0.35,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "Astrolab selection, May 2026",
+     "url": "https://astrolab.space/2026/05/26/nasa-selects-astrolab-to-provide-lunar-rover-for-artemis-astronauts-return-to-the-moon/"
+    },
+    {
+     "title": "Spaceflight Now, June 2026",
+     "url": "https://spaceflightnow.com/2026/06/26/next-gen-astronaut-moon-rovers-aim-for-deployment-ahead-of-artemis-4-crew-arrival/"
+    }
+   ],
+   "match_quality": "moderate",
+   "match_note": "Earth matches the terrain and ice parts; nothing on Earth matches the cold."
+  },
+  {
+   "id": "viper",
+   "suggestion": "VIPER rover hunting water ice at the lunar south pole",
+   "mission": "VIPER water-ice prospecting rover",
+   "agency": "NASA",
+   "body": "Moon",
+   "status": "Planned late 2027 on Blue Origin's Blue Moon MK1",
+   "about": "NASA cancelled VIPER in 2024 and revived it in September 2025, with Blue Origin contracted to land it at the south pole in late 2027. The date depends on Blue Origin's first lander flying well.",
+   "needs_to_test": "Prospecting for ice in cold, dark, rough ground",
+   "target_id": "shackleton",
+   "target_name": "Shackleton crater rim",
+   "target_is_proxy": false,
+   "proxy_note": null,
+   "weights": {
+    "thermal": 2,
+    "aridity": 1,
+    "terrain": 2,
+    "surface": 1,
+    "ice": 4,
+    "illumination": 2,
+    "geology": 1
+   },
+   "best_sites": [
+    {
+     "name": "McMurdo Dry Valleys, Antarctica",
+     "lat": -77.625,
+     "lon": 161.625,
+     "score": 0.52,
+     "percentile": 100,
+     "good_match": [
+      "ice"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "cold"
+     ],
+     "rock": "mixed sediment",
+     "coldest_night_K": 234,
+     "mean_slope_deg": 11.55,
+     "rain_mm_per_yr": 80,
+     "nearest_known_analog": "McMurdo Dry Valleys",
+     "km_to_known_analog": 17,
+     "dims": {
+      "thermal": 0.21,
+      "aridity": 0.45,
+      "terrain": 0.64,
+      "surface": 0.12,
+      "ice": 1,
+      "illumination": 0.75,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Northern Ellesmere Island, Canada",
+     "lat": 81.875,
+     "lon": -79.375,
+     "score": 0.503,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "sunlight",
+      "terrain"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "dryness"
+     ],
+     "rock": "mixed sediment",
+     "coldest_night_K": 238,
+     "mean_slope_deg": 12.38,
+     "rain_mm_per_yr": 179,
+     "nearest_known_analog": "Devon Island",
+     "km_to_known_analog": 752,
+     "dims": {
+      "thermal": 0.19,
+      "aridity": 0.17,
+      "terrain": 0.83,
+      "surface": 0.12,
+      "ice": 1,
+      "illumination": 0.84,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Transantarctic Mountains, Antarctica",
+     "lat": -85.125,
+     "lon": -170.625,
+     "score": 0.501,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "sunlight"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "cold"
+     ],
+     "rock": "sandstone and mudstone",
+     "coldest_night_K": 226,
+     "mean_slope_deg": 12.41,
+     "rain_mm_per_yr": 77,
+     "nearest_known_analog": "McMurdo Dry Valleys",
+     "km_to_known_analog": 942,
+     "dims": {
+      "thermal": 0.24,
+      "aridity": 0.47,
+      "terrain": 0.77,
+      "surface": 0.03,
+      "ice": 1,
+      "illumination": 0.9,
+      "geology": 0.37
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "McMurdo Dry Valleys",
+    "score": 0.483,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "NASA revives VIPER, Astronomy",
+     "url": "https://www.astronomy.com/space-exploration/nasa-revives-viper-moon-rover-taps-blue-origin-for-lunar-landing/"
+    },
+    {
+     "title": "VIPER lives, Space.com",
+     "url": "https://www.space.com/astronomy/moon/viper-lives-jeff-bezos-blue-origin-will-land-ice-hunting-nasa-rover-on-the-moon-in-2027"
+    }
+   ],
+   "match_quality": "moderate",
+   "match_note": "Earth matches the terrain and ice parts; nothing on Earth matches the cold."
+  },
+  {
+   "id": "change-7",
+   "suggestion": "China's Chang'e-7: lander, rover and hopper at Shackleton crater",
+   "mission": "Chang'e-7 south pole lander, rover and hopper",
+   "agency": "CNSA",
+   "body": "Moon",
+   "status": "Launch postponed in August 2026, no new date",
+   "about": "Chang'e-7 targets a peak near Shackleton crater's rim (88.8°S, 123.4°E) to search for water ice, using an orbiter, lander, rover and hopping robot. China called off the August 2026 launch and has not set a new date.",
+   "needs_to_test": "Landing near a crater rim, roving, hopping into dark craters for ice",
+   "target_id": "shackleton",
+   "target_name": "Shackleton crater rim",
+   "target_is_proxy": false,
+   "proxy_note": null,
+   "weights": {
+    "thermal": 2,
+    "aridity": 1,
+    "terrain": 3,
+    "surface": 1,
+    "ice": 3,
+    "illumination": 2,
+    "geology": 1
+   },
+   "best_sites": [
+    {
+     "name": "McMurdo Dry Valleys, Antarctica",
+     "lat": -77.625,
+     "lon": 161.625,
+     "score": 0.502,
+     "percentile": 100,
+     "good_match": [
+      "ice"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "cold"
+     ],
+     "rock": "mixed sediment",
+     "coldest_night_K": 234,
+     "mean_slope_deg": 11.55,
+     "rain_mm_per_yr": 80,
+     "nearest_known_analog": "McMurdo Dry Valleys",
+     "km_to_known_analog": 17,
+     "dims": {
+      "thermal": 0.21,
+      "aridity": 0.45,
+      "terrain": 0.64,
+      "surface": 0.12,
+      "ice": 1,
+      "illumination": 0.75,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Northern Ellesmere Island, Canada",
+     "lat": 81.875,
+     "lon": -79.375,
+     "score": 0.496,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "sunlight",
+      "terrain"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "dryness"
+     ],
+     "rock": "mixed sediment",
+     "coldest_night_K": 238,
+     "mean_slope_deg": 12.38,
+     "rain_mm_per_yr": 179,
+     "nearest_known_analog": "Devon Island",
+     "km_to_known_analog": 752,
+     "dims": {
+      "thermal": 0.19,
+      "aridity": 0.17,
+      "terrain": 0.83,
+      "surface": 0.12,
+      "ice": 1,
+      "illumination": 0.84,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Transantarctic Mountains, Antarctica",
+     "lat": -85.125,
+     "lon": -170.625,
+     "score": 0.491,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "sunlight"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "cold"
+     ],
+     "rock": "sandstone and mudstone",
+     "coldest_night_K": 226,
+     "mean_slope_deg": 12.41,
+     "rain_mm_per_yr": 77,
+     "nearest_known_analog": "McMurdo Dry Valleys",
+     "km_to_known_analog": 942,
+     "dims": {
+      "thermal": 0.24,
+      "aridity": 0.47,
+      "terrain": 0.77,
+      "surface": 0.03,
+      "ice": 1,
+      "illumination": 0.9,
+      "geology": 0.37
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "McMurdo Dry Valleys",
+    "score": 0.453,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "Chang'e 7 (Wikipedia)",
+     "url": "https://en.wikipedia.org/wiki/Chang'e_7"
+    },
+    {
+     "title": "Chang'e 7 status, SpaceNexus",
+     "url": "https://spacenexus.us/moon/missions/change-7"
+    }
+   ],
+   "match_quality": "moderate",
+   "match_note": "Earth matches the terrain and ice parts; nothing on Earth matches the cold."
+  },
+  {
+   "id": "lupex",
+   "suggestion": "Chandrayaan-5 / LUPEX: India–Japan rover drilling for lunar ice",
+   "mission": "Chandrayaan-5 / LUPEX polar drilling rover",
+   "agency": "ISRO and JAXA",
+   "body": "Moon",
+   "status": "Planned, about 2028",
+   "about": "ISRO builds the lander and JAXA the 350 kg rover, which is to drill into the regolith near permanently shadowed regions at the south pole. Launch on Japan's H3 is planned for around 2028.",
+   "needs_to_test": "Drilling for ice in cold polar regolith, long rover traverses",
+   "target_id": "shackleton",
+   "target_name": "Shackleton crater rim",
+   "target_is_proxy": false,
+   "proxy_note": null,
+   "weights": {
+    "thermal": 2,
+    "aridity": 1,
+    "terrain": 2,
+    "surface": 1,
+    "ice": 4,
+    "illumination": 1,
+    "geology": 2
+   },
+   "best_sites": [
+    {
+     "name": "Karakoram, north of K2, China",
+     "lat": 36.375,
+     "lon": 76.625,
+     "score": 0.494,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "terrain"
+     ],
+     "weak_match": [
+      "sunlight",
+      "cold"
+     ],
+     "rock": "granite",
+     "coldest_night_K": 252,
+     "mean_slope_deg": 12.02,
+     "rain_mm_per_yr": 105,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1346,
+     "dims": {
+      "thermal": 0.22,
+      "aridity": 0.35,
+      "terrain": 0.86,
+      "surface": 0.6,
+      "ice": 0.9,
+      "illumination": 0.16,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "McMurdo Dry Valleys, Antarctica",
+     "lat": -77.625,
+     "lon": 161.625,
+     "score": 0.492,
+     "percentile": 100,
+     "good_match": [
+      "ice"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "cold"
+     ],
+     "rock": "mixed sediment",
+     "coldest_night_K": 234,
+     "mean_slope_deg": 11.55,
+     "rain_mm_per_yr": 80,
+     "nearest_known_analog": "McMurdo Dry Valleys",
+     "km_to_known_analog": 17,
+     "dims": {
+      "thermal": 0.21,
+      "aridity": 0.45,
+      "terrain": 0.64,
+      "surface": 0.12,
+      "ice": 1,
+      "illumination": 0.75,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Northern Ellesmere Island, Canada",
+     "lat": 82.875,
+     "lon": -77.125,
+     "score": 0.476,
+     "percentile": 99.99,
+     "good_match": [
+      "ice",
+      "rock type",
+      "sunlight"
+     ],
+     "weak_match": [
+      "surface brightness",
+      "dryness"
+     ],
+     "rock": "gabbro and anorthosite",
+     "coldest_night_K": 238,
+     "mean_slope_deg": 11.6,
+     "rain_mm_per_yr": 245,
+     "nearest_known_analog": "Devon Island",
+     "km_to_known_analog": 867,
+     "dims": {
+      "thermal": 0.19,
+      "aridity": 0.09,
+      "terrain": 0.58,
+      "surface": 0.07,
+      "ice": 1,
+      "illumination": 0.86,
+      "geology": 1
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "McMurdo Dry Valleys",
+    "score": 0.457,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "ISRO–JAXA technical meeting, ISRO",
+     "url": "https://www.isro.gov.in/ISRO_JAXA_CH5_Technical_Interface_Meet.html"
+    },
+    {
+     "title": "Chandrayaan 5 overview",
+     "url": "https://vajiramandravi.com/current-affairs/chandrayaan-5-mission/"
+    }
+   ],
+   "match_quality": "weak",
+   "match_note": "No robust Earth analog. These are the closest partial matches; test subsystems separately."
+  },
+  {
+   "id": "change-8",
+   "suggestion": "China's Chang'e-8: testing how to build with lunar soil",
+   "mission": "Chang'e-8 resource-use and brick-printing lander",
+   "agency": "CNSA",
+   "body": "Moon",
+   "status": "Planned, about 2028",
+   "about": "Chang'e-8 is to test using local resources, including 3D-printing bricks from lunar soil. Candidate landing areas include the ridge connecting Shackleton and de Gerlache craters.",
+   "needs_to_test": "Handling and processing local rock and dust",
+   "target_id": "shackleton",
+   "target_name": "Shackleton crater rim",
+   "target_is_proxy": false,
+   "proxy_note": null,
+   "weights": {
+    "thermal": 1,
+    "aridity": 2,
+    "terrain": 2,
+    "surface": 3,
+    "ice": 1,
+    "illumination": 2,
+    "geology": 3
+   },
+   "best_sites": [
+    {
+     "name": "Iran–Pakistan border, Baluchistan",
+     "lat": 28.625,
+     "lon": 61.125,
+     "score": 0.436,
+     "percentile": 100,
+     "good_match": [
+      "rock type"
+     ],
+     "weak_match": [
+      "sunlight",
+      "cold"
+     ],
+     "rock": "gabbro and anorthosite",
+     "coldest_night_K": 273,
+     "mean_slope_deg": 5.07,
+     "rain_mm_per_yr": 55,
+     "nearest_known_analog": "Wadi Rum",
+     "km_to_known_analog": 2495,
+     "dims": {
+      "thermal": 0.2,
+      "aridity": 0.58,
+      "terrain": 0.29,
+      "surface": 0.69,
+      "ice": 0.37,
+      "illumination": 0.12,
+      "geology": 1
+     }
+    },
+    {
+     "name": "Eastern Pamir, Xinjiang, China",
+     "lat": 37.375,
+     "lon": 76.125,
+     "score": 0.436,
+     "percentile": 100,
+     "good_match": [
+      "terrain"
+     ],
+     "weak_match": [
+      "cold",
+      "sunlight"
+     ],
+     "rock": "granite",
+     "coldest_night_K": 262,
+     "mean_slope_deg": 12.53,
+     "rain_mm_per_yr": 80,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1367,
+     "dims": {
+      "thermal": 0.16,
+      "aridity": 0.45,
+      "terrain": 0.83,
+      "surface": 0.72,
+      "ice": 0.77,
+      "illumination": 0.16,
+      "geology": 0.37
+     }
+    },
+    {
+     "name": "Eastern Iran",
+     "lat": 32.875,
+     "lon": 59.125,
+     "score": 0.411,
+     "percentile": 99.97,
+     "good_match": [
+      "rock type"
+     ],
+     "weak_match": [
+      "sunlight",
+      "cold"
+     ],
+     "rock": "gabbro and anorthosite",
+     "coldest_night_K": 272,
+     "mean_slope_deg": 3.06,
+     "rain_mm_per_yr": 78,
+     "nearest_known_analog": "Wadi Rum",
+     "km_to_known_analog": 2279,
+     "dims": {
+      "thermal": 0.2,
+      "aridity": 0.46,
+      "terrain": 0.22,
+      "surface": 0.64,
+      "ice": 0.37,
+      "illumination": 0.14,
+      "geology": 1
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "McMurdo Dry Valleys",
+    "score": 0.336,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "Chang'e 8 (Wikipedia)",
+     "url": "https://en.wikipedia.org/wiki/Chang%27e_8"
+    }
+   ],
+   "match_quality": "weak",
+   "match_note": "No robust Earth analog. These are the closest partial matches; test subsystems separately."
+  },
+  {
+   "id": "rosalind-franklin",
+   "suggestion": "ESA's Rosalind Franklin rover drilling 2 m into Mars",
+   "mission": "Rosalind Franklin rover (ExoMars), 2 m drill",
+   "agency": "ESA with NASA",
+   "body": "Mars",
+   "status": "Launch late 2028, landing 2030",
+   "about": "Europe's rover, launching with NASA's help in late 2028, will land at Oxia Planum in 2030 and drill up to 2 m into ancient clay-rich rock to look for signs of life.",
+   "needs_to_test": "Rover driving and deep drilling in dry, ancient sediment",
+   "target_id": "jezero",
+   "target_name": "Jezero crater",
+   "target_is_proxy": true,
+   "proxy_note": "Oxia Planum isn't one of our seven targets. We use Jezero crater, the nearest match in character: ancient, water-altered sedimentary rock.",
+   "weights": {
+    "thermal": 1,
+    "aridity": 3,
+    "terrain": 2,
+    "surface": 2,
+    "ice": 1,
+    "illumination": 1,
+    "geology": 3
+   },
+   "best_sites": [
+    {
+     "name": "Pampa del Tamarugal, Atacama, Chile",
+     "lat": -20.625,
+     "lon": -69.875,
+     "score": 0.828,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "rock type",
+      "terrain"
+     ],
+     "weak_match": [],
+     "rock": "sandstone and mudstone",
+     "coldest_night_K": 282,
+     "mean_slope_deg": 2.04,
+     "rain_mm_per_yr": 22,
+     "nearest_known_analog": "Yungay, Atacama",
+     "km_to_known_analog": 387,
+     "dims": {
+      "thermal": 0.48,
+      "aridity": 0.8,
+      "terrain": 0.96,
+      "surface": 0.63,
+      "ice": 1,
+      "illumination": 0.94,
+      "geology": 1
+     }
+    },
+    {
+     "name": "Northern Chad, near the Tibesti",
+     "lat": 21.875,
+     "lon": 18.875,
+     "score": 0.791,
+     "percentile": 99.98,
+     "good_match": [
+      "ice",
+      "rock type",
+      "terrain"
+     ],
+     "weak_match": [
+      "cold"
+     ],
+     "rock": "sandstone and mudstone",
+     "coldest_night_K": 283,
+     "mean_slope_deg": 2.17,
+     "rain_mm_per_yr": 25,
+     "nearest_known_analog": "Wadi Rum",
+     "km_to_known_analog": 1862,
+     "dims": {
+      "thermal": 0.23,
+      "aridity": 0.78,
+      "terrain": 0.95,
+      "surface": 0.75,
+      "ice": 1,
+      "illumination": 0.87,
+      "geology": 1
+     }
+    },
+    {
+     "name": "Eastern Desert, Egypt",
+     "lat": 25.125,
+     "lon": 34.625,
+     "score": 0.787,
+     "percentile": 99.97,
+     "good_match": [
+      "dryness",
+      "ice",
+      "rock type"
+     ],
+     "weak_match": [
+      "cold"
+     ],
+     "rock": "sandstone and mudstone",
+     "coldest_night_K": 287,
+     "mean_slope_deg": 1.4,
+     "rain_mm_per_yr": 0,
+     "nearest_known_analog": "Wadi Rum",
+     "km_to_known_analog": 500,
+     "dims": {
+      "thermal": 0.23,
+      "aridity": 1,
+      "terrain": 0.61,
+      "surface": 0.88,
+      "ice": 1,
+      "illumination": 0.66,
+      "geology": 1
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "Wadi Rum",
+    "score": 0.704,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "Rosalind Franklin (Wikipedia)",
+     "url": "https://en.wikipedia.org/wiki/Rosalind_Franklin_(rover)"
+    },
+    {
+     "title": "ESA mission status, EPSC 2026",
+     "url": "https://meetingorganizer.copernicus.org/EPSC2026/EPSC2026-411.html"
+    }
+   ],
+   "match_quality": "strong",
+   "match_note": "Earth has good test sites for this mission."
+  },
+  {
+   "id": "tianwen-3",
+   "suggestion": "China's Tianwen-3: the first Mars sample return",
+   "mission": "Tianwen-3 Mars sample return",
+   "agency": "CNSA",
+   "body": "Mars",
+   "status": "Launch window Dec 2028 to Jan 2029, return 2031",
+   "about": "Tianwen-3 aims to bring at least 500 g of Mars samples to Earth by 2031, drilling up to 2 m and using a helicopter to collect samples near the lander. Preselected landing zones are the northern plains Amazonis, Utopia and Chryse.",
+   "needs_to_test": "Landing on flat plains, drilling and sampling",
+   "target_id": "arcadia",
+   "target_name": "Arcadia Planitia",
+   "target_is_proxy": true,
+   "proxy_note": "Tianwen-3's preselected zones aren't among our targets. We use Arcadia Planitia, a neighbouring northern plain with similar flat terrain.",
+   "weights": {
+    "thermal": 1,
+    "aridity": 2,
+    "terrain": 3,
+    "surface": 2,
+    "ice": 1,
+    "illumination": 1,
+    "geology": 2
+   },
+   "best_sites": [
+    {
+     "name": "Southern Taklamakan, Xinjiang, China",
+     "lat": 37.875,
+     "lon": 84.625,
+     "score": 0.782,
+     "percentile": 100,
+     "good_match": [
+      "rock type",
+      "surface brightness",
+      "terrain"
+     ],
+     "weak_match": [
+      "cold",
+      "ice"
+     ],
+     "rock": "loose sediment",
+     "coldest_night_K": 259,
+     "mean_slope_deg": 0.25,
+     "rain_mm_per_yr": 19,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 618,
+     "dims": {
+      "thermal": 0.32,
+      "aridity": 0.83,
+      "terrain": 0.93,
+      "surface": 0.99,
+      "ice": 0.37,
+      "illumination": 0.82,
+      "geology": 1
+     }
+    },
+    {
+     "name": "Qaidam Basin, China",
+     "lat": 38.875,
+     "lon": 94.375,
+     "score": 0.747,
+     "percentile": 99.82,
+     "good_match": [
+      "rock type",
+      "surface brightness",
+      "sunlight"
+     ],
+     "weak_match": [
+      "ice",
+      "cold"
+     ],
+     "rock": "loose sediment",
+     "coldest_night_K": 254,
+     "mean_slope_deg": 0.34,
+     "rain_mm_per_yr": 54,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 243,
+     "dims": {
+      "thermal": 0.39,
+      "aridity": 0.59,
+      "terrain": 0.88,
+      "surface": 0.98,
+      "ice": 0.37,
+      "illumination": 0.9,
+      "geology": 1
+     }
+    },
+    {
+     "name": "Southwestern Taklamakan, Xinjiang, China",
+     "lat": 37.875,
+     "lon": 77.875,
+     "score": 0.725,
+     "percentile": 99.66,
+     "good_match": [
+      "rock type",
+      "terrain",
+      "surface brightness"
+     ],
+     "weak_match": [
+      "cold",
+      "ice"
+     ],
+     "rock": "loose sediment",
+     "coldest_night_K": 261,
+     "mean_slope_deg": 0.25,
+     "rain_mm_per_yr": 53,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1207,
+     "dims": {
+      "thermal": 0.26,
+      "aridity": 0.59,
+      "terrain": 0.96,
+      "surface": 0.93,
+      "ice": 0.37,
+      "illumination": 0.82,
+      "geology": 1
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "Qaidam Basin",
+    "score": 0.72,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "Tianwen-3 (Wikipedia)",
+     "url": "https://en.wikipedia.org/wiki/Tianwen-3"
+    },
+    {
+     "title": "Space.com, 2026",
+     "url": "https://www.space.com/astronomy/mars/china-on-track-to-launch-mars-sample-return-mission-in-2028-if-accurate-this-represents-a-sputnik-moment"
+    }
+   ],
+   "match_quality": "strong",
+   "match_note": "Earth has good test sites for this mission."
+  },
+  {
+   "id": "mars-human-ice",
+   "suggestion": "First crewed Mars base: drilling buried ice in Arcadia Planitia",
+   "mission": "First crewed Mars base: drilling buried ice (SWIM candidate region)",
+   "agency": "NASA (concept)",
+   "body": "Mars",
+   "status": "Concept (2030s), no funded mission",
+   "about": "NASA's Subsurface Water Ice Mapping (SWIM) project points to Arcadia Planitia and Deuteronilus Mensae as promising regions for human landings, because ice lies close to the surface at latitudes with enough sunlight.",
+   "needs_to_test": "Drilling into frozen ground on flat plains, cold operations",
+   "target_id": "arcadia",
+   "target_name": "Arcadia Planitia",
+   "target_is_proxy": false,
+   "proxy_note": null,
+   "weights": {
+    "thermal": 2,
+    "aridity": 1,
+    "terrain": 2,
+    "surface": 1,
+    "ice": 4,
+    "illumination": 1,
+    "geology": 1
+   },
+   "best_sites": [
+    {
+     "name": "Qaidam Basin, China",
+     "lat": 38.875,
+     "lon": 95.125,
+     "score": 0.701,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "rock type",
+      "sunlight"
+     ],
+     "weak_match": [
+      "cold"
+     ],
+     "rock": "loose sediment",
+     "coldest_night_K": 251,
+     "mean_slope_deg": 0.8,
+     "rain_mm_per_yr": 58,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 306,
+     "dims": {
+      "thermal": 0.35,
+      "aridity": 0.56,
+      "terrain": 0.5,
+      "surface": 0.86,
+      "ice": 1,
+      "illumination": 0.9,
+      "geology": 1
+     }
+    },
+    {
+     "name": "Aksai Chin",
+     "lat": 34.875,
+     "lon": 79.125,
+     "score": 0.678,
+     "percentile": 100,
+     "good_match": [
+      "ice",
+      "rock type",
+      "surface brightness"
+     ],
+     "weak_match": [
+      "cold",
+      "dryness"
+     ],
+     "rock": "loose sediment",
+     "coldest_night_K": 245,
+     "mean_slope_deg": 0.64,
+     "rain_mm_per_yr": 96,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 1183,
+     "dims": {
+      "thermal": 0.37,
+      "aridity": 0.39,
+      "terrain": 0.57,
+      "surface": 0.88,
+      "ice": 1,
+      "illumination": 0.63,
+      "geology": 1
+     }
+    },
+    {
+     "name": "Kunlun foothills, Xinjiang, China",
+     "lat": 37.125,
+     "lon": 87.875,
+     "score": 0.662,
+     "percentile": 99.99,
+     "good_match": [
+      "ice",
+      "rock type",
+      "surface brightness"
+     ],
+     "weak_match": [
+      "cold"
+     ],
+     "rock": "loose sediment",
+     "coldest_night_K": 249,
+     "mean_slope_deg": 0.96,
+     "rain_mm_per_yr": 61,
+     "nearest_known_analog": "Qaidam Basin",
+     "km_to_known_analog": 360,
+     "dims": {
+      "thermal": 0.32,
+      "aridity": 0.54,
+      "terrain": 0.42,
+      "surface": 0.92,
+      "ice": 1,
+      "illumination": 0.77,
+      "geology": 1
+     }
+    }
+   ],
+   "best_known_analog": {
+    "name": "Qaidam Basin",
+    "score": 0.55,
+    "eligible": true
+   },
+   "cannot_test_on_earth": [
+    "gravity",
+    "vacuum or thin atmosphere",
+    "radiation",
+    "temperatures as cold as the target"
+   ],
+   "sources": [
+    {
+     "title": "NASA JPL, Follow the Water",
+     "url": "https://www.jpl.nasa.gov/news/where-should-future-astronauts-land-on-mars-follow-the-water/"
+    }
+   ],
+   "match_quality": "strong",
+   "match_note": "Earth has good test sites for this mission."
+  }
+ ]
+}
