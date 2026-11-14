@@ -1,0 +1,8 @@
+target_id,target,best_cell_lat,best_cell_lon,best_cell_score,best_cell_earth_testable,best_known_site,known_site_score,known_site_percentile,known_site_earth_testable,named_candidates,not_testable_on_earth,rediscovery_hits,rediscovery_expected
+shackleton,Shackleton crater rim,-77.375,161.625,0.4173,0.4653,McMurdo Dry Valleys,0.3798,99.9,0.42,Transantarctic Mountains 0.3793 (pct 99.9),thermal,5,1.3
+malapert,Malapert Massif,28.625,61.125,0.4613,0.4905,"Badwater Basin, Death Valley",0.3799,97.54,0.4066,Northern Greenland coast 0.3595 (pct 94.04),thermal,3,1.51
+marius,Marius Hills lava-tube pit,27.375,37.375,0.7293,0.8472,"Yungay, Atacama Desert",0.6241,99.48,0.6362,NW Saudi lava field 0.7293 (pct 100.0); Southern Danakil (Afar) 0.641 (pct 99.65),thermal,2,1.51
+arcadia,Arcadia Planitia,38.875,95.125,0.6953,0.778,"Dalangtan playa, Qaidam Basin",0.6523,99.71,0.7222,Southern Taklamakan 0.6754 (pct 99.98),thermal,5,1.3
+jezero,Jezero crater,-20.625,-69.875,0.805,0.8783,"Yungay, Atacama Desert",0.6195,98.82,0.6308,,thermal,2,1.51
+gale,Gale crater,-17.625,-71.125,0.7315,0.8089,Wadi Rum,0.5668,98.93,0.6606,Southern Peru (extends Pampas de La Joya) 0.7315 (pct 100.0),thermal,4,1.51
+meridiani,Meridiani Planum,-22.875,-69.625,0.762,0.7816,"Yungay, Atacama Desert",0.5422,94.25,0.5398,,thermal,3,1.51

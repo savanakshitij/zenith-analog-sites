@@ -1,0 +1,200 @@
+name,lat,lon,diameter_km,coord_source
+Carancas,-16.667,-69.050,0.0135,Earth Impact Database
+Haviland,37.583,-99.167,0.015,Earth Impact Database
+Dalgaranga,-27.633,117.283,0.024,Earth Impact Database
+Sikhote Alin,46.117,134.667,0.027,Earth Impact Database
+Whitecourt,54.000,-115.600,0.036,Earth Impact Database
+Kamil,22.017,26.083,0.045,Earth Impact Database
+Campo Del Cielo,-27.633,-61.700,0.05,Earth Impact Database
+Sobolev,46.300,137.867,0.053,Earth Impact Database
+Ilumetsä,57.967,27.417,0.08,Earth Impact Database
+Veevers,-22.967,125.367,0.08,Earth Impact Database
+Morasko,52.483,16.900,0.1,Earth Impact Database
+Kaalijärv,58.400,22.667,0.11,Earth Impact Database
+Wabar,21.500,50.467,0.116,Earth Impact Database
+Douglas,42.667,-105.467,0.15,Earth Impact Database
+Henbury,-24.567,133.133,0.157,Earth Impact Database
+Odessa,31.756,-102.479,0.168,"EID name+diameter, Wikidata coordinates"
+Boxhole,-22.617,135.200,0.17,Earth Impact Database
+Hickman,-23.033,119.683,0.26,Earth Impact Database
+Macha,60.100,117.583,0.3,Earth Impact Database
+Aouelloul,20.250,-12.683,0.39,Earth Impact Database
+Amguid,26.083,4.383,0.45,Earth Impact Database
+Monturaqui,-23.933,-68.283,0.46,Earth Impact Database
+Kalkkop,-32.717,24.433,0.64,Earth Impact Database
+Wolfe Creek,-19.167,127.800,0.875,Earth Impact Database
+Målingen,62.917,14.550,1,Earth Impact Database
+Tswaing (formerly Pretoria Saltpan),-25.400,28.083,1.13,Earth Impact Database
+Barringer,35.033,-111.017,1.19,Earth Impact Database
+Kamenetsk,47.767,-32.350,1.2,Earth Impact Database
+Hummeln,57.367,16.250,1.2,Earth Impact Database
+Tabun-Khara-Obo,44.117,109.650,1.3,Earth Impact Database
+Karikkoselkä,62.217,25.250,1.5,Earth Impact Database
+Saarijärvi,65.283,28.383,1.5,Earth Impact Database
+Liverpool,-12.400,134.050,1.6,Earth Impact Database
+Talemzane,33.317,4.033,1.75,Earth Impact Database
+Xiuyan,40.350,123.450,1.8,Earth Impact Database
+Lonar,19.967,76.517,1.83,Earth Impact Database
+Tenoumer,22.917,-10.400,1.9,Earth Impact Database
+B.P. Structure,25.317,24.333,2,Earth Impact Database
+Tvären,58.767,17.417,2,"EID name+diameter, Wikipedia coordinates"
+Holleford,44.467,-76.633,2.35,Earth Impact Database
+West Hawk,49.767,-95.183,2.44,Earth Impact Database
+Mishina Gora,58.717,28.050,2.5,Earth Impact Database
+Roter Kamm,-27.767,16.300,2.5,Earth Impact Database
+Viewfield,49.583,-103.067,2.5,Earth Impact Database
+Summanen,62.650,25.367,2.6,Earth Impact Database
+Ritland,59.233,6.433,2.7,Earth Impact Database
+Rotmistrovka,49.000,32.000,2.7,Earth Impact Database
+Shunak,47.200,72.700,2.8,Earth Impact Database
+Goyder,-13.467,135.033,3,Earth Impact Database
+Granby,58.417,14.933,3,Earth Impact Database
+Gusev,48.433,40.533,3,Earth Impact Database
+Iso-Naakkima,62.183,27.150,3,"EID name+diameter, Wikipedia coordinates"
+Newporte,48.967,-101.967,3.2,Earth Impact Database
+Zapadnaya,49.733,29.000,3.2,Earth Impact Database
+New Quebec,61.283,-73.667,3.44,Earth Impact Database
+Kgagodi,-22.483,27.583,3.5,Earth Impact Database
+Ouarkziz,29.000,-7.550,3.5,Earth Impact Database
+Zeleny Gai,48.067,32.750,3.5,Earth Impact Database
+Colônia,-23.867,-46.717,3.6,Earth Impact Database
+Brent,46.083,-78.483,3.8,Earth Impact Database
+Flynn Creek,36.283,-85.667,3.8,Earth Impact Database
+Steinheim,48.683,10.067,3.8,Earth Impact Database
+Suvasvesi S,62.600,28.217,3.8,"EID name+diameter, Wikipedia coordinates"
+Glasford,40.600,-89.783,4,Earth Impact Database
+Ile Rouleau,50.683,-73.883,4,Earth Impact Database
+Kärdla,59.017,22.767,4,Earth Impact Database
+Mount Toondina,-27.950,135.367,4,Earth Impact Database
+Suvasvesi N,62.700,28.167,4,Earth Impact Database
+Dobele,56.583,23.250,4.5,Earth Impact Database
+Riachao Ring,-7.717,-46.650,4.5,Earth Impact Database
+Rio Cuarto,-32.878,-64.223,4.5,"EID name+diameter, Wikidata coordinates"
+Gardnos,60.650,9.000,5,Earth Impact Database
+Gow,56.450,-104.483,5,Earth Impact Database
+Mizarai,54.017,23.900,5,Earth Impact Database
+Goat Paddock,-18.333,126.667,5.1,Earth Impact Database
+Chiyli,49.167,57.850,5.5,Earth Impact Database
+Decorah,43.317,-91.767,5.5,Earth Impact Database
+Jebel Waqf as Suwwan,31.050,36.800,5.5,Earth Impact Database
+Chukcha,75.700,97.800,6,Earth Impact Database
+Decaturville,37.900,-92.717,6,Earth Impact Database
+Foelsche,-16.667,136.783,6,Earth Impact Database
+Kursk,51.700,36.000,6,Earth Impact Database
+Maple Creek,49.800,-109.100,6,Earth Impact Database
+Middlesboro,36.617,-83.733,6,Earth Impact Database
+Pilot,60.283,-111.017,6,Earth Impact Database
+Rock Elm,44.717,-92.233,6,Earth Impact Database
+Sääksjärvi,61.400,22.400,6,"EID name+diameter, Wikipedia coordinates"
+Tin Bider,27.602,5.112,6,"EID name+diameter, Wikidata coordinates"
+Santa Fe,35.750,-105.933,6,Earth Impact Database
+Wetumpka,32.517,-86.167,6.5,Earth Impact Database
+Söderfjärden,63.005,21.575,6.6,"EID name+diameter, Wikidata coordinates"
+Cloud Creek,43.117,-106.750,7,Earth Impact Database
+Crooked Creek,37.833,-91.383,7,Earth Impact Database
+Piccaninny,-17.533,128.417,7,Earth Impact Database
+Lockne,63.000,14.817,7.5,Earth Impact Database
+Matt Wilson,-15.500,131.183,7.5,Earth Impact Database
+Wanapitei,46.750,-80.750,7.5,Earth Impact Database
+Beyenchime-Salaatin,71.000,121.667,8,Earth Impact Database
+Bigach,48.567,82.017,8,Earth Impact Database
+Couture,60.133,-75.333,8,Earth Impact Database
+Des Plaines,42.050,-87.867,8,Earth Impact Database
+Elbow,50.983,-106.717,8,Earth Impact Database
+Glover Bluff,43.967,-89.533,8,Earth Impact Database
+La Moinerie,57.433,-66.617,8,Earth Impact Database
+Neugrund,59.333,23.667,8,Earth Impact Database
+Serpent Mound,39.033,-83.400,8,"EID name+diameter, Wikidata coordinates"
+Vepriai,55.083,24.583,8,Earth Impact Database
+Calvin,41.833,-85.950,8.5,Earth Impact Database
+Crawford,-34.717,139.033,8.5,Earth Impact Database
+Ilyinets,49.117,29.100,8.5,Earth Impact Database
+Connolly Basin,-23.533,124.750,9,Earth Impact Database
+Lumparn,60.150,20.100,9,Earth Impact Database
+Mien,56.417,14.867,9,Earth Impact Database
+Ragozinka,58.733,61.800,9,Earth Impact Database
+Red Wing,47.600,-103.550,9,Earth Impact Database
+Vista Alegre,-25.950,-52.683,9.5,Earth Impact Database
+Eagle Butte,49.700,-110.500,10,Earth Impact Database
+Flaxman,-34.617,139.067,10,Earth Impact Database
+Karla,54.917,48.033,10,Earth Impact Database
+Kelly West,-19.933,133.950,10,Earth Impact Database
+Paasselkä,62.033,29.083,10,Earth Impact Database
+Ramgarh,25.333,76.617,10,Earth Impact Database
+Upheaval Dome,38.433,-109.900,10,Earth Impact Database
+Santa Marta,-10.167,-45.250,10,Earth Impact Database
+Bosumtwi,6.500,-1.417,10.5,Earth Impact Database
+Dhala,25.283,78.133,11,Earth Impact Database
+Ternovka,48.133,33.517,11,Earth Impact Database
+Avak,71.250,-156.633,12,Earth Impact Database
+Serra da Cangalha,-8.080,-46.860,12,"EID name+diameter, Wikidata coordinates"
+Vargeao Dome,-26.815,-52.170,12,"EID name+diameter, Wikidata coordinates"
+Wells Creek,36.383,-87.667,12,Earth Impact Database
+Nicholson,62.667,-102.683,12.5,Earth Impact Database
+Aorounga,19.100,19.250,12.6,Earth Impact Database
+Marquez,31.283,-96.300,12.7,Earth Impact Database
+Deep Bay,56.400,-102.983,13,Earth Impact Database
+Kentland,40.750,-87.400,13,Earth Impact Database
+Sierra Madera,30.600,-102.917,13,Earth Impact Database
+Spider,-16.733,126.083,13,Earth Impact Database
+Cerro do Jarau,-30.200,-56.533,13.5,Earth Impact Database
+Gweni-Fada,17.417,21.750,14,Earth Impact Database
+Jänisjärvi,61.967,30.917,14,Earth Impact Database
+Pantasma,-13.217,-85.950,14,Earth Impact Database
+Zhamanshin,48.400,60.967,14,Earth Impact Database
+Cleanskin,-18.167,137.933,15,Earth Impact Database
+Kaluga,54.500,36.200,15,Earth Impact Database
+Logoisk,54.200,27.800,15,Earth Impact Database
+Yallalie,-30.467,115.783,15,Earth Impact Database
+Ames,36.250,-98.200,16,Earth Impact Database
+Suavjärvi,63.117,33.383,16,"EID name+diameter, Wikipedia coordinates"
+Luizi,-10.167,28.000,17,Earth Impact Database
+El'gygytgyn,67.500,172.083,18,Earth Impact Database
+Lawn Hill,-18.667,138.650,18,Earth Impact Database
+Oasis,24.583,24.400,18,Earth Impact Database
+Dellen,61.800,16.800,19,Earth Impact Database
+Glikson,-23.983,121.567,19,Earth Impact Database
+Logancha,65.517,95.933,20,Earth Impact Database
+Obolon',49.583,32.917,20,Earth Impact Database
+Amelia Creek,-20.917,134.833,20,Earth Impact Database
+Gosses Bluff,-23.817,132.317,22,Earth Impact Database
+Haughton,75.367,-89.683,23,Earth Impact Database
+Lappajärvi,63.200,23.700,23,Earth Impact Database
+Rochechouart,45.833,0.933,23,Earth Impact Database
+Boltysh,48.750,32.167,24,Earth Impact Database
+Presqu'ile,49.717,-74.800,24,Earth Impact Database
+Ries,48.867,10.583,24,"EID name+diameter, Wikidata coordinates"
+Tunnunik (Prince Albert),72.467,-113.967,25,Earth Impact Database
+Kamensk,48.350,40.500,25,Earth Impact Database
+Steen River,59.500,-117.633,25,Earth Impact Database
+Strangways,-15.200,133.583,25,Earth Impact Database
+Clearwater East,56.083,-74.117,26,Earth Impact Database
+Mistastin,55.883,-63.300,28,Earth Impact Database
+Shoemaker (formerly Teague),-25.867,120.883,30,Earth Impact Database
+Slate Islands,48.000,-87.000,30,Earth Impact Database
+Yarrabubba,-27.167,118.833,30,Earth Impact Database
+Keurusselkä,62.133,24.600,30,Earth Impact Database
+Saqqar,29.583,38.700,34,Earth Impact Database
+Manson,42.583,-94.550,35,Earth Impact Database
+Clearwater West,56.217,-74.500,36,Earth Impact Database
+Carswell,58.450,-109.500,39,Earth Impact Database
+Araguainha,-16.783,-52.983,40,Earth Impact Database
+Chesapeake Bay,37.283,-76.017,40,Earth Impact Database
+Mjølnir,73.800,29.667,40,Earth Impact Database
+Puchezh-Katunki,56.967,43.717,40,Earth Impact Database
+Saint Martin,51.783,-98.533,40,Earth Impact Database
+Woodleigh,-26.050,114.650,40,Earth Impact Database
+Montagnais,42.883,-64.217,45,Earth Impact Database
+Kara-Kul,39.017,73.450,52,"EID name+diameter, Wikipedia coordinates"
+Siljan,61.033,14.867,52,Earth Impact Database
+Charlevoix,47.533,-70.300,54,Earth Impact Database
+Tookoonooka,-27.117,142.833,55,Earth Impact Database
+Beaverhead,44.600,-113.000,60,Earth Impact Database
+Kara,69.100,64.150,65,Earth Impact Database
+Morokweng,-26.467,23.533,70,Earth Impact Database
+Manicouagan,51.383,-68.700,85,Earth Impact Database
+Acraman,-32.017,135.450,90,Earth Impact Database
+Popigai,71.650,111.183,90,Earth Impact Database
+Sudbury,46.600,-81.183,130,Earth Impact Database
+Chicxulub,21.333,-89.500,150,Earth Impact Database
+Vredefort,-27.000,27.500,160,Earth Impact Database

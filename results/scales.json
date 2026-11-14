@@ -6,6 +6,7 @@
  "temp_daynight_range_K": 3.0999999999999996,
  "albedo_wsa_unitless": 0.14479999999999998,
  "precip_mm_per_yr": 100.89999999999999,
- "ice_flag_bool": 1.0,
- "sun_noon_elev_mean_deg": 11.07
+ "ground_ice_frac": 1.0,
+ "sun_noon_elev_mean_deg": 11.07,
+ "geology_match": 1.0
 }

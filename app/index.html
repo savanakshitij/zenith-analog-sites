@@ -157,6 +157,8 @@
     ['temp_min_K', 'Coldest monthly night temp', 'K'], ['temp_daynight_range_K', 'Day/night range', 'K'],
     ['slope_deg', 'Mean slope', '°'], ['roughness_tri_m', 'Roughness (TRI)', 'm'], ['relief_m', 'Local relief', 'm'],
     ['albedo_wsa_unitless', 'Albedo', ''], ['precip_mm_per_yr', 'Precipitation', 'mm/yr'],
+    ['sun_noon_elev_mean_deg', 'Mean noon sun elevation', '°'], ['ground_ice_frac', 'Ice at or near the surface', '(0 to 1)'],
+    ['wind_m_s', 'Mean wind at 10 m', 'm/s'], ['aod_unitless', 'Dust in the air (optical depth)', ''],
     ['ndvi_max_unitless', 'Max NDVI', ''], ['barren_pct', 'Bare ground', '%'], ['ice_flag_bool', 'Snow/ice flag', '']
   ];
 
@@ -180,6 +182,11 @@
       return '<div><span>' + esc(n.feature) + '</span><span>' + esc(n.value) + '</span></div>';
     }).join('') + '</div>';
 
+    if (c.tags) {
+      html += '<p class="note" style="font-size:13.5px;color:var(--text)">Rock: ' + esc(c.tags.rock) +
+        (c.tags.impact_crater ? ' · impact crater in this cell: ' + esc(c.tags.impact_crater) : '') +
+        (c.tags.lava_tube ? ' · lava tube nearby: ' + esc(c.tags.lava_tube) : '') + '</p>';
+    }
     if (c.earth) {
       html += '<h3>This Earth cell</h3><table><tbody>' + EARTH_LABELS.map(function (l) {
         var v = c.earth[l[0]];
@@ -190,8 +197,13 @@
       out.targetValues.map(function (v) {
         return '<tr title="' + esc(v.note) + '"><td>' + esc(v.feature) + '</td><td class="n">' + (v.value == null ? 'none' : esc(v.value)) + '</td><td class="' + ((v.status === 'estimated' || v.status === 'not scored') ? 'est' : '') + '">' + esc(v.status) + '</td></tr>';
       }).join('') + '</tbody></table>';
-    html += '<p class="note">Earth and target values use the same definitions. Amber = estimated, not yet from raw data. "not scored" = left out because the definition does not match.</p>';
+    html += '<p class="note">Earth and target values use the same definitions. Amber = estimated, not yet from raw data. "context only" = shown but not part of the score.</p>';
 
+    var gt = DATA.targets[state.target].geology_track || [];
+    if (gt.length) html += '<h3>Right rock, any vegetation</h3><table><thead><tr><th>Site</th><th>Rock</th><th>Bare ground</th><th>Match</th></tr></thead><tbody>' +
+      gt.map(function (g) { return '<tr><td>' + coord(g) + (g.tags.impact_crater ? ' (' + esc(g.tags.impact_crater) + ' crater)' : '') + '</td><td>' + esc(g.rock) + '</td><td>' +
+        (g.passes_bare_ground_filter ? 'yes' : 'no') + '</td><td class="n">' + g.score.toFixed(2) + '</td></tr>'; }).join('') +
+      '</tbody></table><p class="note">Cells with the target\'s rock type or an impact crater, including vegetated land. Useful for sampling and drilling tests, not for surface operations.</p>';
     html += '<h3>Known analog sites under this plan</h3><table><thead><tr><th>Site</th><th>Plan coverage</th></tr></thead><tbody>' +
       out.knownSites.slice(0, 8).map(function (k) { return '<tr><td>' + esc(k.site) + '</td><td class="n">' + pct(k.planCoverage) + '</td></tr>'; }).join('') + '</tbody></table>';
     el('detail').innerHTML = html;

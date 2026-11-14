@@ -1,0 +1,8 @@
+target_id,name,body,glim_code,glim_class,alt_code,status,reason,source_link
+shackleton,Shackleton crater rim,Moon,pb,Basic plutonic rocks,,estimated,Lunar highland crust is anorthosite (plagioclase-rich plutonic rock); GLiM has no anorthosite class so the nearest is pb,https://doi.org/10.1029/2012GC004370
+malapert,Malapert Massif,Moon,pb,Basic plutonic rocks,,estimated,Highland massif of anorthositic crust; nearest GLiM class pb,https://doi.org/10.1029/2012GC004370
+marius,Marius Hills lava-tube pit,Moon,vb,Basic volcanic rocks,,estimated,Mare basalt plains and volcanic domes,https://doi.org/10.3390/rs18030512
+arcadia,Arcadia Planitia,Mars,su,Unconsolidated sediments,vb,estimated,Surface is an ice-rich regolith mantle over Amazonian volcanic plains (vb underneath),https://arxiv.org/abs/1509.03210
+jezero,Jezero crater,Mars,ss,Siliciclastic sedimentary rocks,vb,estimated,Target is the river delta (fluvial sandstone/mudstone); crater floor is igneous (vb),https://digital.inta.es:8443/jspui/handle/20.500.12666/867
+gale,Gale crater,Mars,ss,Siliciclastic sedimentary rocks,,estimated,Mount Sharp lower layers are lake mudstones and sandstones seen by Curiosity,
+meridiani,Meridiani Planum,Mars,ev,Evaporites,ss,estimated,Burns formation is sulfate-rich (evaporitic) sandstone with hematite spherules; ss if treated as sandstone,https://pubs.usgs.gov/publication/70000449

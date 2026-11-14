@@ -1,0 +1,8 @@
+target_id,rock_abbr_match,impact_relevant,basis,status
+shackleton,pb,1,"Lunar highlands are anorthosite; GLiM puts anorthosite and gabbro in basic plutonic (pb). Heavily cratered terrain",proposed - needs review
+malapert,pb,1,"Lunar highlands anorthosite, closest GLiM class pb. Heavily cratered terrain",proposed - needs review
+marius,vb,0,"Mare basalt volcanic domes and lava tubes",proposed - needs review
+arcadia,vb,0,"Basaltic lava plains with shallow ground ice",proposed - needs review
+jezero,vb,1,"Impact crater in basaltic, olivine-rich terrain with a sedimentary delta",proposed - needs review
+gale,ss;sm,1,"Impact crater with a layered sedimentary mound (mudstone, sandstone)",proposed - needs review
+meridiani,ev;ss,0,"Sulfate-rich sandstones with hematite",proposed - needs review
