@@ -6,8 +6,9 @@ shackleton,Shackleton crater rim,Moon,temp_min_K,150.0,estimated,True,diviner_uc
 shackleton,Shackleton crater rim,Moon,temp_daynight_range_K,70.0,estimated,True,diviner_ucla,"No published site-specific Diviner night minimum found for this rim; Diviner sunlit polar rims are ~220 K (published, diviner_ucla). Replace with Diviner PCP / polar summary product."
 shackleton,Shackleton crater rim,Moon,albedo_wsa_unitless,0.11,published,True,nssdc_moon,Global value; Diviner site-specific bolometric albedo not yet extracted
 shackleton,Shackleton crater rim,Moon,precip_mm_per_yr,0.0,published,True,nssdc,Published for all targets (vacuum / 6 mbar CO2)
-shackleton,Shackleton crater rim,Moon,ice_flag_bool,1.0,published,True,zuber2012,"Possible ~20 wt% surface ice on Shackleton floor (one interpretation); lunar ice is cold-trapped, not snow"
+shackleton,Shackleton crater rim,Moon,ground_ice_frac,1.0,published,True,zuber2012,1 = water ice documented at or next to the site
 shackleton,Shackleton crater rim,Moon,sun_noon_elev_mean_deg,0.54,computed,True,latitude and axial tilt,Ignores terrain shadowing
+shackleton,Shackleton crater rim,Moon,geology_match,1.0,estimated,True,GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv),rock classes counted as a match: pb; or a confirmed impact crater in the cell
 malapert,Malapert Massif,Moon,slope_deg,15.22,computed,True,lola_rdr,"144,905 LOLA shots in box; pixel coverage 100%"
 malapert,Malapert Massif,Moon,roughness_tri_m,1309.37,computed,True,lola_rdr,"144,905 LOLA shots in box; pixel coverage 100%"
 malapert,Malapert Massif,Moon,relief_m,4890.99,computed,False,lola_rdr,"144,905 LOLA shots in box; pixel coverage 100%"
@@ -15,8 +16,9 @@ malapert,Malapert Massif,Moon,temp_min_K,150.0,estimated,True,diviner_ucla,"No p
 malapert,Malapert Massif,Moon,temp_daynight_range_K,70.0,estimated,True,diviner_ucla,"No published site-specific Diviner night minimum found for this rim; Diviner sunlit polar rims are ~220 K (published, diviner_ucla). Replace with Diviner PCP / polar summary product."
 malapert,Malapert Massif,Moon,albedo_wsa_unitless,0.11,published,True,nssdc_moon,Global value; Diviner site-specific bolometric albedo not yet extracted
 malapert,Malapert Massif,Moon,precip_mm_per_yr,0.0,published,True,nssdc,Published for all targets (vacuum / 6 mbar CO2)
-malapert,Malapert Massif,Moon,ice_flag_bool,0.0,estimated,True,,Cold traps exist in the region but none documented at the site
+malapert,Malapert Massif,Moon,ground_ice_frac,0.0,estimated,True,,1 = water ice documented at or next to the site
 malapert,Malapert Massif,Moon,sun_noon_elev_mean_deg,4.0,computed,True,latitude and axial tilt,Ignores terrain shadowing
+malapert,Malapert Massif,Moon,geology_match,1.0,estimated,True,GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv),rock classes counted as a match: pb; or a confirmed impact crater in the cell
 marius,Marius Hills lava-tube pit,Moon,slope_deg,1.06,computed,True,lola_rdr,"75,899 LOLA shots in box; pixel coverage 100%"
 marius,Marius Hills lava-tube pit,Moon,roughness_tri_m,102.59,computed,True,lola_rdr,"75,899 LOLA shots in box; pixel coverage 100%"
 marius,Marius Hills lava-tube pit,Moon,relief_m,361.31,computed,False,lola_rdr,"75,899 LOLA shots in box; pixel coverage 100%"
@@ -24,8 +26,9 @@ marius,Marius Hills lava-tube pit,Moon,temp_min_K,95.0,published,True,nssdc_moon
 marius,Marius Hills lava-tube pit,Moon,temp_daynight_range_K,295.0,published,True,nssdc_moon,Earth MODIS uses fixed ~10:30/22:30 overpasses and understates the full swing
 marius,Marius Hills lava-tube pit,Moon,albedo_wsa_unitless,0.11,published,True,nssdc_moon,Mare basalt is darker than the lunar average; site value not extracted
 marius,Marius Hills lava-tube pit,Moon,precip_mm_per_yr,0.0,published,True,nssdc,Published for all targets (vacuum / 6 mbar CO2)
-marius,Marius Hills lava-tube pit,Moon,ice_flag_bool,0.0,estimated,True,,No ice documented
+marius,Marius Hills lava-tube pit,Moon,ground_ice_frac,0.0,estimated,True,,1 = water ice documented at or next to the site
 marius,Marius Hills lava-tube pit,Moon,sun_noon_elev_mean_deg,75.9,computed,True,latitude and axial tilt,Ignores terrain shadowing
+marius,Marius Hills lava-tube pit,Moon,geology_match,1.0,estimated,True,GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv),rock classes counted as a match: vb
 arcadia,Arcadia Planitia,Mars,slope_deg,0.197,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 arcadia,Arcadia Planitia,Mars,roughness_tri_m,19.41,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 arcadia,Arcadia Planitia,Mars,relief_m,54.1,computed,False,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
@@ -33,8 +36,9 @@ arcadia,Arcadia Planitia,Mars,temp_min_K,150.0,estimated,True,,Mid-latitude; no 
 arcadia,Arcadia Planitia,Mars,temp_daynight_range_K,60.0,estimated,True,smith2022_emm,Replace with Mars Climate Database
 arcadia,Arcadia Planitia,Mars,albedo_wsa_unitless,0.25,estimated,True,nssdc_mars,No site-specific TES value checked; replace with TES Lambert albedo at the site
 arcadia,Arcadia Planitia,Mars,precip_mm_per_yr,0.0,published,True,nssdc,Published for all targets (vacuum / 6 mbar CO2)
-arcadia,Arcadia Planitia,Mars,ice_flag_bool,1.0,published,True,bramson2015,"Ice is buried under regolith, not surface snow"
+arcadia,Arcadia Planitia,Mars,ground_ice_frac,1.0,published,True,bramson2015,1 = water ice documented at or next to the site
 arcadia,Arcadia Planitia,Mars,sun_noon_elev_mean_deg,50.0,computed,True,latitude and axial tilt,Ignores terrain shadowing
+arcadia,Arcadia Planitia,Mars,geology_match,1.0,estimated,True,GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv),"rock classes counted as a match: su, vb"
 jezero,Jezero crater,Mars,slope_deg,2.085,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 jezero,Jezero crater,Mars,roughness_tri_m,192.37,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 jezero,Jezero crater,Mars,relief_m,1034.9,computed,False,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
@@ -42,8 +46,9 @@ jezero,Jezero crater,Mars,temp_min_K,200.0,published,True,smith2022_emm,One seas
 jezero,Jezero crater,Mars,temp_daynight_range_K,60.0,published,True,smith2022_emm,Martinez et al. 2023 report diurnal ground amplitudes of 56-87 K
 jezero,Jezero crater,Mars,albedo_wsa_unitless,0.14,published,True,martinez2023_jezero,Broadband surface albedo; spectral definition differs from MODIS white-sky
 jezero,Jezero crater,Mars,precip_mm_per_yr,0.0,published,True,nssdc,Published for all targets (vacuum / 6 mbar CO2)
-jezero,Jezero crater,Mars,ice_flag_bool,0.0,estimated,True,,
+jezero,Jezero crater,Mars,ground_ice_frac,0.0,estimated,True,,1 = water ice documented at or next to the site
 jezero,Jezero crater,Mars,sun_noon_elev_mean_deg,69.49,computed,True,latitude and axial tilt,Ignores terrain shadowing
+jezero,Jezero crater,Mars,geology_match,1.0,estimated,True,GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv),"rock classes counted as a match: ss, vb; or a confirmed impact crater in the cell"
 gale,Gale crater,Mars,slope_deg,4.747,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 gale,Gale crater,Mars,roughness_tri_m,396.88,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 gale,Gale crater,Mars,relief_m,3944.6,computed,False,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
@@ -51,8 +56,9 @@ gale,Gale crater,Mars,temp_min_K,190.0,published,True,smith2022_emm,One season o
 gale,Gale crater,Mars,temp_daynight_range_K,60.0,published,True,smith2022_emm,
 gale,Gale crater,Mars,albedo_wsa_unitless,0.25,estimated,True,nssdc_mars,No site-specific TES value checked; replace with TES Lambert albedo at the site
 gale,Gale crater,Mars,precip_mm_per_yr,0.0,published,True,nssdc,Published for all targets (vacuum / 6 mbar CO2)
-gale,Gale crater,Mars,ice_flag_bool,0.0,estimated,True,,
+gale,Gale crater,Mars,ground_ice_frac,0.0,estimated,True,,1 = water ice documented at or next to the site
 gale,Gale crater,Mars,sun_noon_elev_mean_deg,73.86,computed,True,latitude and axial tilt,Ignores terrain shadowing
+gale,Gale crater,Mars,geology_match,1.0,estimated,True,GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv),"rock classes counted as a match: sm, ss; or a confirmed impact crater in the cell"
 meridiani,Meridiani Planum,Mars,slope_deg,0.301,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 meridiani,Meridiani Planum,Mars,roughness_tri_m,28.32,computed,True,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
 meridiani,Meridiani Planum,Mars,relief_m,112.4,computed,False,MOLA MEGDR 128 ppd (NASA PDS),"Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
@@ -60,5 +66,6 @@ meridiani,Meridiani Planum,Mars,temp_min_K,190.0,estimated,True,smith2022_emm,No
 meridiani,Meridiani Planum,Mars,temp_daynight_range_K,60.0,estimated,True,smith2022_emm,
 meridiani,Meridiani Planum,Mars,albedo_wsa_unitless,0.14,published,True,bell2008_albedo,Range midpoint; spectral definition differs from MODIS white-sky
 meridiani,Meridiani Planum,Mars,precip_mm_per_yr,0.0,published,True,nssdc,Published for all targets (vacuum / 6 mbar CO2)
-meridiani,Meridiani Planum,Mars,ice_flag_bool,0.0,estimated,True,,
+meridiani,Meridiani Planum,Mars,ground_ice_frac,0.0,estimated,True,,1 = water ice documented at or next to the site
 meridiani,Meridiani Planum,Mars,sun_noon_elev_mean_deg,74.09,computed,True,latitude and axial tilt,Ignores terrain shadowing
+meridiani,Meridiani Planum,Mars,geology_match,1.0,estimated,True,GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv),"rock classes counted as a match: ev, ss"

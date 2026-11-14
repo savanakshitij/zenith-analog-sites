@@ -12,8 +12,9 @@
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
     "precip_mm_per_yr",
-    "ice_flag_bool",
-    "sun_noon_elev_mean_deg"
+    "ground_ice_frac",
+    "sun_noon_elev_mean_deg",
+    "geology_match"
    ],
    "out_of_earth_range": {
     "temp_min_K": -43.71,
@@ -24,7 +25,7 @@
    "best": {
     "lat": -77.375,
     "lon": 161.625,
-    "score": 0.2679,
+    "score": 0.2803,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.019,
@@ -32,11 +33,12 @@
      "terrain": 0.35,
      "surface": 0.235,
      "ice": 1.0,
-     "illumination": 0.513
+     "illumination": 0.513,
+     "geology": 0.368
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.019,
-    "stability": 0.64,
+    "stability": 0.58,
     "earth": {
      "slope_deg": 9.41,
      "roughness_tri_m": 553.78,
@@ -45,10 +47,20 @@
      "temp_daynight_range_K": 1.58,
      "albedo_wsa_unitless": 0.32,
      "precip_mm_per_yr": 80.4,
-     "ice_flag_bool": 1.0,
+     "ground_ice_frac": 1.0,
      "sun_noon_elev_mean_deg": 14.84,
+     "geology_match": 0.0,
+     "ice_flag_bool": 1.0,
+     "permafrost_pct": null,
      "barren_pct": 11.9,
-     "ndvi_max_unitless": null
+     "ndvi_max_unitless": null,
+     "wind_m_s": 7.04,
+     "aod_unitless": 0.0
+    },
+    "tags": {
+     "rock_abbr": "pa",
+     "impact_crater": null,
+     "lava_tube": null
     },
     "precip_source": "MERRA-2",
     "nearest_known": {
@@ -57,8 +69,8 @@
      "km": 17
     }
    },
-   "n_lesser_known": 6,
-   "pool_cells": 517
+   "n_lesser_known": 5,
+   "pool_cells": 525
   },
   "malapert": {
    "name": "Malapert Massif",
@@ -72,8 +84,9 @@
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
     "precip_mm_per_yr",
-    "ice_flag_bool",
-    "sun_noon_elev_mean_deg"
+    "ground_ice_frac",
+    "sun_noon_elev_mean_deg",
+    "geology_match"
    ],
    "out_of_earth_range": {
     "temp_min_K": -83.62,
@@ -84,19 +97,20 @@
    "best": {
     "lat": 81.375,
     "lon": -61.625,
-    "score": 0.394,
+    "score": 0.3382,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.32,
      "aridity": 0.303,
      "terrain": 0.245,
      "surface": 0.176,
-     "ice": 1.0,
-     "illumination": 0.896
+     "ice": 0.368,
+     "illumination": 0.896,
+     "geology": 0.368
     },
     "weakest_dimension": "surface",
     "weakest_value": 0.176,
-    "stability": 0.8,
+    "stability": 0.7,
     "earth": {
      "slope_deg": 6.039,
      "roughness_tri_m": 378.54,
@@ -105,10 +119,20 @@
      "temp_daynight_range_K": 0.93,
      "albedo_wsa_unitless": 0.361,
      "precip_mm_per_yr": 120.5,
-     "ice_flag_bool": 0.0,
+     "ground_ice_frac": 1.0,
      "sun_noon_elev_mean_deg": 12.23,
+     "geology_match": 0.0,
+     "ice_flag_bool": 0.0,
+     "permafrost_pct": 100.0,
      "barren_pct": 54.2,
-     "ndvi_max_unitless": 0.148
+     "ndvi_max_unitless": 0.148,
+     "wind_m_s": 4.97,
+     "aod_unitless": 0.04
+    },
+    "tags": {
+     "rock_abbr": "nd",
+     "impact_crater": null,
+     "lava_tube": null
     },
     "precip_source": "MERRA-2",
     "nearest_known": {
@@ -117,8 +141,8 @@
      "km": 577
     }
    },
-   "n_lesser_known": 8,
-   "pool_cells": 277
+   "n_lesser_known": 9,
+   "pool_cells": 309
   },
   "marius": {
    "name": "Marius Hills lava-tube pit",
@@ -132,8 +156,9 @@
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
     "precip_mm_per_yr",
-    "ice_flag_bool",
-    "sun_noon_elev_mean_deg"
+    "ground_ice_frac",
+    "sun_noon_elev_mean_deg",
+    "geology_match"
    ],
    "out_of_earth_range": {
     "temp_min_K": -138.62,
@@ -144,7 +169,7 @@
    "best": {
     "lat": -22.875,
     "lon": -69.875,
-    "score": 0.6165,
+    "score": 0.5727,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.375,
@@ -152,11 +177,12 @@
      "terrain": 0.881,
      "surface": 0.486,
      "ice": 1.0,
-     "illumination": 0.482
+     "illumination": 0.482,
+     "geology": 0.368
     },
-    "weakest_dimension": "thermal",
-    "weakest_value": 0.375,
-    "stability": 0.955,
+    "weakest_dimension": "geology",
+    "weakest_value": 0.368,
+    "stability": 0.815,
     "earth": {
      "slope_deg": 1.239,
      "roughness_tri_m": 110.23,
@@ -165,10 +191,20 @@
      "temp_daynight_range_K": 28.66,
      "albedo_wsa_unitless": 0.214,
      "precip_mm_per_yr": 34.9,
-     "ice_flag_bool": 0.0,
+     "ground_ice_frac": 0.0,
      "sun_noon_elev_mean_deg": 67.07,
+     "geology_match": 0.0,
+     "ice_flag_bool": 0.0,
+     "permafrost_pct": null,
      "barren_pct": 100.0,
-     "ndvi_max_unitless": 0.08
+     "ndvi_max_unitless": 0.08,
+     "wind_m_s": 2.97,
+     "aod_unitless": 0.07
+    },
+    "tags": {
+     "rock_abbr": "ss",
+     "impact_crater": null,
+     "lava_tube": null
     },
     "precip_source": "IMERG",
     "nearest_known": {
@@ -177,8 +213,8 @@
      "km": 137
     }
    },
-   "n_lesser_known": 9,
-   "pool_cells": 324
+   "n_lesser_known": 10,
+   "pool_cells": 391
   },
   "arcadia": {
    "name": "Arcadia Planitia",
@@ -192,8 +228,9 @@
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
     "precip_mm_per_yr",
-    "ice_flag_bool",
-    "sun_noon_elev_mean_deg"
+    "ground_ice_frac",
+    "sun_noon_elev_mean_deg",
+    "geology_match"
    ],
    "out_of_earth_range": {
     "temp_min_K": -43.71,
@@ -203,19 +240,20 @@
    "best": {
     "lat": 38.875,
     "lon": 94.625,
-    "score": 0.5416,
+    "score": 0.5925,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.169,
      "aridity": 0.605,
      "terrain": 0.749,
      "surface": 0.992,
-     "ice": 0.368,
-     "illumination": 0.904
+     "ice": 0.373,
+     "illumination": 0.904,
+     "geology": 1.0
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.169,
-    "stability": 0.885,
+    "stability": 0.925,
     "earth": {
      "slope_deg": 0.467,
      "roughness_tri_m": 30.42,
@@ -224,10 +262,20 @@
      "temp_daynight_range_K": 26.23,
      "albedo_wsa_unitless": 0.251,
      "precip_mm_per_yr": 50.7,
-     "ice_flag_bool": 0.0,
+     "ground_ice_frac": 0.015,
      "sun_noon_elev_mean_deg": 51.12,
+     "geology_match": 1.0,
+     "ice_flag_bool": 0.0,
+     "permafrost_pct": null,
      "barren_pct": 100.0,
-     "ndvi_max_unitless": 0.058
+     "ndvi_max_unitless": 0.058,
+     "wind_m_s": 4.1,
+     "aod_unitless": 0.23
+    },
+    "tags": {
+     "rock_abbr": "su",
+     "impact_crater": null,
+     "lava_tube": null
     },
     "precip_source": "IMERG",
     "nearest_known": {
@@ -237,7 +285,7 @@
     }
    },
    "n_lesser_known": 10,
-   "pool_cells": 510
+   "pool_cells": 478
   },
   "jezero": {
    "name": "Jezero crater",
@@ -251,8 +299,9 @@
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
     "precip_mm_per_yr",
-    "ice_flag_bool",
-    "sun_noon_elev_mean_deg"
+    "ground_ice_frac",
+    "sun_noon_elev_mean_deg",
+    "geology_match"
    ],
    "out_of_earth_range": {
     "temp_min_K": -33.62,
@@ -262,7 +311,7 @@
    "best": {
     "lat": -21.625,
     "lon": -69.875,
-    "score": 0.7036,
+    "score": 0.7398,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.489,
@@ -270,11 +319,12 @@
      "terrain": 0.974,
      "surface": 0.579,
      "ice": 1.0,
-     "illumination": 0.88
+     "illumination": 0.88,
+     "geology": 1.0
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.489,
-    "stability": 0.945,
+    "stability": 0.965,
     "earth": {
      "slope_deg": 2.069,
      "roughness_tri_m": 181.45,
@@ -283,10 +333,20 @@
      "temp_daynight_range_K": 29.52,
      "albedo_wsa_unitless": 0.219,
      "precip_mm_per_yr": 70.0,
-     "ice_flag_bool": 0.0,
+     "ground_ice_frac": 0.0,
      "sun_noon_elev_mean_deg": 68.08,
+     "geology_match": 1.0,
+     "ice_flag_bool": 0.0,
+     "permafrost_pct": null,
      "barren_pct": 100.0,
-     "ndvi_max_unitless": 0.088
+     "ndvi_max_unitless": 0.088,
+     "wind_m_s": 2.64,
+     "aod_unitless": 0.07
+    },
+    "tags": {
+     "rock_abbr": "ss",
+     "impact_crater": null,
+     "lava_tube": null
     },
     "precip_source": "IMERG",
     "nearest_known": {
@@ -296,7 +356,7 @@
     }
    },
    "n_lesser_known": 10,
-   "pool_cells": 318
+   "pool_cells": 341
   },
   "gale": {
    "name": "Gale crater",
@@ -310,8 +370,9 @@
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
     "precip_mm_per_yr",
-    "ice_flag_bool",
-    "sun_noon_elev_mean_deg"
+    "ground_ice_frac",
+    "sun_noon_elev_mean_deg",
+    "geology_match"
    ],
    "out_of_earth_range": {
     "temp_min_K": -43.62,
@@ -321,7 +382,7 @@
    "best": {
     "lat": -21.625,
     "lon": -69.875,
-    "score": 0.5838,
+    "score": 0.6305,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.489,
@@ -329,11 +390,12 @@
      "terrain": 0.338,
      "surface": 0.808,
      "ice": 1.0,
-     "illumination": 0.593
+     "illumination": 0.593,
+     "geology": 1.0
     },
     "weakest_dimension": "terrain",
     "weakest_value": 0.338,
-    "stability": 0.805,
+    "stability": 0.855,
     "earth": {
      "slope_deg": 2.069,
      "roughness_tri_m": 181.45,
@@ -342,10 +404,20 @@
      "temp_daynight_range_K": 29.52,
      "albedo_wsa_unitless": 0.219,
      "precip_mm_per_yr": 70.0,
-     "ice_flag_bool": 0.0,
+     "ground_ice_frac": 0.0,
      "sun_noon_elev_mean_deg": 68.08,
+     "geology_match": 1.0,
+     "ice_flag_bool": 0.0,
+     "permafrost_pct": null,
      "barren_pct": 100.0,
-     "ndvi_max_unitless": 0.088
+     "ndvi_max_unitless": 0.088,
+     "wind_m_s": 2.64,
+     "aod_unitless": 0.07
+    },
+    "tags": {
+     "rock_abbr": "ss",
+     "impact_crater": null,
+     "lava_tube": null
     },
     "precip_source": "IMERG",
     "nearest_known": {
@@ -355,7 +427,7 @@
     }
    },
    "n_lesser_known": 10,
-   "pool_cells": 372
+   "pool_cells": 400
   },
   "meridiani": {
    "name": "Meridiani Planum",
@@ -369,8 +441,9 @@
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
     "precip_mm_per_yr",
-    "ice_flag_bool",
-    "sun_noon_elev_mean_deg"
+    "ground_ice_frac",
+    "sun_noon_elev_mean_deg",
+    "geology_match"
    ],
    "out_of_earth_range": {
     "temp_min_K": -43.62,
@@ -380,7 +453,7 @@
    "best": {
     "lat": -22.875,
     "lon": -69.625,
-    "score": 0.6835,
+    "score": 0.7217,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.447,
@@ -388,11 +461,12 @@
      "terrain": 0.905,
      "surface": 0.572,
      "ice": 1.0,
-     "illumination": 0.53
+     "illumination": 0.53,
+     "geology": 1.0
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.447,
-    "stability": 0.94,
+    "stability": 0.99,
     "earth": {
      "slope_deg": 0.394,
      "roughness_tri_m": 33.09,
@@ -401,10 +475,20 @@
      "temp_daynight_range_K": 29.21,
      "albedo_wsa_unitless": 0.221,
      "precip_mm_per_yr": 18.7,
-     "ice_flag_bool": 0.0,
+     "ground_ice_frac": 0.0,
      "sun_noon_elev_mean_deg": 67.07,
+     "geology_match": 1.0,
+     "ice_flag_bool": 0.0,
+     "permafrost_pct": null,
      "barren_pct": 100.0,
-     "ndvi_max_unitless": 0.072
+     "ndvi_max_unitless": 0.072,
+     "wind_m_s": 3.81,
+     "aod_unitless": 0.07
+    },
+    "tags": {
+     "rock_abbr": "ss",
+     "impact_crater": null,
+     "lava_tube": null
     },
     "precip_source": "IMERG",
     "nearest_known": {
@@ -414,14 +498,14 @@
     }
    },
    "n_lesser_known": 6,
-   "pool_cells": 431
+   "pool_cells": 410
   }
  },
  "validation": {
-  "pass": 7,
+  "pass": 8,
   "total": 23,
   "overall_top10pct": 2,
-  "overall_top25pct": 3
+  "overall_top25pct": 4
  },
  "scales": {
   "slope_deg": 0.816,
@@ -431,8 +515,9 @@
   "temp_daynight_range_K": 3.0999999999999996,
   "albedo_wsa_unitless": 0.14479999999999998,
   "precip_mm_per_yr": 100.89999999999999,
-  "ice_flag_bool": 1.0,
-  "sun_noon_elev_mean_deg": 11.07
+  "ground_ice_frac": 1.0,
+  "sun_noon_elev_mean_deg": 11.07,
+  "geology_match": 1.0
  },
  "bare_cells": 29846,
  "icy_cells": 109780

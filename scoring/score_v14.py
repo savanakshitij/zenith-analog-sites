@@ -1,6 +1,7 @@
-"""Zenith data v1.3: v1.2 plus Mars terrain computed from MOLA (Tahir, patch 1). Relief is shown but no longer scored.
+"""Zenith data v1.4: v1.3 plus a geology dimension (rock class and impact craters, Tahir patch 3) and ground ice
+(ESA CCI permafrost, Mo) in the ice dimension. Adds a "geology track" list that ignores the bare-ground filter.
 
-Usage: python3 score_v13.py <v1_folder> <merra_precip_csv> <out_folder> <mars_terrain.csv>
+Usage: python3 score_v14.py <v1_folder> <merra_precip_csv> <out_folder> <patches_folder>
 
 Changes from v1 (all decided before this script was first run, see DECISIONS_v1_1.md):
  1. Ice cells are eligible only for targets that have ice (Shackleton, Arcadia).
@@ -19,12 +20,20 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-V1, MERRA, OUT, MARS = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4])
+V1, MERRA, OUT, PATCH = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4])
+MARS = PATCH / "mars_terrain.csv"
 (OUT / "results").mkdir(parents=True, exist_ok=True)
 (OUT / "data").mkdir(parents=True, exist_ok=True)
 
 FEATURES = ["slope_deg", "roughness_tri_m", "relief_m", "temp_min_K", "temp_daynight_range_K",
-            "albedo_wsa_unitless", "precip_mm_per_yr", "ice_flag_bool", "sun_noon_elev_mean_deg"]
+            "albedo_wsa_unitless", "precip_mm_per_yr", "ground_ice_frac", "sun_noon_elev_mean_deg", "geology_match"]
+EXTRA = ["ice_flag_bool", "permafrost_pct", "barren_pct", "ndvi_max_unitless", "wind_m_s", "aod_unitless"]
+TAGS = ["rock_abbr", "impact_crater", "lava_tube"]
+# Rock classes counted as a match per target: union of Mo's glim_targets.csv (code and alt code) and Tahir's proposal.
+ROCK = {"shackleton": {"pb"}, "malapert": {"pb"}, "marius": {"vb"}, "arcadia": {"su", "vb"}, "jezero": {"ss", "vb"},
+        "gale": {"ss", "sm"}, "meridiani": {"ev", "ss"}}
+IMPACT_RELEVANT = {"shackleton", "malapert", "jezero", "gale"}  # a confirmed impact crater in the cell also counts
+GEO_TRACK_N = 15
 TILT_DEG = {"Earth": 23.44, "Moon": 1.54, "Mars": 25.19}  # axial tilt relative to the orbit around the Sun
 
 
@@ -41,15 +50,16 @@ DIMENSIONS = {
     "aridity": ["precip_mm_per_yr"],
     "terrain": ["slope_deg", "roughness_tri_m"],  # relief is context only: it depends on box size, and Earth cells shrink with latitude
     "surface": ["albedo_wsa_unitless"],
-    "ice": ["ice_flag_bool"],
+    "ice": ["ground_ice_frac"],
     "illumination": ["sun_noon_elev_mean_deg"],
+    "geology": ["geology_match"],
 }
 DIMS = list(DIMENSIONS)
 PRESETS = {  # unchanged from v1 config (team_criteria left out: one scoring method only)
-    "balanced":         {"thermal": 1, "aridity": 1, "terrain": 1, "surface": 1, "ice": 1, "illumination": 1},
-    "ice_resources":    {"thermal": 2, "aridity": 0.5, "terrain": 1, "surface": 1, "ice": 3, "illumination": 1},
-    "landing_mobility": {"thermal": 1, "aridity": 1, "terrain": 3, "surface": 1, "ice": 0.5, "illumination": 1},
-    "thermal_testing":  {"thermal": 3, "aridity": 1, "terrain": 1, "surface": 1.5, "ice": 0.5, "illumination": 1},
+    "balanced":         {"thermal": 1, "aridity": 1, "terrain": 1, "surface": 1, "ice": 1, "illumination": 1, "geology": 1},
+    "ice_resources":    {"thermal": 2, "aridity": 0.5, "terrain": 1, "surface": 1, "ice": 3, "illumination": 1, "geology": 1},
+    "landing_mobility": {"thermal": 1, "aridity": 1, "terrain": 3, "surface": 1, "ice": 0.5, "illumination": 1, "geology": 1},
+    "thermal_testing":  {"thermal": 3, "aridity": 1, "terrain": 1, "surface": 1.5, "ice": 0.5, "illumination": 1, "geology": 1},
 }
 FLOOR, RUNS, SEED = 0.01, 200, 20261114
 TOP_N, SPACING_KM, LESSER_N, LESSER_KM, STAB_MIN, POOL_N = 25, 300, 10, 150, 0.5, 200
@@ -110,7 +120,23 @@ def main():
     earth["icy"] = (earth.ice_flag_bool == 1) & noveg
     earth["area_w"] = np.cos(np.radians(earth.cell_lat))
     earth["sun_noon_elev_mean_deg"] = sun_noon_elev_mean(earth.cell_lat.values, TILT_DEG["Earth"]).round(2)
-    earth.drop(columns=["eligible"]).to_csv(OUT / "data/earth_features_v1_3.csv", index=False)
+    key = ["cell_lat", "cell_lon"]
+    for f in ["rock_GLiM.csv", "permafrost_ESACCI.csv", "wind_POWER.csv", "dust_POWER.csv", "ground_temp_mean_POWER.csv"]:
+        earth = earth.merge(pd.read_csv(PATCH / f, low_memory=False), on=key, how="left", validate="one_to_one")
+    # ground ice: surface ice flag, or ESA permafrost share where the map has a value, else a temperature stand-in
+    # (0 at a mean ground temperature of 275 K, rising to 1 at 267 K)
+    standin = np.clip((275 - earth.ground_temp_mean_K) / 8, 0, 1)
+    frozen = (earth.permafrost_pct / 100).where(earth.permafrost_pct.notna(), standin)
+    earth["ground_ice_source"] = np.where(earth.ice_flag_bool == 1, "surface ice flag", np.where(earth.permafrost_pct.notna(), "ESA CCI permafrost", "temperature stand-in"))
+    earth["ground_ice_frac"] = np.maximum(earth.ice_flag_bool, frozen).round(3)
+    lt = pd.read_csv(PATCH / "lava_tubes.csv")
+    earth["lava_tube"] = None
+    for r in lt.itertuples():
+        d = hav(r.lat, r.lon, earth.cell_lat.values, earth.cell_lon.values)
+        earth.loc[d < 30, "lava_tube"] = r.name
+    earth["impact_crater"] = earth.impact_crater.where(earth.impact_crater.notna(), None)
+    earth["geology_match"] = 0.0
+    earth.drop(columns=["eligible"]).to_csv(OUT / "data/earth_features_v1_4.csv", index=False)
 
     targets = pd.read_csv(V1 / "data/final/targets.csv")
     mars = targets.body == "Mars"
@@ -121,6 +147,14 @@ def main():
         targets.loc[mars, f + "_source"] = "MOLA MEGDR 128 ppd (NASA PDS)"
         targets.loc[mars, f + "_note"] = "Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
     targets["sun_noon_elev_mean_deg"] = [round(float(sun_noon_elev_mean(la, TILT_DEG[b])), 2) for la, b in zip(targets.cell_lat, targets.body)]
+    targets["ground_ice_frac"] = targets["ice_flag_bool"]
+    targets["ground_ice_frac_status"] = targets["ice_flag_bool_status"]
+    targets["ground_ice_frac_source"] = targets.get("ice_flag_bool_source")
+    targets["ground_ice_frac_note"] = "1 = water ice documented at or next to the site"
+    targets["geology_match"] = 1.0
+    targets["geology_match_status"] = "estimated"
+    targets["geology_match_source"] = "GLiM class labels from Mo (glim_targets.csv) and Tahir (targets_rock_PROPOSED.csv)"
+    targets["geology_match_note"] = ["rock classes counted as a match: " + ", ".join(sorted(ROCK[t])) + ("; or a confirmed impact crater in the cell" if t in IMPACT_RELEVANT else "") for t in targets.target_id]
     targets["sun_noon_elev_mean_deg_status"] = "computed"
     targets["sun_noon_elev_mean_deg_source"] = "latitude and axial tilt"
     targets["sun_noon_elev_mean_deg_note"] = "Ignores terrain shadowing"
@@ -128,7 +162,7 @@ def main():
     long = [{"target_id": t["target_id"], "name": t["name"], "body": t["body"], "feature": f, "value": t[f],
              "status": t[f + "_status"], "scored": f in scored_feats and not pd.isna(t[f]),
              "source": t.get(f + "_source"), "note": t.get(f + "_note")} for t in targets.to_dict("records") for f in FEATURES]
-    pd.DataFrame(long).to_csv(OUT / "data/targets_v1_3.csv", index=False)
+    pd.DataFrame(long).to_csv(OUT / "data/targets_v1_4.csv", index=False)
     ks = pd.read_csv(V1 / "data/final/known_sites_merged.csv")
 
     # ---- scales: area-weighted IQR over bare-ground cells ----
@@ -139,10 +173,11 @@ def main():
         x, w = tf(f, bare.loc[ok, f]), bare.loc[ok, "area_w"].to_numpy()
         s = wquantile(x, w, 0.75) - wquantile(x, w, 0.25)
         scales[f] = s if s > 0 else 1.0
+    scales["geology_match"] = 1.0  # yes/no feature, same treatment as the old ice flag
     (OUT / "results/scales.json").write_text(json.dumps(scales, indent=1))
 
     rng = np.random.default_rng(SEED)
-    out = {p: {"version": "v1.3", "preset": p, "weights": PRESETS[p], "scales": scales, "dimensions": DIMENSIONS,
+    out = {p: {"version": "v1.4", "preset": p, "weights": PRESETS[p], "scales": scales, "dimensions": DIMENSIONS,
                "grid_deg": 0.25, "targets": {}} for p in PRESETS}
     pool_out, val_rows, summary = {}, [], {"targets": {}}
 
@@ -168,6 +203,7 @@ def main():
 
     for t in targets.to_dict("records"):
         tid = t["target_id"]
+        earth["geology_match"] = (earth.rock_abbr.isin(ROCK[tid]) | (earth.impact_crater.notna() & (tid in IMPACT_RELEVANT))).astype(float)
         feats = [f for f in FEATURES if not pd.isna(t[f])]
         mask = earth.bare | (earth.icy if t["ice_flag_bool"] == 1 else False)
         el = earth[mask & earth[feats].notna().all(axis=1)].reset_index(drop=True)
@@ -215,7 +251,8 @@ def main():
                 return {"lat": float(lat[i]), "lon": float(lon[i]), "score": round(float(score[i]), 4),
                         "percentile": wpct(score[i], ss, cw), "dimensions": dd, "weakest_dimension": wk,
                         "weakest_value": dd[wk], "stability": round(float(stab[i]), 3),
-                        "earth": {f: r3(el.at[i, f]) for f in FEATURES + ["barren_pct", "ndvi_max_unitless"]},
+                        "earth": {f: r3(el.at[i, f]) for f in FEATURES + EXTRA},
+                        "tags": {g: (None if pd.isna(el.at[i, g]) else str(el.at[i, g])) for g in TAGS},
                         "precip_source": el.at[i, "precip_source"],
                         "nearest_known": {"id": str(ks.id.iloc[inear[i]]), "name": ks.name.iloc[inear[i]], "km": int(round(dnear[i]))}}
 
@@ -236,6 +273,26 @@ def main():
                     if len(lesser) == LESSER_N:
                         break
             pool_idx.update(lesser)
+            # geology track: right rock (or crater), any vegetation; for sampling and drilling tests, not surface operations
+            gt = earth[(earth.geology_match == 1) & earth[feats].notna().all(axis=1) & ~earth.rock_abbr.isin(["wb", "ig", "nd"])].reset_index(drop=True)
+            geo_track = []
+            if len(gt):
+                gd, _ = dims_for(gt, t, ranges)
+                gs = geo(gd[DIMS].to_numpy(), w)
+                keep = []
+                for i in np.argsort(-gs):
+                    if all(hav(gt.cell_lat[i], gt.cell_lon[i], gt.cell_lat[j], gt.cell_lon[j]) >= LESSER_KM for j in keep):
+                        keep.append(i)
+                        if len(keep) == GEO_TRACK_N:
+                            break
+                for i in keep:
+                    dk = hav(gt.cell_lat[i], gt.cell_lon[i], ks.lat.values, ks.lon.values)
+                    geo_track.append({"lat": float(gt.cell_lat[i]), "lon": float(gt.cell_lon[i]), "score": round(float(gs[i]), 4),
+                                      "dimensions": {d: r3(gd[d].iloc[i]) for d in DIMS},
+                                      "passes_bare_ground_filter": bool(gt.bare[i] or (gt.icy[i] and t["ice_flag_bool"] == 1)),
+                                      "earth": {f: r3(gt.at[i, f]) for f in FEATURES + EXTRA},
+                                      "tags": {g: (None if pd.isna(gt.at[i, g]) else str(gt.at[i, g])) for g in TAGS},
+                                      "nearest_known": {"name": ks.name.iloc[int(np.argmin(dk))], "km": int(round(dk.min()))}})
             known = {}
             for s in ks.itertuples():
                 row = site_row(s)
@@ -261,27 +318,30 @@ def main():
                                      "overall_pct": kk.get("percentile"), "cell_eligible": eligible,
                                      "pass": bool(sp is not None and sp >= 90),
                                      **{f"pct_{d}": kk.get("dimension_percentiles", {}).get(d) for d in DIMS},
+                                     "geology_match": bool(row.geology_match == 1), "rock": row.rock_abbr,
+                                     "crater_in_cell": None if pd.isna(row.impact_crater) else str(row.impact_crater),
                                      "cell_precip": r3(row.precip_mm_per_yr), "cell_slope": r3(row.slope_deg),
                                      "cell_temp_min": r3(row.temp_min_K), "cell_ice": r3(row.ice_flag_bool)})
             out[preset]["targets"][tid] = {
                 "name": t["name"], "body": t["body"], "n_eligible_cells": n,
                 "target_features": {f: (None if pd.isna(t[f]) else t[f]) for f in FEATURES},
-                "out_of_earth_range": oor, "top": [rec(i) for i in top], "lesser_known": [rec(i) for i in lesser],
+                "out_of_earth_range": oor, "top": [rec(i) for i in top], "lesser_known": [rec(i) for i in lesser], "geology_track": geo_track,
                 "known_sites": known}
         pool = sorted(pool_idx, key=lambda i: -bal[i])
         pool_out[tid] = {"name": t["name"], "body": t["body"], "cells": [
             {"lat": float(lat[i]), "lon": float(lon[i]), "balanced_score": round(float(bal[i]), 4), "stability": round(float(stab[i]), 3),
              "dims": {d: r3(D[i, j]) for j, d in enumerate(DIMS)},
-             "earth": {f: r3(el.at[i, f]) for f in FEATURES + ["barren_pct", "ndvi_max_unitless"]},
+             "earth": {f: r3(el.at[i, f]) for f in FEATURES + EXTRA},
+             "tags": {g: (None if pd.isna(el.at[i, g]) else str(el.at[i, g])) for g in TAGS},
              "nearest_known": ks.name.iloc[inear[i]], "km_to_known": int(round(dnear[i]))} for i in pool]}
         b = out["balanced"]["targets"][tid]
         summary["targets"][tid].update({"best": b["top"][0], "n_lesser_known": len(b["lesser_known"]), "pool_cells": len(pool)})
 
     for p in PRESETS:
         (OUT / f"results/scores_{p}.json").write_text(json.dumps(out[p], ensure_ascii=False))
-    (OUT / "results/plan_pool.json").write_text(json.dumps({"version": "v1.3", "targets": pool_out}, ensure_ascii=False))
+    (OUT / "results/plan_pool.json").write_text(json.dumps({"version": "v1.4", "targets": pool_out}, ensure_ascii=False))
     val = pd.DataFrame(val_rows)
-    val.to_csv(OUT / "results/validation_v1_3.csv", index=False)
+    val.to_csv(OUT / "results/validation_v1_4.csv", index=False)
     summary["validation"] = {"pass": int(val["pass"].sum()), "total": len(val),
                              "overall_top10pct": int((val.overall_pct >= 90).sum()), "overall_top25pct": int((val.overall_pct >= 75).sum())}
     summary["scales"] = scales
@@ -292,7 +352,7 @@ def main():
     for tid, s in summary["targets"].items():
         b = s["best"]
         print(f"{tid:10} n={s['eligible_cells']:6} best={b['lat']:8.3f},{b['lon']:9.3f} score={b['score']:.3f} stab={b['stability']:.2f} near={b['nearest_known']['name'][:28]} ({b['nearest_known']['km']} km) dims={b['dimensions']} lesser={s['n_lesser_known']} pool={s['pool_cells']}")
-    print(val[["site", "target", "signature", "signature_pct", "overall_pct", "cell_eligible", "pass"]].to_string())
+    print(val[["site", "target", "signature", "signature_pct", "overall_pct", "cell_eligible", "pass", "geology_match", "rock", "crater_in_cell"]].to_string())
 
 
 if __name__ == "__main__":

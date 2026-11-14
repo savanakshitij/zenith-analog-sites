@@ -1,0 +1,17 @@
+rock_class,rock_abbr,name
+1,su,unconsolidated sediments
+2,vb,basic volcanic (basalt)
+3,ss,siliciclastic sedimentary
+4,pb,"basic plutonic (gabbro, anorthosite)"
+5,sm,mixed sedimentary
+6,sc,carbonate sedimentary
+7,va,acid volcanic
+8,mt,metamorphic
+9,pa,acid plutonic (granite)
+10,vi,intermediate volcanic
+11,wb,water body
+12,py,pyroclastics
+13,pi,intermediate plutonic
+14,ev,evaporites
+15,nd,no data
+16,ig,ice and glaciers

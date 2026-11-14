@@ -1,8 +1,8 @@
-# Zenith data v1.3
+# Zenith data v1.4
 
 A rescoring of Mo's data v1 with fixes for the problems found when validating it. The Earth layers (Tahir) and the Moon and Mars targets (Mo) are unchanged, except where listed below.
 
-Run: `python3 score_v13.py <data v1 folder> <merra precip csv> <output folder> data/mars_terrain.csv` (about 20 seconds).
+Run: `python3 score_v14.py <data v1 folder> <merra precip csv> <output folder> <patches folder>` (about 20 seconds).
 
 ## Files
 
@@ -10,12 +10,12 @@ Run: `python3 score_v13.py <data v1 folder> <merra precip csv> <output folder> d
 |---|---|
 | `results/scores_<preset>.json` | Same structure as v1: `top` (25), `lesser_known` (10), `known_sites` per target |
 | `results/plan_pool.json` | 330 to 490 cells per target with all five dimension scores, for the mission-plan layer |
-| `results/validation.md`, `validation_v1_3.csv` | Validation against the 23 known analog sites |
+| `results/validation.md`, `validation_v1_4.csv` | Validation against the 23 known analog sites |
 | `results/run_summary.json`, `scales.json` | Counts, scales, best cell per target |
-| `data/earth_features_v1_3.csv` | Tahir's layers plus the precipitation used, `bare`, `icy`, `area_w` |
-| `data/targets_v1_3.csv` | Every target value with status, source and whether it is scored |
+| `data/earth_features_v1_4.csv` | Tahir's layers plus the precipitation used, `bare`, `icy`, `area_w` |
+| `data/targets_v1_4.csv` | Every target value with status, source and whether it is scored |
 | `data/targets.csv`, `not_matchable.csv`, `known_sites_merged.csv` | Copied from v1 unchanged |
-| `score_v13.py` | The scoring script |
+| `score_v14.py` | The scoring script |
 
 ## What changed from v1, and why
 
@@ -48,3 +48,14 @@ Effect: the lunar polar targets now point to high-latitude bare ground (Transant
 - Relief is shown but not scored. It depends strongly on box size, and a 0.25° Earth cell is 28 km wide at the equator but 18 km at 50° and 7 km at 75°, so Earth relief is not comparable across latitudes or with the 28 km target boxes. Terrain = slope and roughness.
 - Scored target values: 21 computed, 20 published, 15 estimated (8 temperatures, 2 albedo values, 5 ice flags).
 - Strict validation: 7 of 23.
+
+## Changed in v1.4: geology, ground ice, tags, geology track
+
+- **Geology is a seventh dimension.** A cell matches if its rock class (GLiM, Tahir patch 3) is one of the target's classes, or if the target is an impact site and the cell holds a confirmed impact crater. Target classes are the union of Mo's `glim_targets.csv` and Tahir's proposal: Shackleton and Malapert pb; Marius vb; Arcadia su, vb; Jezero ss, vb; Gale ss, sm; Meridiani ev, ss. Match scores 1, no match scores 0.37 (same yes/no treatment the ice flag had). Unknown rock counts as no match. All seven labels are estimates from general literature.
+- **Ground ice is in the ice dimension.** `ground_ice_frac` = the surface ice flag, or the ESA CCI permafrost share where that map has a value (Mo), or elsewhere a temperature stand-in (0 at a mean ground temperature of 275 K, rising to 1 at 267 K, from NASA POWER). The stand-in agrees with the ESA map on 85% of bare-ground cells where both exist. `ground_ice_source` says which one a cell uses.
+- **Tags, not scored:** rock class, impact crater in the cell, lava tube within 30 km (Mo's list of 10).
+- **Geology track.** `geology_track` in each scores file lists the best cells with the right rock or a crater, ignoring the bare-ground filter. It is for sampling and drilling tests, not surface operations.
+- **Wind and dust** (NASA POWER, Mo) are in the Earth table and shown in the demo, but not scored: the Mars values are still missing.
+- **Validation** now has two checks: the strict rule (8 of 23) and whether the rock map recognises the geology analogs (8 of 13, with all 6 impact sites flagged).
+- Scored target values: 21 computed, 20 published, 22 estimated (the 7 rock labels are new and all estimated).
+- `patches/` holds every patch file used, plus `ground_temp_mean_POWER.csv` (NASA POWER mean ground temperature on the 0.25° grid).

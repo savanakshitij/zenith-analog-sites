@@ -1,0 +1,24 @@
+site,target,signature,signature_pct,overall_pct,cell_eligible,pass,pct_thermal,pct_aridity,pct_terrain,pct_surface,pct_ice,pct_illumination,pct_geology,geology_match,rock,crater_in_cell,cell_precip,cell_slope,cell_temp_min,cell_ice
+Mistastin Lake crater,Malapert Massif,terrain,75.65,77.93,False,False,94.37,0.87,75.65,32.61,7.48,98.12,100.0,True,pa,Mistastin,621.7,1.133,249.9,0.0
+Sudbury Basin,Malapert Massif,terrain,59.32,73.19,False,False,92.39,0.39,59.32,81.54,100.0,97.93,100.0,True,pa,Sudbury,886.4,0.456,252.64,0.0
+Lonar Crater,Marius Hills lava-tube pit,terrain,67.54,14.21,False,False,6.97,0.11,67.54,99.54,100.0,80.87,100.0,True,vb,Lonar,1261.1,0.38,287.81,0.0
+Mauna Kea,Marius Hills lava-tube pit,surface,99.93,3.39,False,True,67.09,0.18,2.44,99.93,100.0,80.87,98.15,False,vi,,1108.8,7.685,279.58,0.0
+"HI-SEAS, Mauna Loa",Marius Hills lava-tube pit,surface,96.53,20.49,True,True,75.64,0.13,15.96,96.53,100.0,81.97,100.0,True,vb,,1187.3,4.283,280.67,0.0
+Craters of the Moon,Marius Hills lava-tube pit,surface,73.92,25.25,False,False,84.26,3.23,70.28,73.92,100.0,5.42,100.0,True,vb,,325.8,2.072,258.57,0.0
+Black Point Lava Flow,Marius Hills lava-tube pit,surface,94.37,62.34,False,True,81.43,5.22,97.6,94.37,100.0,18.69,98.15,False,ss,,266.4,1.147,267.22,0.0
+Lanzarote,Marius Hills lava-tube pit,surface,99.87,2.89,False,True,14.1,1.14,54.16,99.87,100.0,38.57,98.15,False,nd,,525.6,2.486,285.3,0.0
+McMurdo Dry Valleys,Arcadia Planitia,thermal,62.79,24.22,True,False,62.79,52.68,2.18,49.91,100.0,18.05,74.59,False,pa,,80.4,9.038,232.41,1.0
+"Concordia Station, Dome C",Arcadia Planitia,thermal,98.3,53.3,True,True,98.3,82.83,27.55,10.41,100.0,24.41,74.59,False,ig,,29.2,0.023,202.28,1.0
+Axel Heiberg Island springs,Arcadia Planitia,ice,100.0,9.92,False,True,55.02,13.42,2.95,46.3,100.0,12.87,74.59,False,sm,,299.5,8.685,237.4,0.0
+"Bockfjorden, Svalbard",Arcadia Planitia,ice,100.0,3.23,True,True,35.21,4.17,5.55,47.52,100.0,12.87,74.59,False,mt,,664.8,7.32,249.63,1.0
+"Haughton Crater, Devon Island",Jezero crater,terrain,87.69,2.11,True,False,99.93,3.61,87.69,1.02,3.5,0.72,100.0,True,sm,Haughton,310.5,1.46,235.07,0.0
+Meteor Crater,Jezero crater,terrain,71.89,51.53,False,False,81.26,2.97,71.89,91.58,100.0,19.45,100.0,True,vb,Barringer,338.2,0.739,266.53,0.0
+"Yungay, Atacama Desert",Jezero crater,aridity,30.41,96.89,True,False,84.12,30.41,81.59,87.66,100.0,62.59,85.32,False,pi,,114.2,3.641,280.53,0.0
+Mars Desert Research Station,Jezero crater,aridity,11.11,57.19,True,False,81.01,11.11,91.67,67.73,100.0,14.36,85.32,False,su,,193.7,1.459,264.58,0.0
+Pilbara Craton,Jezero crater,aridity,1.26,17.63,False,False,3.08,1.26,74.79,97.72,100.0,85.74,100.0,True,ss,,487.1,0.697,289.25,0.0
+Nördlinger Ries,Gale crater,terrain,67.76,1.3,False,False,73.63,0.53,67.76,52.29,100.0,1.92,100.0,True,ss,Ries,786.2,0.711,269.56,0.0
+Qaidam Basin,Gale crater,aridity,59.73,94.77,True,False,93.0,59.73,45.87,60.79,100.0,14.79,100.0,True,ss,,48.0,0.333,254.63,0.0
+Wadi Rum,Gale crater,aridity,83.55,87.6,True,False,50.95,83.55,91.22,82.93,100.0,36.45,71.22,False,su,,21.4,2.278,280.17,0.0
+"Badwater Basin, Death Valley",Meridiani Planum,aridity,27.37,11.12,True,False,47.56,27.37,5.87,87.85,100.0,17.86,100.0,True,ss,,122.7,4.66,279.69,0.0
+Río Tinto,Meridiani Planum,surface,98.14,2.45,False,True,49.19,0.49,19.39,98.14,100.0,15.52,86.51,False,sm,,819.6,1.318,278.63,0.0
+Holuhraun lava field,Meridiani Planum,surface,71.62,1.08,True,False,83.42,0.42,17.36,71.62,7.57,1.7,86.51,False,vb,,862.0,1.672,258.9,0.0
