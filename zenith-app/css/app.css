@@ -59,7 +59,7 @@ canvas#globe:active { cursor: grabbing; }
 
 /* ---------- search ---------- */
 .search {
-  position: fixed; z-index: 6; left: 50%; bottom: 9vh; width: min(560px, calc(100vw - 32px));
+  position: fixed; z-index: 11; left: 50%; bottom: 9vh; width: min(560px, calc(100vw - 32px));
   transform: translateX(-50%);
   display: flex; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
   box-shadow: 0 1px 2px rgba(10, 27, 46, .08), 0 8px 24px -12px rgba(10, 27, 46, .25);
@@ -282,18 +282,13 @@ a.link:hover b, .fit .go { color: var(--accent); }
 @media (max-width: 900px) { .result { border-radius: 20px 20px 0 0; } }
 
 /* ---------- cinematic flight: letterbox bars and a location title card ---------- */
-.cine-bar { position: fixed; left: 0; right: 0; z-index: 3; height: min(13vh, 112px); background: #000; transform: scaleY(0); transition: transform 900ms var(--ease-in-out); pointer-events: none; }
-.cine-bar.top { top: 0; transform-origin: top; }
-.cine-bar.bottom { bottom: 0; transform-origin: bottom; }
-.is-flying .cine-bar { transform: scaleY(1); }
-.foot { transition: opacity 400ms; }
 .is-flying .foot { opacity: 0; }
-.cine-card { position: fixed; z-index: 4; left: 28px; bottom: 18px; margin: 0; max-width: calc(100vw - 56px); display: grid; gap: 4px; color: #fff; pointer-events: none; opacity: 0; transition: opacity 500ms; }
+.cine-card { position: fixed; z-index: 3; text-shadow: 0 1px 8px rgba(0, 0, 0, .85), 0 0 2px rgba(0, 0, 0, .9); left: 28px; bottom: 18px; margin: 0; max-width: calc(100vw - 56px); display: grid; gap: 4px; color: #fff; pointer-events: none; opacity: 0; transition: opacity 500ms; }
 .card-in .cine-card { opacity: 1; transition: opacity 200ms; }
 .cine-card span { font-size: 11px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: rgba(255, 255, 255, .7); font-variant-numeric: tabular-nums; }
 .cine-card #cEyebrow { color: var(--accent); }
 .cine-card b { font-size: clamp(22px, 3.2vw, 34px); font-weight: 900; letter-spacing: .14em; line-height: 1; text-transform: uppercase; }
-.no-film .cine-bar, .no-film .cine-card { display: none; }
+.no-film .cine-card { display: none; }
 .result.await { visibility: hidden; }
 
 /* ---------- panels read their look from the tokens (see-through, blur, corners) ---------- */
@@ -563,7 +558,6 @@ a.link:hover b, .fit .go { color: var(--accent); }
 .nav { display: flex; gap: 2px; margin-left: 128px; }  /* leaves room for the Design button */
 .nav button { border: 0; background: none; color: rgba(255, 255, 255, .7); font: 600 13px var(--font); padding: 6px 10px; border-radius: 999px; cursor: pointer; transition: color 150ms, background-color 150ms; }
 .nav button:hover { color: #fff; background: rgba(255, 255, 255, .1); }
-.is-flying .top .nav { opacity: 0; pointer-events: none; }
 .dz-toggle { z-index: 10; }
 
 .hero { position: fixed; z-index: 4; left: 50%; bottom: calc(9vh + 88px); transform: translateX(-50%); width: min(640px, calc(100vw - 32px)); text-align: center; color: #fff; pointer-events: none; }
@@ -645,4 +639,32 @@ p.verdict.q-strong b { color: #2fae6f; } p.verdict.q-weak b { color: var(--accen
   .tools { position: absolute; left: 16px; top: calc(52vh - 46px); bottom: auto; max-width: none; }
   .toast { left: 16px; right: 16px; bottom: 16px; }
   .sheet-in { padding: 24px 20px; }
+}
+
+/* ---------- search list: always on top, solid, scrolls on its own; the ground window and tools step aside ---------- */
+.suggest {
+  z-index: 11; background: rgb(var(--panel-rgb)); -webkit-backdrop-filter: none; backdrop-filter: none;
+  max-height: min(60vh, calc(100vh - 150px)); overflow-y: auto; overscroll-behavior: contain;
+}
+.is-result .suggest { max-height: calc(100vh - 140px); }
+.searching .ground:not(.in-panel), .searching .g-pill, .searching .tools, .searching .toast { opacity: 0; visibility: hidden; pointer-events: none; transition: none; }
+.ground { z-index: 4; } .tools { z-index: 6; }
+.cine-card { z-index: 3; }
+
+/* ---------- top bar: wraps instead of clipping on narrow screens ---------- */
+.top { right: 0; flex-wrap: wrap; row-gap: 6px; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.nav button { text-shadow: 0 1px 6px rgba(0, 0, 0, .8); color: rgba(255, 255, 255, .88); }
+@media (max-width: 1100px) {
+  .top { padding: 14px 16px; gap: 6px 14px; }
+  .nav { margin-left: 0; flex-wrap: wrap; flex: 1 1 100%; order: 3; }
+  .dz-toggle { top: 14px; left: auto; right: 16px; }
+}
+@media (max-width: 900px) {
+  .nav { flex: 0 1 auto; }
+  .nav button { padding: 6px 8px; font-size: 12px; }
+}
+@media (max-width: 480px) {
+  .nav { flex: 1 1 100%; }
+  .nav button { padding: 6px 7px; font-size: 11.5px; white-space: nowrap; }
 }

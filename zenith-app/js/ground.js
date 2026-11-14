@@ -288,14 +288,33 @@
 
   /* ---------- public: called by the app for each result ---------- */
   const fmt = (v, d = 0) => (v == null ? "–" : (+v).toFixed(d));
-  function show(site, target, info) {
+  // Building two 81 x 81 terrain blocks costs tens of milliseconds, so it never runs inside the caller's frame:
+  // it waits for opts.delay (the camera flight), then runs in three idle steps. A newer call cancels an older one.
+  let token = 0, timer = 0;
+  const idle = f => (window.requestIdleCallback ? requestIdleCallback(f, { timeout: 400 }) : setTimeout(f, 16));
+  function show(site, target, info, opts) {
+    const my = ++token; clearTimeout(timer);
     current = { site, target, info };
-    const es = earthSpec(site), ts = targetSpec(target);
-    const fe = field(es), ft = field(ts);
-    // one vertical scale for both, so heights compare directly
-    const ve = Math.max(1, Math.min(10, Math.round(0.3 * PATCH_M / Math.max(1, fe.relief, ft.relief) * 2) / 2));
-    const blocks = [block(fe, ve, surfaceColour("Earth", es.look), es.seed), block(ft, ve, surfaceColour(target.body, ts.look), ts.seed)];
-    views.forEach((v, k) => { if (v.group) { v.scene.remove(v.group); dispose(v.group); } v.group = blocks[k]; v.scene.add(v.group); });
+    sync();
+    const run = () => {
+      let es, ts, fe, ft, ve;
+      const steps = [
+        () => { es = earthSpec(site); ts = targetSpec(target); fe = field(es); },
+        () => { ft = field(ts); ve = Math.max(1, Math.min(10, Math.round(0.3 * PATCH_M / Math.max(1, fe.relief, ft.relief) * 2) / 2)); },
+        () => {
+          // one vertical scale for both, so heights compare directly
+          const blocks = [block(fe, ve, surfaceColour("Earth", es.look), es.seed), block(ft, ve, surfaceColour(target.body, ts.look), ts.seed)];
+          views.forEach((v, k) => { if (v.group) { v.scene.remove(v.group); dispose(v.group); } v.group = blocks[k]; v.scene.add(v.group); });
+          label(site, target, info, fe, ft, ve);
+        },
+      ];
+      const next = () => { if (my !== token) return; steps.shift()(); if (steps.length) idle(next); };
+      idle(next);
+    };
+    const d = (opts && opts.delay) || 0;
+    d > 0 ? (timer = setTimeout(run, d)) : run();
+  }
+  function label(site, target, info, fe, ft, ve) {
     const e = site.earth || {}, f = target.features || {};
     const set = (k, eye, name, slope, rough, alb, relief) => {
       labs[k].querySelector(".g-eye").textContent = eye;

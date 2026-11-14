@@ -56,7 +56,7 @@
     const pctOf = v => { let lo = 0, hi = sorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] > v) lo = m + 1; else hi = m; } return 100 * (1 - (lo < cum.length ? cum[lo] : tot) / tot); };
     const rankOf = v => { let lo = 0, hi = sorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] > v) lo = m + 1; else hi = m; } return lo + 1; };
     const out = { s, idx, n: idx.length, pctOf, rankOf, best: sorted[0], p60: sorted[Math.floor(sorted.length * 0.6)] };
-    if (cache.size > 12) cache.delete(cache.keys().next().value);
+    if (cache.size > 40) cache.delete(cache.keys().next().value);
     cache.set(key, out);
     return out;
   }

@@ -61,8 +61,9 @@
       html += `<li><button type="button" data-i="${i}" role="option"><span class="body">${m.free ? "GO" : esc(m.real ? m.tag : A.target(m.target).body.toUpperCase())}</span><span>${esc(m.title)}${m.real ? `<small>${esc(m.real.status)}</small>` : ""}</span></button></li>`;
     });
     sug.innerHTML = html; sug.hidden = false; sug._items = items;
+    document.body.classList.add("searching"); // the ground window and tools step aside while the list is open
   }
-  const hideSuggest = () => { sug.hidden = true; };
+  const hideSuggest = () => { sug.hidden = true; document.body.classList.remove("searching"); };
   q.addEventListener("focus", showSuggest);
   q.addEventListener("input", showSuggest);
   q.addEventListener("keydown", e => {
@@ -122,8 +123,9 @@
     S.text = text; S.idx = 0; S.tab = "overview"; S.wi = 2; S.pick = null;
     S.plan = { target: plan.target, subsystems: plan.subsystems || A.partsFromWeights(plan.weights), weights: plan.weights || null, real: plan.real || null, why: plan.why, guessed: plan.guessed };
     S.report = A.assess(S.plan);
-    // a new search is a film shot: letterbox in, camera flight, title card, then the panel
+    // a new search is a camera flight, a short title card, then the panel
     const id = ++flight, cine = !reduce, res = $("#result"), body = document.body;
+    clearTimeout(flightEnd);
     body.classList.remove("is-home", "card-in");
     body.classList.add("is-result");
     body.classList.toggle("is-flying", cine);
@@ -131,21 +133,25 @@
     res.classList.toggle("await", cine);
     if (!cine) replay(res);
     layout();
-    markers(); paintHeat();
+    markers(); if (S.heat) paintHeat();
     const ms = show(0, { cine }) || 0;
     if (cine && S.report.ranked[0]) {
-      const r = S.report.ranked[0], t = S.report.target, card = ms * 0.55;
-      // the title card types itself out in the bottom film bar
-      typeText($("#cEyebrow"), `Earth test site for ${t.name}, ${t.body}`, { delay: card, speed: 16 });
-      typeText($("#cName"), nameOf(r.site), { delay: card + 550, speed: 70 });
-      typeText($("#cCoord"), placeOf(r.site), { delay: card + 550 + 70 * nameOf(r.site).length + 150, speed: 18 });
+      const r = S.report.ranked[0], t = S.report.target, card = ms * 0.5;
+      // the title card types itself out at the bottom left; it is gone again when the panel is up
+      typeText($("#cEyebrow"), `Earth test site for ${t.name}, ${t.body}`, { delay: card, speed: 12 });
+      typeText($("#cName"), nameOf(r.site), { delay: card + 350, speed: 40 });
+      typeText($("#cCoord"), placeOf(r.site), { delay: card + 350 + 40 * nameOf(r.site).length + 100, speed: 12 });
       const later = (f, at) => setTimeout(() => { if (id === flight) f(); }, at);
       later(() => body.classList.add("card-in"), card);
       later(() => { res.classList.remove("await"); replay(res); }, ms * 0.8);
-      later(() => body.classList.remove("is-flying", "card-in"), ms + 2100);
-    }
+      later(() => body.classList.remove("card-in"), ms * 0.8 + 400);
+      // hard stop: whatever happens, the flight state is cleared (a newer go() clears and re-sets it itself)
+      flightEnd = setTimeout(() => { if (id === flight) endFlight(); }, ms * 0.8 + 900);
+    } else endFlight();
   }
-  function rerun() { S.report = A.assess(S.plan); S.idx = 0; S.pick = null; markers(); paintHeat(); show(0); }
+  let flightEnd = 0;
+  function endFlight() { document.body.classList.remove("is-flying", "card-in"); $("#result").classList.remove("await"); }
+  function rerun() { S.report = A.assess(S.plan); S.idx = 0; S.pick = null; markers(); if (S.heat) paintHeat(); show(0); }
   function markers() {
     const m = S.report.ranked.map((r, i) => ({ id: r.site.id, lat: r.site.lat, lon: r.site.lon, rank: i + 1, label: nameOf(r.site) }));
     if (S.pick) m.push({ id: S.pick.site.id, lat: S.pick.site.lat, lon: S.pick.site.lon, rank: 0, pick: true, label: "Your pick" });
@@ -191,7 +197,8 @@
     typeText($("#rName"), nameOf(s), { delay: at + 200, speed: 45 });
     typeText($("#rWhere"), placeOf(s), { delay: at + 500, speed: 16 });
     renderSlides(at);
-    try { if (window.ZenithGround) window.ZenithGround.show(s, t, { name: nameOf(s), place: placeOf(s) }); } catch (e) { console.warn("ground view", e); }
+    // the 3D terrain is built after the camera flight, in idle time, so it never lands on a flight frame
+    try { if (window.ZenithGround) window.ZenithGround.show(s, t, { name: nameOf(s), place: placeOf(s) }, { delay: opts.cine ? ms : 0 }); } catch (e) { console.warn("ground view", e); }
     return ms;
   }
   $("#prev").onclick = () => (S.pick ? show(S.idx) : show(S.idx - 1));
@@ -218,12 +225,23 @@
   }
   /* ---------- fact cards: a stack you swipe through, one card per topic ---------- */
   const panel = $("#panel"), sbar = $("#slideBar"), N = TABS.length;
-  let cardIdx = 0, counts = {}, cards = [], busy = false;
+  let cardIdx = 0, counts = {}, cards = [], busy = false, lazyArgs = null, built = new Set();
+  const LAZY = new Set(["whatif", "fits"]);
+  function ensureCard(k) {
+    const id = TABS[k][0];
+    if (!LAZY.has(id) || built.has(id) || !lazyArgs) return;
+    built.add(id);
+    cards[k].firstElementChild.innerHTML = PANELS[id](lazyArgs.r, lazyArgs.t, lazyArgs.sp);
+    if (BIND[id]) BIND[id](lazyArgs.r);
+  }
   function renderSlides(typeAt = 0) {
     const r = current(), t = S.report.target, sp = split(r.site, t);
     counts = { similar: sp.sim.length, different: sp.diff.length + S.report.cannotTest.length };
+    // "What if" re-scores the whole Earth four times and "Also fits" scores every library mission, so those two
+    // cards are built the first time they reach the top, not on every site change.
+    lazyArgs = { r, t, sp }; built = new Set();
     panel.innerHTML = TABS.map(([id, label], k) =>
-      `<section class="card" data-card="${id}" role="group" aria-roledescription="card" aria-label="${label}, ${k + 1} of ${N}"><div class="card-body">${PANELS[id](r, t, sp)}</div></section>`).join("");
+      `<section class="card" data-card="${id}" role="group" aria-roledescription="card" aria-label="${label}, ${k + 1} of ${N}"><div class="card-body">${LAZY.has(id) ? "" : PANELS[id](r, t, sp)}</div></section>`).join("");
     cards = [...panel.children];
     sbar.innerHTML = `
       <button type="button" class="step sl-step" data-step="-1" aria-label="Bring back the previous card">‹</button>
@@ -233,7 +251,7 @@
           `<button type="button" data-k="${k}" aria-label="${label}${counts[id] != null ? ` (${counts[id]})` : ""}"><i></i></button>`).join("")}</div>
       </div>
       <button type="button" class="step sl-step" data-step="1" aria-label="Next card">›</button>`;
-    for (const id in BIND) BIND[id](r);
+    for (const id in BIND) if (!LAZY.has(id)) BIND[id](r);
     cardIdx = Math.max(0, TABS.findIndex(([id]) => id === S.tab));
     busy = false; place(); announce(typeAt);
     requestAnimationFrame(() => panel.querySelectorAll(".bar .fill").forEach(el => (el.style.transform = `scaleX(${el.dataset.v})`)));
@@ -257,6 +275,7 @@
   function announce(typeAt = 0) {
     const [id, label] = TABS[cardIdx];
     S.tab = id;
+    if (LAZY.has(id) && !built.has(id)) ensureCard(cardIdx);
     typeText($("#slTitle"), counts[id] != null ? `${label} (${counts[id]})` : label, { delay: typeAt, speed: 26 });
     $("#slCount").textContent = `${cardIdx + 1} / ${N}`;
     sbar.querySelectorAll(".sl-dots button").forEach((b, i) => b.setAttribute("aria-current", i === cardIdx ? "step" : "false"));
@@ -458,7 +477,7 @@
       document.querySelectorAll(".fit[data-target]").forEach(b => b.onclick = () => {
         if (b.dataset.target === S.plan.target) return;
         const s = current().site; S.plan.target = b.dataset.target; S.plan.real = null; S.plan.weights = null; S.plan.why = null;
-        S.report = A.assess(S.plan); paintHeat(); inspect(s.lat, s.lon);
+        S.report = A.assess(S.plan); if (S.heat) paintHeat(); inspect(s.lat, s.lon);
       });
     },
   };
@@ -487,16 +506,24 @@
   /* ---------- heat layer ---------- */
   const RAMP = [[34, 52, 110], [30, 128, 146], [120, 200, 112], [250, 212, 72], [255, 122, 40]];
   function ramp(v) { const x = Math.max(0, Math.min(1, v)) * (RAMP.length - 1), i = Math.min(RAMP.length - 2, Math.floor(x)), f = x - i; return RAMP[i].map((c, k) => Math.round(c + (RAMP[i + 1][k] - c) * f)); }
+  // The score layer is only painted when it is on, and only once per scoring pass (a new mission or new weights is a new pass).
+  const heatCache = new WeakMap();
   function paintHeat() {
     if (!S.report) return;
-    const P = S.report.pass, lo = P.s[P.idx[Math.floor(P.n * 0.95)]], hi = P.best, buf = new Uint8Array(1440 * 720 * 4), e = A.eng;
-    for (const i of P.idx) { const c = ramp((P.s[i] - lo) / (hi - lo)), o = (e.row[i] * 1440 + e.col[i]) * 4; buf[o] = c[0]; buf[o + 1] = c[1]; buf[o + 2] = c[2]; buf[o + 3] = 235; }
-    G.setHeat(buf);
+    const P = S.report.pass, lo = P.s[P.idx[Math.floor(P.n * 0.95)]], hi = P.best;
+    let buf = heatCache.get(P);
+    if (!buf) {
+      buf = new Uint8Array(1440 * 720 * 4); const e = A.eng;
+      for (const i of P.idx) { const c = ramp((P.s[i] - lo) / (hi - lo)), o = (e.row[i] * 1440 + e.col[i]) * 4; buf[o] = c[0]; buf[o + 1] = c[1]; buf[o + 2] = c[2]; buf[o + 3] = 235; }
+      heatCache.set(P, buf);
+    }
+    if (heatShown !== buf) { G.setHeat(buf); heatShown = buf; }
     $("#legend").innerHTML = `<span>${lo.toFixed(2)}</span><i></i><span>${hi.toFixed(2)}</span><em>match score, ${P.n.toLocaleString("en")} cells</em>`;
   }
+  let heatShown = null;
   $("#heatBtn").onclick = () => {
     if (!G.hasGL()) return toast("The score layer needs WebGL, which this browser has turned off.");
-    S.heat = !S.heat; G.heat(S.heat); $("#heatBtn").setAttribute("aria-pressed", S.heat); $("#legend").hidden = !S.heat;
+    S.heat = !S.heat; if (S.heat) paintHeat(); G.heat(S.heat); $("#heatBtn").setAttribute("aria-pressed", S.heat); $("#legend").hidden = !S.heat;
   };
   $("#flagBtn").onclick = () => setFlags(!S.flags);
   function setFlags(on) { S.flags = on; G.setFlags(on ? A.known.filter(k => !k.cave).map(k => ({ lat: k.lat, lon: k.lon, label: k.name.split(",")[0] })) : []); $("#flagBtn").setAttribute("aria-pressed", on); }
