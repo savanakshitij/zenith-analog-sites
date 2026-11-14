@@ -157,6 +157,7 @@
     ['temp_min_K', 'Coldest monthly night temp', 'K'], ['temp_daynight_range_K', 'Day/night range', 'K'],
     ['slope_deg', 'Mean slope', '°'], ['roughness_tri_m', 'Roughness (TRI)', 'm'], ['relief_m', 'Local relief', 'm'],
     ['albedo_wsa_unitless', 'Albedo', ''], ['precip_mm_per_yr', 'Precipitation', 'mm/yr'],
+    ['sun_noon_elev_mean_deg', 'Mean noon sun elevation', '°'],
     ['ndvi_max_unitless', 'Max NDVI', ''], ['barren_pct', 'Bare ground', '%'], ['ice_flag_bool', 'Snow/ice flag', '']
   ];
 
@@ -190,7 +191,7 @@
       out.targetValues.map(function (v) {
         return '<tr title="' + esc(v.note) + '"><td>' + esc(v.feature) + '</td><td class="n">' + (v.value == null ? 'none' : esc(v.value)) + '</td><td class="' + ((v.status === 'estimated' || v.status === 'not scored') ? 'est' : '') + '">' + esc(v.status) + '</td></tr>';
       }).join('') + '</tbody></table>';
-    html += '<p class="note">Earth and target values use the same definitions. Amber = estimated, not yet from raw data. "not scored" = left out because the definition does not match.</p>';
+    html += '<p class="note">Earth and target values use the same definitions. Amber = estimated, not yet from raw data. "context only" = shown but not part of the score.</p>';
 
     html += '<h3>Known analog sites under this plan</h3><table><thead><tr><th>Site</th><th>Plan coverage</th></tr></thead><tbody>' +
       out.knownSites.slice(0, 8).map(function (k) { return '<tr><td>' + esc(k.site) + '</td><td class="n">' + pct(k.planCoverage) + '</td></tr>'; }).join('') + '</tbody></table>';

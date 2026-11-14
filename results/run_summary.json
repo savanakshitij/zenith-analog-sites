@@ -22,43 +22,43 @@
    },
    "stability_top_k": 1394,
    "best": {
-    "lat": -85.125,
-    "lon": 166.875,
-    "score": 0.2839,
+    "lat": -77.375,
+    "lon": 161.625,
+    "score": 0.2679,
     "percentile": 100.0,
     "dimensions": {
-     "thermal": 0.033,
-     "aridity": 0.805,
-     "terrain": 0.31,
-     "surface": 0.079,
+     "thermal": 0.019,
+     "aridity": 0.451,
+     "terrain": 0.35,
+     "surface": 0.235,
      "ice": 1.0,
-     "illumination": 0.795
+     "illumination": 0.513
     },
     "weakest_dimension": "thermal",
-    "weakest_value": 0.033,
-    "stability": 0.635,
+    "weakest_value": 0.019,
+    "stability": 0.64,
     "earth": {
-     "slope_deg": 5.891,
-     "roughness_tri_m": 260.68,
-     "relief_m": 1175.6,
-     "temp_min_K": 225.93,
-     "temp_daynight_range_K": -0.58,
-     "albedo_wsa_unitless": 0.477,
-     "precip_mm_per_yr": 21.9,
+     "slope_deg": 9.41,
+     "roughness_tri_m": 553.78,
+     "relief_m": 1333.6,
+     "temp_min_K": 232.33,
+     "temp_daynight_range_K": 1.58,
+     "albedo_wsa_unitless": 0.32,
+     "precip_mm_per_yr": 80.4,
      "ice_flag_bool": 1.0,
-     "sun_noon_elev_mean_deg": 9.99,
-     "barren_pct": 0.0,
+     "sun_noon_elev_mean_deg": 14.84,
+     "barren_pct": 11.9,
      "ndvi_max_unitless": null
     },
     "precip_source": "MERRA-2",
     "nearest_known": {
-     "id": "imm21",
-     "name": "Beacon Valley / University Valley",
-     "km": 818
+     "id": "dryvalleys",
+     "name": "McMurdo Dry Valleys",
+     "km": 17
     }
    },
-   "n_lesser_known": 4,
-   "pool_cells": 514
+   "n_lesser_known": 6,
+   "pool_cells": 517
   },
   "malapert": {
    "name": "Malapert Massif",
@@ -78,26 +78,25 @@
    "out_of_earth_range": {
     "temp_min_K": -83.62,
     "temp_daynight_range_K": 40.34,
-    "relief_m": 239.69,
     "sun_noon_elev_mean_deg": -7.01
    },
    "stability_top_k": 298,
    "best": {
     "lat": 81.375,
     "lon": -61.625,
-    "score": 0.4054,
+    "score": 0.394,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.32,
      "aridity": 0.303,
-     "terrain": 0.291,
+     "terrain": 0.245,
      "surface": 0.176,
      "ice": 1.0,
      "illumination": 0.896
     },
     "weakest_dimension": "surface",
     "weakest_value": 0.176,
-    "stability": 0.78,
+    "stability": 0.8,
     "earth": {
      "slope_deg": 6.039,
      "roughness_tri_m": 378.54,
@@ -119,7 +118,7 @@
     }
    },
    "n_lesser_known": 8,
-   "pool_cells": 272
+   "pool_cells": 277
   },
   "marius": {
    "name": "Marius Hills lava-tube pit",
@@ -145,7 +144,7 @@
    "best": {
     "lat": -22.875,
     "lon": -69.875,
-    "score": 0.6164,
+    "score": 0.6165,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.375,
@@ -157,7 +156,7 @@
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.375,
-    "stability": 0.95,
+    "stability": 0.955,
     "earth": {
      "slope_deg": 1.239,
      "roughness_tri_m": 110.23,
@@ -179,7 +178,7 @@
     }
    },
    "n_lesser_known": 9,
-   "pool_cells": 323
+   "pool_cells": 324
   },
   "arcadia": {
    "name": "Arcadia Planitia",
@@ -187,6 +186,8 @@
    "ice_cells_included": true,
    "features_scored": [
     "slope_deg",
+    "roughness_tri_m",
+    "relief_m",
     "temp_min_K",
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
@@ -202,19 +203,19 @@
    "best": {
     "lat": 38.875,
     "lon": 94.625,
-    "score": 0.5645,
+    "score": 0.5416,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.169,
      "aridity": 0.605,
-     "terrain": 0.96,
+     "terrain": 0.749,
      "surface": 0.992,
      "ice": 0.368,
      "illumination": 0.904
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.169,
-    "stability": 0.905,
+    "stability": 0.885,
     "earth": {
      "slope_deg": 0.467,
      "roughness_tri_m": 30.42,
@@ -236,7 +237,7 @@
     }
    },
    "n_lesser_known": 10,
-   "pool_cells": 499
+   "pool_cells": 510
   },
   "jezero": {
    "name": "Jezero crater",
@@ -244,6 +245,8 @@
    "ice_cells_included": false,
    "features_scored": [
     "slope_deg",
+    "roughness_tri_m",
+    "relief_m",
     "temp_min_K",
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
@@ -259,19 +262,19 @@
    "best": {
     "lat": -21.625,
     "lon": -69.875,
-    "score": 0.6968,
+    "score": 0.7036,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.489,
      "aridity": 0.5,
-     "terrain": 0.919,
+     "terrain": 0.974,
      "surface": 0.579,
      "ice": 1.0,
      "illumination": 0.88
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.489,
-    "stability": 0.95,
+    "stability": 0.945,
     "earth": {
      "slope_deg": 2.069,
      "roughness_tri_m": 181.45,
@@ -293,7 +296,7 @@
     }
    },
    "n_lesser_known": 10,
-   "pool_cells": 343
+   "pool_cells": 318
   },
   "gale": {
    "name": "Gale crater",
@@ -301,6 +304,8 @@
    "ice_cells_included": false,
    "features_scored": [
     "slope_deg",
+    "roughness_tri_m",
+    "relief_m",
     "temp_min_K",
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
@@ -314,43 +319,43 @@
    },
    "stability_top_k": 298,
    "best": {
-    "lat": -25.375,
-    "lon": -68.375,
-    "score": 0.5264,
+    "lat": -21.625,
+    "lon": -69.875,
+    "score": 0.5838,
     "percentile": 100.0,
     "dimensions": {
-     "thermal": 0.232,
-     "aridity": 0.675,
-     "terrain": 0.681,
-     "surface": 0.46,
+     "thermal": 0.489,
+     "aridity": 0.5,
+     "terrain": 0.338,
+     "surface": 0.808,
      "ice": 1.0,
-     "illumination": 0.434
+     "illumination": 0.593
     },
-    "weakest_dimension": "thermal",
-    "weakest_value": 0.232,
-    "stability": 0.905,
+    "weakest_dimension": "terrain",
+    "weakest_value": 0.338,
+    "stability": 0.805,
     "earth": {
-     "slope_deg": 5.314,
-     "roughness_tri_m": 491.12,
-     "relief_m": 1318.9,
-     "temp_min_K": 261.16,
-     "temp_daynight_range_K": 26.54,
-     "albedo_wsa_unitless": 0.138,
-     "precip_mm_per_yr": 39.7,
+     "slope_deg": 2.069,
+     "roughness_tri_m": 181.45,
+     "relief_m": 734.0,
+     "temp_min_K": 278.72,
+     "temp_daynight_range_K": 29.52,
+     "albedo_wsa_unitless": 0.219,
+     "precip_mm_per_yr": 70.0,
      "ice_flag_bool": 0.0,
-     "sun_noon_elev_mean_deg": 64.62,
+     "sun_noon_elev_mean_deg": 68.08,
      "barren_pct": 100.0,
-     "ndvi_max_unitless": 0.029
+     "ndvi_max_unitless": 0.088
     },
     "precip_source": "IMERG",
     "nearest_known": {
      "id": "atacama",
      "name": "Yungay, Atacama Desert",
-     "km": 217
+     "km": 276
     }
    },
    "n_lesser_known": 10,
-   "pool_cells": 344
+   "pool_cells": 372
   },
   "meridiani": {
    "name": "Meridiani Planum",
@@ -358,6 +363,8 @@
    "ice_cells_included": false,
    "features_scored": [
     "slope_deg",
+    "roughness_tri_m",
+    "relief_m",
     "temp_min_K",
     "temp_daynight_range_K",
     "albedo_wsa_unitless",
@@ -373,19 +380,19 @@
    "best": {
     "lat": -22.875,
     "lon": -69.625,
-    "score": 0.6818,
+    "score": 0.6835,
     "percentile": 100.0,
     "dimensions": {
      "thermal": 0.447,
      "aridity": 0.831,
-     "terrain": 0.891,
+     "terrain": 0.905,
      "surface": 0.572,
      "ice": 1.0,
      "illumination": 0.53
     },
     "weakest_dimension": "thermal",
     "weakest_value": 0.447,
-    "stability": 0.945,
+    "stability": 0.94,
     "earth": {
      "slope_deg": 0.394,
      "roughness_tri_m": 33.09,
@@ -406,12 +413,12 @@
      "km": 141
     }
    },
-   "n_lesser_known": 4,
-   "pool_cells": 430
+   "n_lesser_known": 6,
+   "pool_cells": 431
   }
  },
  "validation": {
-  "pass": 8,
+  "pass": 7,
   "total": 23,
   "overall_top10pct": 2,
   "overall_top25pct": 3

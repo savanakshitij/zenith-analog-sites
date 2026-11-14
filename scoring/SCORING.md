@@ -1,8 +1,8 @@
-# Zenith data v1.2
+# Zenith data v1.3
 
 A rescoring of Mo's data v1 with fixes for the problems found when validating it. The Earth layers (Tahir) and the Moon and Mars targets (Mo) are unchanged, except where listed below.
 
-Run: `python3 score_v12.py <data v1 folder> <merra precip csv> <output folder>` (about 20 seconds).
+Run: `python3 score_v13.py <data v1 folder> <merra precip csv> <output folder> data/mars_terrain.csv` (about 20 seconds).
 
 ## Files
 
@@ -10,12 +10,12 @@ Run: `python3 score_v12.py <data v1 folder> <merra precip csv> <output folder>` 
 |---|---|
 | `results/scores_<preset>.json` | Same structure as v1: `top` (25), `lesser_known` (10), `known_sites` per target |
 | `results/plan_pool.json` | 330 to 490 cells per target with all five dimension scores, for the mission-plan layer |
-| `results/validation.md`, `validation_v1_2.csv` | Validation against the 23 known analog sites |
+| `results/validation.md`, `validation_v1_3.csv` | Validation against the 23 known analog sites |
 | `results/run_summary.json`, `scales.json` | Counts, scales, best cell per target |
-| `data/earth_features_v1_2.csv` | Tahir's layers plus the precipitation used, `bare`, `icy`, `area_w` |
-| `data/targets_scored_v1_2.csv` | The target values that were scored |
+| `data/earth_features_v1_3.csv` | Tahir's layers plus the precipitation used, `bare`, `icy`, `area_w` |
+| `data/targets_v1_3.csv` | Every target value with status, source and whether it is scored |
 | `data/targets.csv`, `not_matchable.csv`, `known_sites_merged.csv` | Copied from v1 unchanged |
-| `score_v12.py` | The scoring script |
+| `score_v13.py` | The scoring script |
 
 ## What changed from v1, and why
 
@@ -41,3 +41,10 @@ Scoring written with AI assistance (Claude), reviewed by Team Zenith.
 A sixth dimension, `illumination`, with one feature: `sun_noon_elev_mean_deg`, the annual mean of the Sun's elevation at local noon (0 when the Sun stays below the horizon). It is computed from latitude and axial tilt only (Earth 23.44°, Moon 1.54°, Mars 25.19°), for Earth cells and targets alike. No download. It ignores terrain shadowing and atmosphere, and it says nothing about sunlight strength or day length, which stay on the "cannot be matched" list. It has weight 1 in every preset.
 
 Effect: the lunar polar targets now point to high-latitude bare ground (Transantarctic Mountains, northern Ellesmere and Greenland), Arcadia (40°N on Mars) to the Qaidam and northern Tibetan Plateau, and the low-latitude targets stay in the Atacama. Strict validation is unchanged at 8 of 23.
+
+## Changed in v1.3: real Mars terrain, relief not scored
+
+- Slope and roughness for Arcadia, Jezero, Gale and Meridiani now come from MOLA elevation (Tahir, patch 1), computed the same way as Earth and the Moon. The point about Mars roughness under "What changed from v1" (item 5) and the Mars terrain limit no longer apply.
+- Relief is shown but not scored. It depends strongly on box size, and a 0.25° Earth cell is 28 km wide at the equator but 18 km at 50° and 7 km at 75°, so Earth relief is not comparable across latitudes or with the 28 km target boxes. Terrain = slope and roughness.
+- Scored target values: 21 computed, 20 published, 15 estimated (8 temperatures, 2 albedo values, 5 ice flags).
+- Strict validation: 7 of 23.

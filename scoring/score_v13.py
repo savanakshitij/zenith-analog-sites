@@ -1,6 +1,6 @@
-"""Zenith data v1.2: data v1.1 plus an illumination dimension (computed from latitude and axial tilt).
+"""Zenith data v1.3: v1.2 plus Mars terrain computed from MOLA (Tahir, patch 1). Relief is shown but no longer scored.
 
-Usage: python3 score_v11.py <v1_folder> <merra_precip_csv> <out_folder>
+Usage: python3 score_v13.py <v1_folder> <merra_precip_csv> <out_folder> <mars_terrain.csv>
 
 Changes from v1 (all decided before this script was first run, see DECISIONS_v1_1.md):
  1. Ice cells are eligible only for targets that have ice (Shackleton, Arcadia).
@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-V1, MERRA, OUT = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])
+V1, MERRA, OUT, MARS = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4])
 (OUT / "results").mkdir(parents=True, exist_ok=True)
 (OUT / "data").mkdir(parents=True, exist_ok=True)
 
@@ -39,7 +39,7 @@ LOG1P = ["roughness_tri_m", "relief_m"]
 DIMENSIONS = {
     "thermal": ["temp_min_K", "temp_daynight_range_K"],
     "aridity": ["precip_mm_per_yr"],
-    "terrain": ["slope_deg", "roughness_tri_m", "relief_m"],
+    "terrain": ["slope_deg", "roughness_tri_m"],  # relief is context only: it depends on box size, and Earth cells shrink with latitude
     "surface": ["albedo_wsa_unitless"],
     "ice": ["ice_flag_bool"],
     "illumination": ["sun_noon_elev_mean_deg"],
@@ -110,13 +110,25 @@ def main():
     earth["icy"] = (earth.ice_flag_bool == 1) & noveg
     earth["area_w"] = np.cos(np.radians(earth.cell_lat))
     earth["sun_noon_elev_mean_deg"] = sun_noon_elev_mean(earth.cell_lat.values, TILT_DEG["Earth"]).round(2)
-    earth.drop(columns=["eligible"]).to_csv(OUT / "data/earth_features_v1_2.csv", index=False)
+    earth.drop(columns=["eligible"]).to_csv(OUT / "data/earth_features_v1_3.csv", index=False)
 
     targets = pd.read_csv(V1 / "data/final/targets.csv")
     mars = targets.body == "Mars"
-    targets.loc[mars, "roughness_tri_m"] = np.nan  # fix 5
+    mt = pd.read_csv(MARS).set_index("target_id")
+    for f in ["slope_deg", "roughness_tri_m", "relief_m"]:
+        targets.loc[mars, f] = targets.loc[mars, "target_id"].map(mt[f])
+        targets.loc[mars, f + "_status"] = "computed"
+        targets.loc[mars, f + "_source"] = "MOLA MEGDR 128 ppd (NASA PDS)"
+        targets.loc[mars, f + "_note"] = "Tahir patch 1: 1.85 km pixels, 28 km box, same method as Earth and Moon"
     targets["sun_noon_elev_mean_deg"] = [round(float(sun_noon_elev_mean(la, TILT_DEG[b])), 2) for la, b in zip(targets.cell_lat, targets.body)]
-    targets[["target_id", "name", "body"] + FEATURES].to_csv(OUT / "data/targets_scored_v1_2.csv", index=False)
+    targets["sun_noon_elev_mean_deg_status"] = "computed"
+    targets["sun_noon_elev_mean_deg_source"] = "latitude and axial tilt"
+    targets["sun_noon_elev_mean_deg_note"] = "Ignores terrain shadowing"
+    scored_feats = {f for fs in DIMENSIONS.values() for f in fs}
+    long = [{"target_id": t["target_id"], "name": t["name"], "body": t["body"], "feature": f, "value": t[f],
+             "status": t[f + "_status"], "scored": f in scored_feats and not pd.isna(t[f]),
+             "source": t.get(f + "_source"), "note": t.get(f + "_note")} for t in targets.to_dict("records") for f in FEATURES]
+    pd.DataFrame(long).to_csv(OUT / "data/targets_v1_3.csv", index=False)
     ks = pd.read_csv(V1 / "data/final/known_sites_merged.csv")
 
     # ---- scales: area-weighted IQR over bare-ground cells ----
@@ -130,7 +142,7 @@ def main():
     (OUT / "results/scales.json").write_text(json.dumps(scales, indent=1))
 
     rng = np.random.default_rng(SEED)
-    out = {p: {"version": "v1.2", "preset": p, "weights": PRESETS[p], "scales": scales, "dimensions": DIMENSIONS,
+    out = {p: {"version": "v1.3", "preset": p, "weights": PRESETS[p], "scales": scales, "dimensions": DIMENSIONS,
                "grid_deg": 0.25, "targets": {}} for p in PRESETS}
     pool_out, val_rows, summary = {}, [], {"targets": {}}
 
@@ -267,9 +279,9 @@ def main():
 
     for p in PRESETS:
         (OUT / f"results/scores_{p}.json").write_text(json.dumps(out[p], ensure_ascii=False))
-    (OUT / "results/plan_pool.json").write_text(json.dumps({"version": "v1.2", "targets": pool_out}, ensure_ascii=False))
+    (OUT / "results/plan_pool.json").write_text(json.dumps({"version": "v1.3", "targets": pool_out}, ensure_ascii=False))
     val = pd.DataFrame(val_rows)
-    val.to_csv(OUT / "results/validation_v1_2.csv", index=False)
+    val.to_csv(OUT / "results/validation_v1_3.csv", index=False)
     summary["validation"] = {"pass": int(val["pass"].sum()), "total": len(val),
                              "overall_top10pct": int((val.overall_pct >= 90).sum()), "overall_top25pct": int((val.overall_pct >= 75).sum())}
     summary["scales"] = scales
