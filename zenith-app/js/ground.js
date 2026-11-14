@@ -50,7 +50,7 @@
     const on = !!current && document.body.classList.contains("is-result");
     win.hidden = !on || userHidden;
     pill.hidden = !on || !userHidden || inPanel.matches;
-    if (!win.hidden) { resize(); kick(); }
+    if (!win.hidden && window.THREE) { resize(); kick(); }
   }
   new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
   win.addEventListener("click", e => {

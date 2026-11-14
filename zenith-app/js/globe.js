@@ -18,6 +18,7 @@
   let markers = [], selected = null, onPick = null;
   // layout eases toward goal each frame, so the globe glides when the panel opens
   let layout = { cx: 0.5, cy: 0.5, r: 0.36, maxX: 1 }, goal = { ...layout }, placed = false;
+  let flags = [], onClick = null, heatOn = false, heatTex = null;
   const t0 = performance.now();
   const easeInOutCubic = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const easeInOutSine = t => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -76,7 +77,8 @@
   const VS = "attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }";
   const FS = `
 precision highp float;
-uniform sampler2D uDay, uNight, uClouds;
+uniform sampler2D uDay, uNight, uClouds, uHeat;
+uniform float uHeatOn;
 uniform vec2 uCenter; uniform float uR, uLambda, uPhi, uTime;
 const float PI = 3.14159265;
 void main() {
@@ -119,6 +121,10 @@ void main() {
   // atmosphere at the limb, brighter on the day side
   float rim = pow(1.0 - sz, 3.0);
   col = mix(col, vec3(0.45, 0.7, 1.0), rim * (0.25 + 0.6 * day));
+  if (uHeatOn > 0.5) {                                  // match-score layer: dim the photo, draw scored cells flat
+    vec4 h = texture2D(uHeat, uv);
+    col = mix(col * 0.28, h.rgb * (0.82 + 0.18 * max(diff, 0.0)), h.a);
+  }
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -142,7 +148,7 @@ void main() {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    for (const k of ["uDay", "uNight", "uClouds", "uCenter", "uR", "uLambda", "uPhi", "uTime"]) uni[k] = gl.getUniformLocation(prog, k);
+    for (const k of ["uDay", "uNight", "uClouds", "uHeat", "uHeatOn", "uCenter", "uR", "uLambda", "uPhi", "uTime"]) uni[k] = gl.getUniformLocation(prog, k);
     let loaded = 0;
     ["day", "night", "clouds"].forEach((k, i) => {
       const t = gl.createTexture(); tex[k] = t;
@@ -161,7 +167,9 @@ void main() {
       };
       img.src = window.EARTH_TEX[k];
     });
-    gl.uniform1i(uni.uDay, 0); gl.uniform1i(uni.uNight, 1); gl.uniform1i(uni.uClouds, 2);
+    gl.uniform1i(uni.uDay, 0); gl.uniform1i(uni.uNight, 1); gl.uniform1i(uni.uClouds, 2); gl.uniform1i(uni.uHeat, 3);
+    heatTex = gl.createTexture(); gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, heatTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
   }
 
   function drawGL(cx, cy, r) {
@@ -174,6 +182,7 @@ void main() {
     gl.uniform1f(uni.uR, r * dpr);
     gl.uniform1f(uni.uLambda, rotation[0] * Math.PI / 180);
     gl.uniform1f(uni.uPhi, rotation[1] * Math.PI / 180);
+    gl.uniform1f(uni.uHeatOn, heatOn ? 1 : 0);
     gl.uniform1f(uni.uTime, reduceMotion ? 0 : (performance.now() - t0) / 1000);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
@@ -220,14 +229,23 @@ void main() {
     drawTwinkles(cx, cy, r);
 
     const center = projection.invert([cx, cy]);
+    for (const f of flags) {                                // known analog sites: small hollow squares
+      if (d3.geoDistance([f.lon, f.lat], center) > Math.PI / 2 - 0.03) continue;
+      const [x, y] = projection([f.lon, f.lat]);
+      ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(x - 4, y - 4, 8, 8);
+      ctx.strokeStyle = "#ffd23f"; ctx.lineWidth = 1.5; ctx.strokeRect(x - 4, y - 4, 8, 8);
+      if (f.label && zoom > 1.6) { ctx.font = "600 11px "; ctx.font = `600 11px ${theme.font}`; ctx.fillStyle = "#ffd23f"; ctx.fillText(f.label, x + 8, y + 4); }
+    }
     const list = markers.slice().sort((a, b) => (a.id === selected) - (b.id === selected) || b.rank - a.rank);
     for (const m of list) {
       if (d3.geoDistance([m.lon, m.lat], center) > Math.PI / 2 - 0.03) continue;
       const [x, y] = projection([m.lon, m.lat]);
       const sel = m.id === selected;
-      ctx.beginPath(); ctx.arc(x, y, sel ? 6.5 : 3.5, 0, 7);
+      const big = !sel && (m.rank <= 3 || m.pick);
+      ctx.beginPath(); ctx.arc(x, y, sel ? 6.5 : big ? 7.5 : 3.5, 0, 7);
       ctx.fillStyle = sel ? theme.dot : "#ffffff"; ctx.fill();
       ctx.lineWidth = 1.5; ctx.strokeStyle = sel ? "#ffffff" : "#0b3d91"; ctx.stroke();
+      if (big && m.rank) { ctx.font = `800 10px ${theme.font}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = "#0b3d91"; ctx.fillText(String(m.rank), x, y + 0.5); ctx.textAlign = "start"; ctx.textBaseline = "alphabetic"; }
       if (!sel || flying) continue;
       // target lock after landing: crosshair flash, brackets close in, then the label fades up
       const age = performance.now() - landAt, k = reduceMotion ? 1 : easeOutCubic(clamp01(age / 700));
@@ -326,6 +344,7 @@ void main() {
     });
     addEventListener("pointerup", e => {
       if (drag && !drag.moved && onPick) {
+        projection.translate([W * layout.cx, H * layout.cy]).scale(Math.min(W, H) * layout.r * zoom).rotate(rotation);
         let best = null, bd = 14;
         for (const m of markers) {
           const p = projection([m.lon, m.lat]);
@@ -333,10 +352,24 @@ void main() {
           if (d < bd && d3.geoDistance([m.lon, m.lat], projection.invert([W * layout.cx, H * layout.cy])) < Math.PI / 2) { bd = d; best = m; }
         }
         if (best) onPick(best.id);
+        else if (onClick && Math.hypot(e.clientX - W * layout.cx, e.clientY - H * layout.cy) < Math.min(W, H) * layout.r * zoom && e.target === canvas) {
+          const ll = projection.invert([e.clientX, e.clientY]);
+          if (ll) onClick(ll[1], ll[0]);
+        }
       }
       drag = null;
     });
     requestAnimationFrame(frame);
+  }
+
+  /* Match-score layer. rgba: Uint8Array of 1440 x 720 x 4, row 0 = north, column 0 = 180°W. */
+  function setHeat(rgba) {
+    if (!gl || !heatTex) return false;
+    gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, heatTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1440, 720, 0, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return true;
   }
 
   function countryOf(lat, lon) {
@@ -348,6 +381,8 @@ void main() {
     init, flyTo, countryOf,
     isPhotoreal: () => !!(gl && ready),
     setMarkers: (m) => { markers = m; },
+    setFlags: (f) => { flags = f; }, setHeat, heat: (on) => { heatOn = !!on; }, hasGL: () => !!gl,
+    onClick: (fn) => { onClick = fn; }, zoom: (z) => { zoom = z; },
     select: (id) => { selected = id; },
     setLayout: (l) => { goal = { ...goal, ...l }; if (!placed || reduceMotion) layout = { ...goal }; placed = true; },
     onPick: (fn) => { onPick = fn; },

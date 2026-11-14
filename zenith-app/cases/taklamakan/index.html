@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case Study 1 — Southern Taklamakan as an Arcadia Planitia analog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3efe6; --ink:#23282e; --muted:#565a60; --line:#d9d2c4; --panel:#ece5d6;
+  --rust:#b4532a; --rust-ink:#993b1c; --cool-ink:#2f6a86;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 'Inter',system-ui,sans-serif}
+a{color:var(--rust-ink)}
+.wrap{max-width:1180px;margin:0 auto;padding:48px 24px 64px}
+.eyebrow{font:600 13px/1 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--rust-ink);margin:0 0 10px}
+h1{font:700 clamp(30px,4vw,46px)/1.08 'Space Grotesk',sans-serif;margin:0}
+.sub{color:var(--muted);margin:12px 0 0;font-size:18px}
+h2{font:700 22px/1.2 'Space Grotesk',sans-serif;margin:0 0 14px}
+h3{font:700 15px/1.2 'Space Grotesk',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--rust-ink);margin:0 0 8px}
+.breaks h3{color:var(--cool-ink)}
+section{margin-top:44px}
+
+/* scores */
+.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.card{background:var(--panel);border-radius:12px;padding:18px 20px}
+.card .n{font:700 52px/1 'Space Grotesk',sans-serif;color:var(--rust)}
+.card .n.alt{color:var(--ink)}
+.card .l{margin-top:8px;font-weight:600}
+.card .s{color:var(--muted);font-size:15px;margin-top:2px}
+.bench{color:var(--muted);font-size:15px;margin:12px 0 0}
+
+/* zoom map */
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button{font:600 15px 'Inter',sans-serif;border:1px solid var(--line);background:#fbf8f2;color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fbf8f2;border-color:var(--ink)}
+figure{margin:0}
+.map img{width:100%;height:auto;display:block;border-radius:12px;background:#e6dfd0}
+figcaption{color:var(--muted);font-size:14px;margin-top:8px}
+
+/* match table + text */
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:start}
+table{border-collapse:collapse;width:100%;font-size:16px}
+th{text-align:left;font:700 15px 'Space Grotesk',sans-serif;color:var(--rust-ink);padding:8px 10px;border-bottom:2px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line)}
+td.k{color:var(--muted)}
+tr.ok td:nth-child(2){font-weight:700}
+tr.gap td{color:var(--cool-ink)}
+.legend{font-size:14px;color:var(--muted);margin-top:8px}
+.legend span{color:var(--cool-ink);font-weight:600}
+.blocks{display:grid;gap:22px}
+.blocks p{margin:0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 36px}
+.note{font-size:14px;color:var(--muted);margin-top:6px}
+.sources{font-size:14px;color:var(--muted)}
+.sources li{margin:4px 0}
+@media (max-width:820px){
+  .scores,.two,.grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<header>
+  <p class="eyebrow">Case study 1 · Mars · Arcadia Planitia</p>
+  <h1>Southern Taklamakan — Earth analog for Arcadia Planitia</h1>
+  <p class="sub">Candidate site · cell centre 37.875°N, 83.375°E · southern edge of the Taklamakan Desert, Xinjiang, China · 1,258 m · analog for a Mars ice-drilling target</p>
+</header>
+
+<div class="scores">
+  <div class="card"><div class="n">0.68</div><div class="l">Arcadia match</div><div class="s">Top 0.04% of 30,000 bare-ground cells</div></div>
+  <div class="card"><div class="n alt">0.78</div><div class="l">Earth-testable match</div><div class="s">Leaves out dimensions Earth can't reach</div></div>
+  <div class="card"><div class="n alt">97%</div><div class="l">Robustness</div><div class="s">Stays in the top 1% across random weightings</div></div>
+</div>
+<p class="bench">Scores measure distance from an identical twin, not a grade. For scale: the best known analog for Arcadia, the Qaidam Basin, scores 0.65 on the same scale.</p>
+
+<section aria-labelledby="zoom-h">
+  <h2 id="zoom-h">Zoom map</h2>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-view="context">Context · scored cell (~80 km)</button>
+    <button role="tab" aria-selected="false" data-view="close">Close-up (~45 km)</button>
+  </div>
+  <figure class="map">
+    <img id="mapimg" src="zoommap.jpg" alt="Sentinel-2 view of the southern Taklamakan with the 0.25-degree scored cell outlined, the cell centre marked, and the Tarim Desert Highway about 30 km to the west">
+    <figcaption id="mapcap">The scored 0.25° cell (37.75–38.00°N, 83.25–83.50°E): linear dune ridges, flat interdune plains and the Yawatongguz river corridor. Contains modified Copernicus Sentinel-2 data, S2 L2A true colour, 18 Aug 2026.</figcaption>
+  </figure>
+</section>
+
+<section class="two" aria-labelledby="match-h">
+  <div>
+    <h2 id="match-h">Match: this cell vs Arcadia</h2>
+    <table>
+      <tr><th></th><th>This cell</th><th>Arcadia</th></tr>
+      <tr class="ok"><td class="k">Mean slope</td><td>0.14°</td><td>0.20°</td></tr>
+      <tr class="ok"><td class="k">Roughness</td><td>18 m</td><td>19 m</td></tr>
+      <tr class="ok"><td class="k">Albedo</td><td>0.26</td><td>0.25</td></tr>
+      <tr class="ok"><td class="k">Noon sun (yearly mean)</td><td>52°</td><td>50°</td></tr>
+      <tr><td class="k">Rock</td><td>loose sediment</td><td>ice-rich sediment mantle</td></tr>
+      <tr class="gap"><td class="k">Rain</td><td>18 mm/yr</td><td>none</td></tr>
+      <tr class="gap"><td class="k">Coldest night</td><td>258 K</td><td>163 K</td></tr>
+      <tr class="gap"><td class="k">Ground ice</td><td>none</td><td>yes, at 1–5 m</td></tr>
+    </table>
+    <p class="legend"><span>Blue rows</span> are where Earth can't match.</p>
+  </div>
+  <div class="blocks">
+    <div><h3>Good for</h3><p>Flat-terrain rover and lander tests, and surface operations on plains that match Arcadia's slope, roughness, brightness and sun angle almost exactly.</p></div>
+    <div class="breaks"><h3>Where it breaks</h3><p>No ground ice, which is Arcadia's main resource. About 100 K warmer (258 K vs 163 K). Gravity, pressure and radiation can't be tested anywhere on Earth.</p></div>
+  </div>
+</section>
+
+<section class="grid" aria-label="Site details">
+  <div>
+    <h3>Prior analog work</h3>
+    <p>No study found at this spot. Nearest published work: the <a href="https://www.spacedaily.com/reports/NASA_Studies_Limits_Of_Life_In_Extreme_Deserts_Of_China_999.html">NASA Ames–Chinese Academy of Sciences desert-microbe study</a> at Ruoqiang, spring 2006, ~440 km east (<a href="https://doi.org/10.1111/j.1574-6941.2007.00351.x">Warren-Rhodes et al. 2007</a>); ISRO's <a href="https://www.isro.gov.in/ISRO_EN/Space_Analog_Mission.html">HOPE analog mission</a> at Tso Kar, Ladakh, 705 km; <a href="https://ricerca.unich.it/handle/11564/694940">Qaidam Basin yardangs</a> as a Mars analog (Wang et al. 2018).</p>
+  </div>
+  <div>
+    <h3>Access &amp; permits</h3>
+    <p>Altitude 1,258 m. Nearest town Minfeng, ~110 km SW. The <a href="https://en.wikipedia.org/wiki/Tarim_Desert_Highway">Tarim Desert Highway</a> passes ~30 km west of the cell centre (visible in the map). Fly to Yutian or Qiemo (~185 km), drive the highway, then go off-road across the dunes. The site is in China: field surveying by foreign teams needs <a href="https://www.chinajusticeobserver.com/law/x/surveying-and-mapping-law-20170427">state approval and a Chinese partner institution</a>.</p>
+  </div>
+  <div>
+    <h3>EMIT surface minerals</h3>
+    <p>NASA EMIT has 49 mineral scenes over the cell (2023–2026). Band depths show only weak iron-oxide and clay/carbonate signals over the dunes, which points to sandy sediment, unlike Arcadia's basalt-derived surface.</p>
+    <p class="note">Based on EMIT browse panels; individual mineral identifications still need the full L2B data files.</p>
+  </div>
+  <div>
+    <h3>Nearest known analog</h3>
+    <p>Tso Kar, Ladakh (ISRO), 705 km away. This cell is a candidate site, not a discovery.</p>
+  </div>
+</section>
+
+<section>
+  <h3>Sources</h3>
+  <ul class="sources">
+    <li>Imagery: Copernicus Sentinel-2 L2A, 18 Aug 2026, via the Copernicus Browser.</li>
+    <li>Elevation: <a href="https://api.opentopodata.org/v1/srtm90m?locations=37.875,83.375">SRTM 90 m via OpenTopoData</a>.</li>
+    <li>EMIT: NASA CMR search for EMITL2BMIN granules over 83.25–83.50°E, 37.75–38.00°N.</li>
+    <li>Scores and match values: Team Zenith engine, data v1.6. Distances are great-circle from the cell centre.</li>
+  </ul>
+</section>
+
+</main>
+<script>
+(function(){
+  var views={
+    context:{src:"zoommap.jpg",alt:"Sentinel-2 view of the southern Taklamakan with the 0.25-degree scored cell outlined, the cell centre marked, and the Tarim Desert Highway about 30 km to the west",
+      cap:"The scored 0.25° cell (37.75–38.00°N, 83.25–83.50°E): linear dune ridges, flat interdune plains and the Yawatongguz river corridor. Contains modified Copernicus Sentinel-2 data, S2 L2A true colour, 18 Aug 2026."},
+    close:{src:"closeup.jpg",alt:"Sentinel-2 close-up, about 45 km across, centred on 37.875°N 83.375°E: dune ridges and flat interdune plains",
+      cap:"Close-up centred on 37.875°N, 83.375°E, about 45 km across. Copernicus Sentinel-2, 18 Aug 2026."}
+  };
+  var img=document.getElementById("mapimg"), cap=document.getElementById("mapcap");
+  document.querySelectorAll(".tabs button").forEach(function(b){
+    b.addEventListener("click",function(){
+      var v=views[b.dataset.view];
+      img.src=v.src; img.alt=v.alt; cap.textContent=v.cap;
+      document.querySelectorAll(".tabs button").forEach(function(o){o.setAttribute("aria-selected",o===b?"true":"false");});
+    });
+  });
+})();
+</script>
+</body>
+</html>
