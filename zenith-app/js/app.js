@@ -193,13 +193,13 @@
     $("#rSub").innerHTML = s.eligible ? `top <b>${topFmt(s.percentile)}%</b> of ${R.pass.n.toLocaleString("en")} scored cells` : `not ranked: ${esc(s.why_not)}`;
     const isFresh = !S.pick && S.idx === R.fresh;
     $("#rRank").textContent = S.pick ? (s.eligible ? `Your pick, #${s.rank.toLocaleString("en")} of ${R.pass.n.toLocaleString("en")}` : "Your pick")
-      : isFresh && r.extra ? `Best new candidate, #${s.rank.toLocaleString("en")}` : `${S.idx + 1} of ${R.ranked.length}`;
+      : isFresh && r.extra ? `Best new analog site, #${s.rank.toLocaleString("en")}` : `${S.idx + 1} of ${R.ranked.length}`;
     $("#prev").disabled = !S.pick && S.idx === 0; $("#next").disabled = !S.pick && S.idx === R.ranked.length - 1;
     const b = [];
     const nk = s.nearest_known;
-    if (nk.km >= A.NEW_KM) { if (s.eligible) b.push(`<span class="tag gem" title="Nearest known analog site: ${esc(nk.name)}">New candidate, ${nk.km.toLocaleString("en")} km from the nearest known analog</span>`); }
+    if (nk.km >= A.NEW_KM) { if (s.eligible) b.push(`<span class="tag gem" title="Nearest known analog site: ${esc(nk.name)}">New analog site, ${nk.km.toLocaleString("en")} km from the nearest known one. Not field-checked yet.</span>`); }
     else b.push(`<span class="tag" title="${nk.km.toLocaleString("en")} km from ${esc(nk.name)}">Near ${esc(nk.name.split(",")[0])}, a known analog site</span>`);
-    if (!S.pick && R.fresh > 0) b.push(isFresh ? `<button class="tag jump" data-jump="0">‹ Best match</button>` : `<button class="tag jump" data-jump="${R.fresh}">New candidate ›</button>`);
+    if (!S.pick && R.fresh > 0) b.push(isFresh ? `<button class="tag jump" data-jump="0">‹ Best match</button>` : `<button class="tag jump" data-jump="${R.fresh}">New analog site ›</button>`);
     if (r.stability != null) b.push(`<span class="tag ${r.stability >= 0.5 ? "" : "warn"}" title="In the top 1% in ${Math.round(r.stability * 100)}% of 200 random weightings">${r.stability >= 0.5 ? "Stable" : "Weight-sensitive"}</span>`);
     $("#rBadges").innerHTML = b.join("");
     mwLine(s);
@@ -404,8 +404,8 @@
       const opts = (S.plan.target === "custom" ? `<option value="custom" selected>Your conditions (${esc(t.body)})</option>` : "") + ["Moon", "Mars"].map(b => `<optgroup label="${b}">${A.eng.targets.filter(x => x.body === b).map(x => `<option value="${x.id}" ${x.id === S.plan.target ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`).join("");
       const best = R.ranked[0], fr = R.ranked[R.fresh];
       const ans = (x, k, lbl) => x ? `<button class="answer ${S.idx === k && !S.pick ? "on" : ""}" data-jump="${k}"><span class="kicker">${lbl}</span><b>${esc(nameOf(x.site))}</b><span>${x.overall.toFixed(2)} · ${x.site.nearest_known.km < A.NEW_KM ? `${x.site.nearest_known.km.toLocaleString("en")} km from ${esc(x.site.nearest_known.name.split(",")[0])}, a known analog site` : `${x.site.nearest_known.km.toLocaleString("en")} km from any known analog site`}</span></button>` : "";
-      const two = R.fresh === 0 ? `<div class="sec answers one">${ans(best, 0, "Best match, and already a new candidate")}</div>`
-        : `<div class="sec answers">${ans(best, 0, "Best match overall")}${ans(fr, R.fresh, `Best new candidate (${A.NEW_KM}+ km from known sites)`)}</div>`;
+      const two = R.fresh === 0 ? `<div class="sec answers one">${ans(best, 0, "Best match, and already a new analog site")}</div>`
+        : `<div class="sec answers">${ans(best, 0, "Best match overall")}${ans(fr, R.fresh, `Best new analog site (${A.NEW_KM}+ km from known sites)`)}</div>`;
       const ks = Object.entries(A.knownScores[t.id] || {}).filter(([, k]) => k.score != null).sort((a, b) => b[1].score - a[1].score)[0];
       const kn = ks && X.known.find(k => k.id === ks[0]);
       const dimRow = A.DIMS.map(d => `<span class="dim ${!R.weights[d] ? "off" : s.dims[d] >= 0.8 ? "hi" : s.dims[d] < 0.4 ? "lo" : ""}" title="${DIM_LABEL[d]}: ${!R.weights[d] ? "switched off" : `${(s.dims[d] || 0).toFixed(2)}, weight ${R.weights[d]}`}"><i style="height:${Math.round((s.dims[d] || 0) * 100)}%"></i><b>${DIM_LABEL[d]}</b>${R.weights[d] > 1 ? `<em>×${R.weights[d]}</em>` : ""}</span>`).join("");
@@ -693,7 +693,7 @@
     const line = (x, lbl) => x ? `<div><span class="kicker">${lbl}</span><b>${esc(nameOf(x.site))}</b><span>${esc(placeOf(x.site))}</span><em>${x.overall.toFixed(2)}</em></div>` : "";
     $("#cfOut").classList.remove("busy");
     $("#cfOut").innerHTML = `<p class="verdict q-${R.quality}"><b>${R.quality[0].toUpperCase() + R.quality.slice(1)} match.</b> ${esc(R.qualityNote)}</p>
-      <div class="cf-res">${line(b, "Closest place on Earth")}${R.fresh > 0 ? line(f, `Best new candidate, ${A.NEW_KM}+ km from known sites`) : ""}</div>
+      <div class="cf-res">${line(b, "Closest place on Earth")}${R.fresh > 0 ? line(f, `Best new analog site, ${A.NEW_KM}+ km from known sites`) : ""}</div>
       <p class="note">Matched on ${usedList()}. Scores run 0 to 1 (1 = identical on every condition used). ${R.pass.n.toLocaleString("en")} cells scored.</p>`;
   }
 
@@ -726,14 +726,14 @@
     const fly = c => `<button class="chip ns-fly" data-cid="${esc(c.id)}" data-tid="${esc(t.target_id)}">Fly there</button>`;
     const head = `<p class="kicker">${esc(t.body)}</p><h3>${esc(t.target_name)}</h3>`;
     if (t.same_place) return `<article class="ns-card" data-t="${esc(t.target_id)}">${head}
-      <p class="ns-row"><span>Best match and best new candidate</span><b>${esc(ncPlace(n))}</b><em>${n.score.toFixed(2)}, ${nq(n.score)} match</em></p>
+      <p class="ns-row"><span>Best match and best new analog site</span><b>${esc(ncPlace(n))}</b><em>${n.score.toFixed(2)}, ${nq(n.score)} match</em></p>
       <p>The best match is already far from known sites: ${km0(n.nearest_known_km)} km from the nearest known analog (${esc(n.nearest_known_name)}).</p>
       <p class="ns-dims"><span>Best: ${dimList(n.best_dimensions.slice(0, 2))}</span><span>Worst: ${dimList(n.worst_dimensions.slice(0, 2))}</span></p>
       <p class="ns-why">${esc(n.why)}</p><p class="ns-meta">${esc(n.label)}</p>${fly(n)}</article>`;
     return `<article class="ns-card" data-t="${esc(t.target_id)}">${head}
       <p class="ns-row"><span>Best match</span><b>${esc(m.name)}</b><em>${m.score.toFixed(2)}, ${nq(m.score)} match</em></p>
       ${near ? `<p class="ns-meta">Near ${esc(m.nearest_known_name.split(",")[0])}, a known analog site</p>` : ""}
-      <p class="ns-row"><span>Best new candidate</span><b>${esc(ncPlace(n))}</b><em>${n.score.toFixed(2)}, ${nq(n.score)} match</em></p>
+      <p class="ns-row"><span>Best new analog site</span><b>${esc(ncPlace(n))}</b><em>${n.score.toFixed(2)}, ${nq(n.score)} match</em></p>
       ${n.readme_name && n.readme_name !== n.name ? `<p class="ns-meta">Region label in the app: ${esc(n.name)}</p>` : ""}
       <p class="ns-meta">${km0(n.nearest_known_km)} km from the nearest known analog (${esc(n.nearest_known_name)})</p>
       <p class="ns-dims"><span>Best: ${dimList(n.best_dimensions.slice(0, 2))}</span><span>Worst: ${dimList(n.worst_dimensions.slice(0, 2))}</span></p>
@@ -741,13 +741,15 @@
   }
   function newSitesSheet() {
     const top = NC.overall_top_10.map((c, i) => { sheetCandidates[c.id + "|" + c.target_id] = c; return `<li><span class="ns-n">${i + 1}</span><span class="ns-t"><b>${esc(ncPlace(c))}</b><small>${esc(c.target_name)}, ${km0(c.nearest_known_km)} km from ${esc(c.nearest_known_name.split(",")[0])}</small></span><em>${c.score.toFixed(2)}</em><button class="chip ns-fly" data-cid="${esc(c.id)}" data-tid="${esc(c.target_id)}" aria-label="Fly to ${esc(ncPlace(c))}">Fly there</button></li>`; }).join("");
-    return `<h2>New places to test</h2>
+    return `<h2>New analog sites</h2>
+      <p class="sub-line"><b>Found from satellite and climate data. Not field-checked yet.</b></p>
+      <p class="sub-line">Moon polar sites score lower because nothing on Earth is that cold.</p>
       <p class="lede">${esc(NC.rule.text)} Listing the Atacama again adds nothing, and a place that only looks like Mars is not enough. These match on what matters to hardware.</p>
       <p class="note">Match quality: strong from 0.70, moderate from 0.50, weak below.</p>
       <div class="ns-cards">${NC.targets.map(ncCard).join("")}</div>
-      <h3>Top 10 new candidates across all targets</h3>
+      <h3>Top 10 new analog sites across all targets</h3>
       <ol class="ns-top">${top}</ol>
-      <p class="note">Candidates from satellite and climate data. Nobody has field-checked them yet.</p>`;
+      <p class="note">New analog sites come from satellite and climate data. Not field-checked yet.</p>`;
   }
   SHEETS["new-sites"] = newSitesSheet;
   // Opens a candidate through the app's own path: the target is scored, the cell is selected and the globe flies to it.
@@ -808,7 +810,7 @@
     if (e.key === "/") { e.preventDefault(); q.focus(); }
     if (e.key === "h") $("#heatBtn").click();
   });
-  $(".brand").onclick = e => { e.preventDefault(); S.report = null; S.pick = null; document.body.className = "is-home"; $("#result").hidden = true; $("#tools").hidden = true; $("#legend").hidden = true; G.heat(false); S.heat = false; $("#heatBtn").setAttribute("aria-pressed", false); setNewLayer(false); G.setMarkers([]); setFlags(false); G.zoom(1); G.spin(true); q.value = ""; layout(); closeSheet(); };
+  $(".brand").onclick = e => { e.preventDefault(); S.report = null; S.pick = null; document.body.className = "is-home"; $("#result").hidden = true; $("#tools").hidden = true; $("#legend").hidden = true; G.heat(false); S.heat = false; $("#heatBtn").setAttribute("aria-pressed", false); setNewLayer(true); G.setMarkers([]); setFlags(false); G.zoom(1); G.spin(true); q.value = ""; layout(); closeSheet(); };
 
   // used by the Design controls' "Replay flight"
   window.ZenithReplay = () => (S.plan ? go(S.text, { target: S.plan.target, subsystems: S.plan.subsystems.slice() }) : pick(LIBRARY[0]));
@@ -826,5 +828,11 @@
     if (S.report) { layout(); markers(); if (S.heat) { heatShown = null; paintHeat(); } else G.heat(false); show(S.idx, { fly: true }); }
     else { G.heat(false); G.spin(true); layout(); }
   }
+  // new analog sites: count of distinct best_new cells, layer on by default, hooks for the tour and the landing card
+  const NEW_N = new Set(NC.targets.map(t => t.best_new.id)).size;
+  setNewLayer(true);
+  window.ZenithNew = { N: NEW_N, targets: NC.targets, place: ncPlace, setLayer: setNewLayer, openSheet, closeSheet, input: q, rediscovery: (window.ZENITH_EXTRAS && window.ZENITH_EXTRAS.rediscovery) || null };
+  const lc = document.getElementById("newCard");
+  if (lc) { lc.querySelector("b").textContent = NEW_N + " new analog sites found from space"; lc.querySelector("button").onclick = () => openSheet("new-sites"); }
   window.ZenithUI = { go, pick, inspect, restore, closeSheet, state: () => S };
 })();

@@ -15,7 +15,7 @@
   let path;
   let rotation = [10, -15, 0], spin = !reduceMotion, flying = null, pulse = 0;
   let zoom = 1, landAt = -1e9, lastT = performance.now(), starScale = 1;
-  let markers = [], selected = null, onPick = null;
+  let markers = [], selected = null, onPick = null, layerPulse = false, tourLabel = null;
   // layout eases toward goal each frame, so the globe glides when the panel opens
   let layout = { cx: 0.5, cy: 0.5, r: 0.36, maxX: 1 }, goal = { ...layout }, placed = false;
   let flags = [], layer = [], onLayerPick = null, onClick = null, heatOn = false, heatTex = null;
@@ -239,9 +239,16 @@ void main() {
     for (const f of layer) {                                // new candidates: filled diamonds
       if (d3.geoDistance([f.lon, f.lat], center) > Math.PI / 2 - 0.03) continue;
       const p = projection([f.lon, f.lat]), x = p[0], y = p[1];
+      if (layerPulse && !reduceMotion) { const ph = ((pulse + f.lon * 2) % 70) / 70; ctx.beginPath(); ctx.arc(x, y, 8 + ph * 26, 0, 6.2832); ctx.strokeStyle = "rgba(77,227,255," + (0.85 * (1 - ph)).toFixed(2) + ")"; ctx.lineWidth = 2; ctx.stroke(); }
       ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.lineTo(x + 6, y); ctx.lineTo(x, y + 7); ctx.lineTo(x - 6, y); ctx.closePath();
       ctx.fillStyle = "#4de3ff"; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = "#03222b"; ctx.stroke();
       if (zoom > 1.6) { ctx.font = `600 11px ${theme.font}`; ctx.fillStyle = "#4de3ff"; ctx.fillText(f.label, x + 9, y + 4); }
+    }
+    if (tourLabel && d3.geoDistance([tourLabel.lon, tourLabel.lat], center) < Math.PI / 2 - 0.03) {   // tour label on a known site
+      const p = projection([tourLabel.lon, tourLabel.lat]), x = p[0], y = p[1];
+      ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(x - 6, y - 6, 12, 12); ctx.strokeStyle = "#ffd23f"; ctx.lineWidth = 2; ctx.strokeRect(x - 6, y - 6, 12, 12);
+      ctx.font = "700 16px " + theme.font; const w = ctx.measureText(tourLabel.text).width;
+      ctx.fillStyle = "rgba(0,0,0,.78)"; ctx.fillRect(x + 12, y - 14, w + 16, 28); ctx.fillStyle = "#ffd23f"; ctx.fillText(tourLabel.text, x + 20, y + 6);
     }
     const list = markers.slice().sort((a, b) => (a.id === selected) - (b.id === selected) || b.rank - a.rank);
     for (const m of list) {
@@ -399,6 +406,7 @@ void main() {
     select: (id) => { selected = id; },
     setLayout: (l) => { goal = { ...goal, ...l }; if (!placed || reduceMotion) layout = { ...goal }; placed = true; },
     onPick: (fn) => { onPick = fn; },
+    setLayerPulse: (on) => { layerPulse = !!on; }, setTourLabel: (l) => { tourLabel = l; },
     spin: (on) => { spin = on && !reduceMotion; },
   };
 })();
