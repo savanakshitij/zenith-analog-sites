@@ -25,10 +25,10 @@
   const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
   const clamp01 = t => Math.max(0, Math.min(1, t));
   // overlay colours and label font come from the page's look (CSS tokens); re-read when it changes
-  let theme = { reticle: "255, 255, 255", label: "#fc3d21", ink: "#ffffff", dot: "#fc3d21", font: "'Public Sans', system-ui, sans-serif" };
+  let theme = { reticle: "255, 255, 255", label: "#fc3d21", ink: "#ffffff", dot: "#fc3d21", accent: "#fc3d21", font: "'Public Sans', system-ui, sans-serif" };
   function readTheme() {
     const cs = getComputedStyle(document.documentElement), v = k => cs.getPropertyValue(k).trim();
-    theme = { reticle: v("--reticle-rgb") || theme.reticle, label: v("--label-bg") || theme.label, ink: v("--label-ink") || theme.ink, dot: v("--dot-bg") || theme.dot, font: v("--head-font") || theme.font };
+    theme = { reticle: v("--reticle-rgb") || theme.reticle, label: v("--label-bg") || theme.label, ink: v("--label-ink") || theme.ink, dot: v("--dot-bg") || theme.dot, accent: v("--accent") || theme.accent, font: v("--head-font") || theme.font };
   }
   addEventListener("zenith:look", readTheme);
 
@@ -240,8 +240,8 @@ void main() {
       if (d3.geoDistance([f.lon, f.lat], center) > Math.PI / 2 - 0.03) continue;
       const p = projection([f.lon, f.lat]), x = p[0], y = p[1];
       ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.lineTo(x + 6, y); ctx.lineTo(x, y + 7); ctx.lineTo(x - 6, y); ctx.closePath();
-      ctx.fillStyle = "#4de3ff"; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = "#03222b"; ctx.stroke();
-      if (zoom > 1.6) { ctx.font = `600 11px ${theme.font}`; ctx.fillStyle = "#4de3ff"; ctx.fillText(f.label, x + 9, y + 4); }
+      ctx.fillStyle = theme.accent; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = "#ffffff"; ctx.stroke();
+      if (zoom > 1.6) { ctx.font = `600 11px ${theme.font}`; ctx.fillStyle = "#ffffff"; ctx.fillText(f.label, x + 9, y + 4); }
     }
     const list = markers.slice().sort((a, b) => (a.id === selected) - (b.id === selected) || b.rank - a.rank);
     for (const m of list) {

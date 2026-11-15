@@ -549,17 +549,17 @@
           <img class="cs-thumb" src="cases/taklamakan/closeup.jpg" alt="Satellite close-up of dune ridges and flat plains in the southern Taklamakan" loading="lazy" width="112" height="112">
           <div class="cs-head"><p class="kicker">Arcadia Planitia, Mars</p><h3>Southern Taklamakan, China</h3><p>Flat sediment plains that match Arcadia's slope, roughness, brightness and Sun angle. There is no ground ice, and we found no analog study at this spot.</p></div>
           ${stats([["0.68", "Score"], ["0.04%", "Top share of cells"], ["705 km", "Nearest known site"]])}
-          <a class="btn primary" href="cases/taklamakan/index.html" target="_blank" rel="noopener">Read the case study</a>
+          <a class="cta" href="cases/taklamakan/index.html" target="_blank" rel="noopener">Read the case study</a>
         </article>
         <article class="cs-card">
           <div class="cs-head"><p class="kicker">Jezero crater, Mars</p><h3>Yungay against our best Atacama cell</h3><p>Yungay, the well-known Atacama test site, matches Jezero less well than a cell in the same desert that sits 390 km to the north.</p></div>
           ${stats([["0.62", "Yungay"], ["0.81", "Best Atacama cell"], ["390 km", "Apart"]])}
-          <a class="btn primary" href="cases/yungay-jezero/index.html" target="_blank" rel="noopener">Read the case study</a>
+          <a class="cta" href="cases/yungay-jezero/index.html" target="_blank" rel="noopener">Read the case study</a>
         </article>
         <article class="cs-card">
           <div class="cs-head"><p class="kicker">Marius Hills lava tube, Moon</p><h3>Harrat lava fields, Saudi Arabia</h3><p>Basalt, dry, and the right terrain. We found no analog study of this lava field, and the nearest known site is Wadi Rum.</p></div>
           ${stats([["0.73", "Score"], ["0.62", "Best known analog"], ["310 km", "Nearest known site"]])}
-          <button class="btn primary" data-case="saudi">Open on the globe</button>
+          <button class="cta" data-case="saudi">Open on the globe</button>
         </article>
       </div>
       <p class="note">These are candidate sites from satellite-scale data. Nobody on the team has been there.</p>`;
@@ -583,7 +583,7 @@
       <p>We have no soil chemistry. From climate, terrain and rock alone, the engine puts the Atacama first for Jezero. Soil scientists picked the same desert for a different reason: Navarro-Gonzalez et al. (2003) found its soils behave like Mars soil.</p>
       <h3>Weak spots</h3>
       <p>Nothing on Earth is as cold as these targets, so the Moon's polar sites top out around 0.5. Malapert has no good match anywhere. The app marks these as weak.</p>
-      <button class="btn secondary" id="flagFromSheet">Show the known analog sites on the globe</button>
+      <button class="chip" id="flagFromSheet">Show the known analog sites on the globe</button>
       <p class="note">Rules were fixed before the run (scoring/DECISIONS_v1_6.md). Full tables: results/validation.md.</p>`;
     },
     phone: () => {
@@ -593,7 +593,7 @@
       return `<h2>Open it on your phone</h2><p class="lede">Scan the code and the same app opens on your phone, with the same engine and data.</p>
       <div class="qr">${svg}</div>
       <p class="mono" id="phoneUrl">${esc(url.replace(/^https?:\/\//, ""))}</p>
-      <button class="btn secondary small" id="copyLink" data-url="${esc(url)}">Copy link</button>
+      <button class="chip" id="copyLink" data-url="${esc(url)}">Copy link</button>
       <p class="note">Runs in the browser, so nothing is sent anywhere. About 20 MB on first load.</p>`;
     },
   };
