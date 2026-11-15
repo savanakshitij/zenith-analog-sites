@@ -1,0 +1,1020 @@
+{
+ "title": "New candidates",
+ "definition": "A new candidate is a site in a target's top 25 (best cells at least 300 km apart, balanced preset, as in the rediscovery check) that is more than 300 km from every known analog site. Distance is great-circle (haversine, R = 6371 km) from the cell centre to the known site's coordinate.",
+ "known_site_count": 34,
+ "known_sites_file": "data/v1_6/known_sites_merged.csv",
+ "validation_reproduction": {
+  "hits": 24,
+  "top_sites": 175,
+  "expected_by_chance": 10.2,
+  "matches_results_validation_md": true,
+  "new_candidates": 151,
+  "per_target": {
+   "shackleton": {
+    "top_sites": 25,
+    "within_300_km_of_known": 5,
+    "new": 20,
+    "expected_by_chance": 1.3
+   },
+   "malapert": {
+    "top_sites": 25,
+    "within_300_km_of_known": 3,
+    "new": 22,
+    "expected_by_chance": 1.51
+   },
+   "marius": {
+    "top_sites": 25,
+    "within_300_km_of_known": 2,
+    "new": 23,
+    "expected_by_chance": 1.51
+   },
+   "arcadia": {
+    "top_sites": 25,
+    "within_300_km_of_known": 5,
+    "new": 20,
+    "expected_by_chance": 1.3
+   },
+   "jezero": {
+    "top_sites": 25,
+    "within_300_km_of_known": 2,
+    "new": 23,
+    "expected_by_chance": 1.51
+   },
+   "gale": {
+    "top_sites": 25,
+    "within_300_km_of_known": 4,
+    "new": 21,
+    "expected_by_chance": 1.51
+   },
+   "meridiani": {
+    "top_sites": 25,
+    "within_300_km_of_known": 3,
+    "new": 22,
+    "expected_by_chance": 1.51
+   }
+  }
+ },
+ "percentile_note": "Percentile is the engine's area-weighted percentile of the cell's score among that target's eligible cells (the same figure as `percentile` in results/scores_balanced.json).",
+ "score_note": "score is the engine value at 4 decimals; score_display is the 2 decimal figure the app shows on cards.",
+ "dimension_note": "best_dimensions and worst_dimensions are the 2 highest and 2 lowest of the 7 dimension scores for that cell and target. Ties keep the engine's dimension order (thermal, aridity, terrain, surface, ice, illumination, geology).",
+ "dedup_rule": "Overall list: highest score first, one entry per site; a site within 300 km of a higher-scoring one is listed in its `also_matches`.",
+ "script": "scoring/new_candidates.py",
+ "generated_by": "scoring/new_candidates.py from results/scores_balanced.json (scoring v1.6). Deterministic, no timestamp.",
+ "best_new_candidate_per_target": {
+  "shackleton": {
+   "id": "karakoram-shackleton-2",
+   "name": "Karakoram",
+   "name_source": "app region table",
+   "country": "China",
+   "lat": 36.375,
+   "lon": 76.625,
+   "target": {
+    "id": "shackleton",
+    "name": "Shackleton crater rim",
+    "body": "Moon"
+   },
+   "rank_in_target": 2,
+   "score": 0.4141,
+   "score_display": "0.41",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 361,
+   "nearest_known_name": "Tso Kar Valley, Ladakh (ISRO HOPE)",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 0.896
+    },
+    {
+     "dimension": "terrain",
+     "score": 0.859
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "illumination",
+     "score": 0.158
+    },
+    {
+     "dimension": "thermal",
+     "score": 0.222
+    }
+   ],
+   "why": "Ice (0.90) and terrain (0.86) are its strongest dimensions, and sunlight (0.16) is the weakest, with cold (0.22) also low, which is expected because no place on Earth is as cold as this Moon target.",
+   "label": "Not field-checked yet. Access and permits not assessed."
+  },
+  "malapert": {
+   "id": "baluchistan-iran-pakistan-border-malapert-1",
+   "name": "Baluchistan, Iran–Pakistan border",
+   "name_source": "app region table",
+   "country": "Iran",
+   "lat": 28.625,
+   "lon": 61.125,
+   "target": {
+    "id": "malapert",
+    "name": "Malapert Massif",
+    "body": "Moon"
+   },
+   "rank_in_target": 1,
+   "score": 0.4613,
+   "score_display": "0.46",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 1685,
+   "nearest_known_name": "Tso Kar Valley, Ladakh (ISRO HOPE)",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "illumination",
+     "score": 0.134
+    },
+    {
+     "dimension": "terrain",
+     "score": 0.26
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and sunlight (0.13) is the weakest.",
+   "label": "Not field-checked yet. Access and permits not assessed."
+  },
+  "marius": {
+   "id": "harrat-lava-fields-nw-saudi-arabia-marius-1",
+   "name": "Harrat lava fields, NW Saudi Arabia",
+   "name_source": "app region table",
+   "country": "Saudi Arabia",
+   "lat": 27.375,
+   "lon": 37.375,
+   "target": {
+    "id": "marius",
+    "name": "Marius Hills lava-tube pit",
+    "body": "Moon"
+   },
+   "rank_in_target": 1,
+   "score": 0.7293,
+   "score_display": "0.73",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 310,
+   "nearest_known_name": "Wadi Rum",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.297
+    },
+    {
+     "dimension": "illumination",
+     "score": 0.607
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.30) is the weakest, which is expected because no place on Earth is as cold as this Moon target.",
+   "label": "Not field-checked yet. Access and permits not assessed."
+  },
+  "arcadia": {
+   "id": "southern-taklamakan-xinjiang-china-arcadia-2",
+   "name": "Southern Taklamakan, Xinjiang, China",
+   "name_source": "app region table",
+   "country": "China",
+   "lat": 37.875,
+   "lon": 84.625,
+   "target": {
+    "id": "arcadia",
+    "name": "Arcadia Planitia",
+    "body": "Mars"
+   },
+   "rank_in_target": 2,
+   "score": 0.6892,
+   "score_display": "0.69",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 618,
+   "nearest_known_name": "Dalangtan playa, Qaidam Basin",
+   "best_dimensions": [
+    {
+     "dimension": "geology",
+     "score": 1.0
+    },
+    {
+     "dimension": "surface",
+     "score": 0.994
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.318
+    },
+    {
+     "dimension": "ice",
+     "score": 0.368
+    }
+   ],
+   "why": "Rock type (1.00) and surface (0.99) are its strongest dimensions, and cold (0.32) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed."
+  },
+  "jezero": {
+   "id": "pampa-del-tamarugal-atacama-chile-jezero-1",
+   "name": "Pampa del Tamarugal, Atacama, Chile",
+   "name_source": "app region table",
+   "country": "Chile",
+   "lat": -20.625,
+   "lon": -69.875,
+   "target": {
+    "id": "jezero",
+    "name": "Jezero crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 1,
+   "score": 0.805,
+   "score_display": "0.81",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 387,
+   "nearest_known_name": "Yungay, Atacama Desert",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.477
+    },
+    {
+     "dimension": "surface",
+     "score": 0.633
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.48) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed."
+  },
+  "gale": {
+   "id": "southern-peru-coast-gale-1",
+   "name": "Southern Peru coast",
+   "name_source": "app region table",
+   "country": "Peru",
+   "lat": -17.625,
+   "lon": -71.125,
+   "target": {
+    "id": "gale",
+    "name": "Gale crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 1,
+   "score": 0.7315,
+   "score_display": "0.73",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 729,
+   "nearest_known_name": "Yungay, Atacama Desert",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.4
+    },
+    {
+     "dimension": "aridity",
+     "score": 0.58
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.40) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed."
+  },
+  "meridiani": {
+   "id": "sahara-sudan-meridiani-2",
+   "name": "Sahara, Sudan",
+   "name_source": "app region table",
+   "country": "Egypt",
+   "lat": 22.625,
+   "lon": 31.875,
+   "target": {
+    "id": "meridiani",
+    "name": "Meridiani Planum",
+    "body": "Mars"
+   },
+   "rank_in_target": 2,
+   "score": 0.6821,
+   "score_display": "0.68",
+   "percentile": 99.99,
+   "distance_to_nearest_known_km": 849,
+   "nearest_known_name": "Wadi Rum",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.166
+    },
+    {
+     "dimension": "illumination",
+     "score": 0.541
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.17) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed."
+  }
+ },
+ "overall_top_10": [
+  {
+   "id": "pampa-del-tamarugal-atacama-chile-jezero-1",
+   "name": "Pampa del Tamarugal, Atacama, Chile",
+   "name_source": "app region table",
+   "country": "Chile",
+   "lat": -20.625,
+   "lon": -69.875,
+   "target": {
+    "id": "jezero",
+    "name": "Jezero crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 1,
+   "score": 0.805,
+   "score_display": "0.81",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 387,
+   "nearest_known_name": "Yungay, Atacama Desert",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.477
+    },
+    {
+     "dimension": "surface",
+     "score": 0.633
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.48) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 1,
+   "also_matches": [
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.6494,
+     "name": "Pampa del Tamarugal, Atacama, Chile",
+     "km_apart": 87
+    },
+    {
+     "target": "Meridiani Planum",
+     "id": "meridiani",
+     "score": 0.6111,
+     "name": "Pampa del Tamarugal, Atacama, Chile",
+     "km_apart": 61
+    },
+    {
+     "target": "Malapert Massif",
+     "id": "malapert",
+     "score": 0.4247,
+     "name": "Pampa del Tamarugal, Atacama, Chile",
+     "km_apart": 38
+    },
+    {
+     "target": "Malapert Massif",
+     "id": "malapert",
+     "score": 0.3964,
+     "name": "Atacama Desert, Chile",
+     "km_apart": 266
+    },
+    {
+     "target": "Shackleton crater rim",
+     "id": "shackleton",
+     "score": 0.3485,
+     "name": "Pampa del Tamarugal, Atacama, Chile",
+     "km_apart": 38
+    }
+   ]
+  },
+  {
+   "id": "southern-peru-coast-gale-1",
+   "name": "Southern Peru coast",
+   "name_source": "app region table",
+   "country": "Peru",
+   "lat": -17.625,
+   "lon": -71.125,
+   "target": {
+    "id": "gale",
+    "name": "Gale crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 1,
+   "score": 0.7315,
+   "score_display": "0.73",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 729,
+   "nearest_known_name": "Yungay, Atacama Desert",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.4
+    },
+    {
+     "dimension": "aridity",
+     "score": 0.58
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.40) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 2,
+   "also_matches": [
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.606,
+     "name": "Southern Peru coast",
+     "km_apart": 154
+    }
+   ]
+  },
+  {
+   "id": "tibesti-northern-chad-jezero-3",
+   "name": "Tibesti, northern Chad",
+   "name_source": "app region table",
+   "country": "Chad",
+   "lat": 21.375,
+   "lon": 17.375,
+   "target": {
+    "id": "jezero",
+    "name": "Jezero crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 3,
+   "score": 0.7306,
+   "score_display": "0.73",
+   "percentile": 99.93,
+   "distance_to_nearest_known_km": 1836,
+   "nearest_known_name": "Mount Etna",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.226
+    },
+    {
+     "dimension": "aridity",
+     "score": 0.705
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.23) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 3,
+   "also_matches": [
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.7089,
+     "name": "Sahara, Libya",
+     "km_apart": 233
+    },
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.6662,
+     "name": "Tibesti, northern Chad",
+     "km_apart": 250
+    },
+    {
+     "target": "Gale crater",
+     "id": "gale",
+     "score": 0.6411,
+     "name": "Tibesti, northern Chad",
+     "km_apart": 132
+    },
+    {
+     "target": "Meridiani Planum",
+     "id": "meridiani",
+     "score": 0.6337,
+     "name": "Tibesti, northern Chad",
+     "km_apart": 288
+    },
+    {
+     "target": "Meridiani Planum",
+     "id": "meridiani",
+     "score": 0.6057,
+     "name": "Tibesti, northern Chad",
+     "km_apart": 141
+    },
+    {
+     "target": "Gale crater",
+     "id": "gale",
+     "score": 0.5782,
+     "name": "Tibesti, northern Chad",
+     "km_apart": 176
+    },
+    {
+     "target": "Malapert Massif",
+     "id": "malapert",
+     "score": 0.3884,
+     "name": "Tibesti, northern Chad",
+     "km_apart": 129
+    }
+   ]
+  },
+  {
+   "id": "harrat-lava-fields-nw-saudi-arabia-marius-1",
+   "name": "Harrat lava fields, NW Saudi Arabia",
+   "name_source": "app region table",
+   "country": "Saudi Arabia",
+   "lat": 27.375,
+   "lon": 37.375,
+   "target": {
+    "id": "marius",
+    "name": "Marius Hills lava-tube pit",
+    "body": "Moon"
+   },
+   "rank_in_target": 1,
+   "score": 0.7293,
+   "score_display": "0.73",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 310,
+   "nearest_known_name": "Wadi Rum",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.297
+    },
+    {
+     "dimension": "illumination",
+     "score": 0.607
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.30) is the weakest, which is expected because no place on Earth is as cold as this Moon target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 4,
+   "also_matches": [
+    {
+     "target": "Jezero crater",
+     "id": "jezero",
+     "score": 0.7048,
+     "name": "Harrat lava fields, NW Saudi Arabia",
+     "km_apart": 251
+    },
+    {
+     "target": "Malapert Massif",
+     "id": "malapert",
+     "score": 0.3935,
+     "name": "Harrat lava fields, NW Saudi Arabia",
+     "km_apart": 111
+    }
+   ]
+  },
+  {
+   "id": "hadhramaut-yemen-jezero-4",
+   "name": "Hadhramaut, Yemen",
+   "name_source": "app region table",
+   "country": "Yemen",
+   "lat": 13.625,
+   "lon": 46.375,
+   "target": {
+    "id": "jezero",
+    "name": "Jezero crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 4,
+   "score": 0.7102,
+   "score_display": "0.71",
+   "percentile": 99.86,
+   "distance_to_nearest_known_km": 2101,
+   "nearest_known_name": "Wadi Rum",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.179
+    },
+    {
+     "dimension": "aridity",
+     "score": 0.691
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.18) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 5,
+   "also_matches": [
+    {
+     "target": "Gale crater",
+     "id": "gale",
+     "score": 0.6487,
+     "name": "Hadhramaut, Yemen",
+     "km_apart": 206
+    },
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.6431,
+     "name": "Hadhramaut, Yemen",
+     "km_apart": 0
+    },
+    {
+     "target": "Meridiani Planum",
+     "id": "meridiani",
+     "score": 0.6068,
+     "name": "Hadhramaut, Yemen",
+     "km_apart": 289
+    }
+   ]
+  },
+  {
+   "id": "rub-al-khali-arabia-jezero-5",
+   "name": "Rub' al Khali, Arabia",
+   "name_source": "app region table",
+   "country": "Yemen",
+   "lat": 15.125,
+   "lon": 50.875,
+   "target": {
+    "id": "jezero",
+    "name": "Jezero crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 5,
+   "score": 0.7067,
+   "score_display": "0.71",
+   "percentile": 99.84,
+   "distance_to_nearest_known_km": 2255,
+   "nearest_known_name": "Wadi Rum",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.176
+    },
+    {
+     "dimension": "aridity",
+     "score": 0.721
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.18) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 6,
+   "also_matches": [
+    {
+     "target": "Gale crater",
+     "id": "gale",
+     "score": 0.65,
+     "name": "Rub' al Khali, Arabia",
+     "km_apart": 28
+    }
+   ]
+  },
+  {
+   "id": "eastern-desert-egypt-jezero-7",
+   "name": "Eastern Desert, Egypt",
+   "name_source": "app region table",
+   "country": "Egypt",
+   "lat": 25.125,
+   "lon": 34.625,
+   "target": {
+    "id": "jezero",
+    "name": "Jezero crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 7,
+   "score": 0.7006,
+   "score_display": "0.70",
+   "percentile": 99.82,
+   "distance_to_nearest_known_km": 500,
+   "nearest_known_name": "Wadi Rum",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.234
+    },
+    {
+     "dimension": "terrain",
+     "score": 0.61
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.23) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 7,
+   "also_matches": [
+    {
+     "target": "Meridiani Planum",
+     "id": "meridiani",
+     "score": 0.6559,
+     "name": "Eastern Desert, Egypt",
+     "km_apart": 94
+    },
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.6174,
+     "name": "Eastern Desert, Egypt",
+     "km_apart": 112
+    },
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.6129,
+     "name": "Eastern Desert, Egypt",
+     "km_apart": 201
+    },
+    {
+     "target": "Gale crater",
+     "id": "gale",
+     "score": 0.5907,
+     "name": "Eastern Desert, Egypt",
+     "km_apart": 224
+    },
+    {
+     "target": "Gale crater",
+     "id": "gale",
+     "score": 0.5767,
+     "name": "Eastern Desert, Egypt",
+     "km_apart": 203
+    },
+    {
+     "target": "Malapert Massif",
+     "id": "malapert",
+     "score": 0.3931,
+     "name": "Eastern Desert, Egypt",
+     "km_apart": 122
+    }
+   ]
+  },
+  {
+   "id": "harrat-lava-fields-nw-saudi-arabia-marius-4",
+   "name": "Harrat lava fields, NW Saudi Arabia",
+   "name_source": "app region table",
+   "country": "Saudi Arabia",
+   "lat": 25.375,
+   "lon": 39.875,
+   "target": {
+    "id": "marius",
+    "name": "Marius Hills lava-tube pit",
+    "body": "Moon"
+   },
+   "rank_in_target": 4,
+   "score": 0.6938,
+   "score_display": "0.69",
+   "percentile": 99.98,
+   "distance_to_nearest_known_km": 641,
+   "nearest_known_name": "Wadi Rum",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.269
+    },
+    {
+     "dimension": "aridity",
+     "score": 0.556
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.27) is the weakest, which is expected because no place on Earth is as cold as this Moon target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 8,
+   "also_matches": [
+    {
+     "target": "Jezero crater",
+     "id": "jezero",
+     "score": 0.6551,
+     "name": "Saudi Arabia",
+     "km_apart": 251
+    }
+   ]
+  },
+  {
+   "id": "southern-taklamakan-xinjiang-china-arcadia-2",
+   "name": "Southern Taklamakan, Xinjiang, China",
+   "name_source": "app region table",
+   "country": "China",
+   "lat": 37.875,
+   "lon": 84.625,
+   "target": {
+    "id": "arcadia",
+    "name": "Arcadia Planitia",
+    "body": "Mars"
+   },
+   "rank_in_target": 2,
+   "score": 0.6892,
+   "score_display": "0.69",
+   "percentile": 100.0,
+   "distance_to_nearest_known_km": 618,
+   "nearest_known_name": "Dalangtan playa, Qaidam Basin",
+   "best_dimensions": [
+    {
+     "dimension": "geology",
+     "score": 1.0
+    },
+    {
+     "dimension": "surface",
+     "score": 0.994
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.318
+    },
+    {
+     "dimension": "ice",
+     "score": 0.368
+    }
+   ],
+   "why": "Rock type (1.00) and surface (0.99) are its strongest dimensions, and cold (0.32) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 9,
+   "also_matches": [
+    {
+     "target": "Malapert Massif",
+     "id": "malapert",
+     "score": 0.421,
+     "name": "Taklamakan Desert, Xinjiang, China",
+     "km_apart": 221
+    },
+    {
+     "target": "Shackleton crater rim",
+     "id": "shackleton",
+     "score": 0.3972,
+     "name": "Kunlun Mountains, China",
+     "km_apart": 185
+    },
+    {
+     "target": "Malapert Massif",
+     "id": "malapert",
+     "score": 0.3914,
+     "name": "Taklamakan Desert, Xinjiang, China",
+     "km_apart": 208
+    },
+    {
+     "target": "Shackleton crater rim",
+     "id": "shackleton",
+     "score": 0.3841,
+     "name": "Kunlun Mountains, China",
+     "km_apart": 228
+    }
+   ]
+  },
+  {
+   "id": "sahara-algeria-jezero-8",
+   "name": "Sahara, Algeria",
+   "name_source": "app region table",
+   "country": "Algeria",
+   "lat": 25.875,
+   "lon": 7.625,
+   "target": {
+    "id": "jezero",
+    "name": "Jezero crater",
+    "body": "Mars"
+   },
+   "rank_in_target": 8,
+   "score": 0.6871,
+   "score_display": "0.69",
+   "percentile": 99.73,
+   "distance_to_nearest_known_km": 1492,
+   "nearest_known_name": "Mount Etna",
+   "best_dimensions": [
+    {
+     "dimension": "ice",
+     "score": 1.0
+    },
+    {
+     "dimension": "geology",
+     "score": 1.0
+    }
+   ],
+   "worst_dimensions": [
+    {
+     "dimension": "thermal",
+     "score": 0.238
+    },
+    {
+     "dimension": "illumination",
+     "score": 0.616
+    }
+   ],
+   "why": "Ice (1.00) and rock type (1.00) are its strongest dimensions, and cold (0.24) is the weakest, which is expected because no place on Earth is as cold as this Mars target.",
+   "label": "Not field-checked yet. Access and permits not assessed.",
+   "overall_rank": 10,
+   "also_matches": [
+    {
+     "target": "Marius Hills lava-tube pit",
+     "id": "marius",
+     "score": 0.6832,
+     "name": "Sahara, Algeria",
+     "km_apart": 97
+    },
+    {
+     "target": "Gale crater",
+     "id": "gale",
+     "score": 0.5869,
+     "name": "Sahara, Algeria",
+     "km_apart": 50
+    }
+   ]
+  }
+ ],
+ "all_new_candidates_count": 151,
+ "naming_gaps": []
+}
