@@ -26,13 +26,19 @@
     }[d];
   }
 
-  let id = null, on = [], dimS = {}, elig = null, nAll = 0, shown = 0, timer = 0, busy = false;
+  let id = null, on = [], dimS = {}, elig = null, nAll = 0, shown = 0, timer = 0, busy = false, edge = null;
   const ones = () => { const w = {}; A.DIMS.forEach(d => (w[d] = 0)); return w; };
 
   function prepare(tid) {
     id = tid; on = []; dimS = {};
     elig = e.scoreAll(id, {});
-    nAll = 0; for (let i = 0; i < e.n; i++) if (elig[i] === elig[i]) nAll++;
+    nAll = 0; edge = { cold: Infinity, swing: -Infinity };
+    for (let i = 0; i < e.n; i++) if (elig[i] === elig[i]) {
+      nAll++;
+      const f = e.features(i);
+      if (f.temp_min_K < edge.cold) edge.cold = f.temp_min_K;
+      if (f.temp_daynight_range_K > edge.swing) edge.swing = f.temp_daynight_range_K;
+    }
   }
   function dim(d) { if (!dimS[d]) { const w = ones(); w[d] = 1; dimS[d] = e.scoreAll(id, { weights: w }); } return dimS[d]; }
 
@@ -82,11 +88,13 @@
     $("#simPct").textContent = on.length ? `${pct < 0.1 && st.n ? "<0.1" : pct.toFixed(pct < 10 ? 1 : 0)}% of Earth's bare ground` : "every patch of bare ground we score";
     let line;
     if (!on.length) line = `Press <b>Add a condition</b>, or let the room pick one below.`;
-    else if (last && st.n === 0) line = `<b>${esc(NAME[last])}</b> · ${esc(says(id, last))}. <b>No place on Earth survives.</b>${!T.earth_testable_dims.includes(last) ? ` Earth is never ${last === "thermal" ? "this cold" : "like this"}, so this gets tested in a chamber.` : ""}`;
-    else if (last) line = `<b>${esc(NAME[last])}</b> · ${esc(says(id, last))}.`;
+    else if (last && st.n === 0) line = `<b>${esc(NAME[last])}</b>: ${esc(says(id, last))}. <b>No place on Earth survives.</b>${!T.earth_testable_dims.includes(last) ? ` Earth is never ${last === "thermal" ? "this cold" : "like this"}, so this gets tested in a chamber.` : ""}`;
+    else if (last) line = `<b>${esc(NAME[last])}</b>: ${esc(says(id, last))}.`;
     else line = st.n === 0 ? `Nothing on Earth passes ${on.map(d => NAME[d].toLowerCase()).join(" and ")}. Click a condition again to take it out.` : `Took that condition out.`;
     const bi = st.n ? st.best : st.overall, p = bi >= 0 ? place(bi) : null;
     $("#simLine").innerHTML = line;
+    $("#simWhy").hidden = !(on.length && st.n === 0);
+    if (!$("#simWhy").hidden) $("#simWhy").innerHTML = why(st);
     $("#simBest").innerHTML = p && on.length ? `${st.n ? "Best place still in" : "Closest anyway"}: <b>${esc(p.name)}</b> <span>${(st.n ? st.bestScore : st.overallScore).toFixed(2)}</span>` : "";
     document.querySelectorAll("#simChips [data-d]").forEach(b => b.setAttribute("aria-pressed", on.includes(b.dataset.d)));
     $("#simNext").disabled = done; $("#simPlay").disabled = done;
@@ -94,6 +102,19 @@
     if (done) $("#simEnd").textContent = st.n ? `Open the full result: ${st.n} place${st.n === 1 ? "" : "s"} pass everything` : "Open the full result for the closest places";
     if (p && on.length) G.flyTo(p.lat, p.lon, { cinematic: false });
     $("#simTarget").textContent = `${T.name}, ${T.body}`;
+  }
+
+  // Why the count hits zero. The rule is strict on purpose; the real scores are not zero.
+  function why(st) {
+    const f = X.targets[id].features, cold = on.includes("thermal");
+    const c = k => Math.round(k - 273.15);
+    const facts = cold
+      ? `${esc(A.target(id).name)} gets down to ${c(f.temp_min_K)} °C at night with a ${Math.round(f.temp_daynight_range_K)} K day–night swing. The coldest bare ground we score on Earth reaches ${c(edge.cold)} °C (its coldest monthly-mean night), and the widest swing is ${Math.round(edge.swing)} K.`
+      : `The conditions switched on are past anything Earth's bare ground offers.`;
+    return `<b>Why it drops to zero</b>
+      <p>${facts} A place stays in only while it is at least half way to the target on every condition switched on, so one condition Earth cannot reach knocks out every place at once.</p>
+      <p>This is the honest result, not a bug. No place on Earth is a perfect copy of the Moon or Mars, so ${cold ? "cold is" : "these are"} tested in a thermal vacuum chamber instead. Zenith's real scores never hit zero: where a target is past anything on Earth, that condition is scored on a wider, gentler scale and flagged.</p>
+      <p>The closest place anyway is shown below.</p>`;
   }
 
   function add(d) {
@@ -144,6 +165,7 @@
     <p class="kicker">Turning Earth into <span id="simTarget"></span></p>
     <div class="sim-count"><b id="simN">0</b><span>places still match<small id="simPct"></small></span></div>
     <p class="sim-line" id="simLine"></p>
+    <div class="sim-why" id="simWhy" hidden></div>
     <p class="sim-best" id="simBest"></p>
     <div class="plan-row" id="simChips"></div>
     <div class="sim-btns"><button class="cta" id="simNext">Add a condition ›</button><button class="chip" id="simPlay">Play ▶</button></div>
