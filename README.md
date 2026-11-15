@@ -2,24 +2,61 @@
 
 Team Zenith, NASA Space Apps Challenge 2026 (Heilbronn). Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars.*
 
-- **Live prototype:** https://zenith-space-apps.vercel.app
+- **Live app:** https://zenith-analog-sites.vercel.app (opens straight to the new sites: https://zenith-analog-sites.vercel.app/#sheet=new-sites)
 - **Demo video (30 s):** https://zenith-space-apps.vercel.app/demo.mp4
-- **Drill game:** https://zenith-space-apps.vercel.app/game/index.html
+- **Drill game:** https://zenith-analog-sites.vercel.app/game/index.html
 
 Team: Surya Pratama, Tahir Atmaca, Mohamed Elmallah, Immanuel Hamonangan, Anas Ahmed, Kshitij Savannah.
+
+## Two traps
+
+An analog-site finder can fail in two ways. **Trap one: rediscovering the usual sites.** The Atacama, Iceland and Devon Island are where agencies already test, so listing them again adds nothing. **Trap two: a place that only looks like Mars.** Red rock is not enough; a test site has to match in the ways that matter to hardware: cold, dryness, slopes and rock type. Zenith scores the whole planet on those measurements and, for every target, always shows a second answer: the best place at least 500 km from all 37 known analog sites on our list. Those are the new places to test.
+
+## New places to test
+
+Balanced weights (every dimension counts the same). The best match overall comes first, then the best new candidate.
+
+| Target | Best match overall | Score | Best new candidate (500+ km from known sites) | Score | Distance to nearest known analog |
+|---|---|---|---|---|---|
+| Jezero crater, Mars | Pampa del Tamarugal, Atacama, Chile | 0.81 | Tibesti Mountains, northern Chad (21.4N, 17.4E) | 0.73 | 1,836 km (Mount Etna) |
+| Meridiani Planum, Mars | Atacama Desert, Chile | 0.76 | Nubian Desert near Abu Simbel and Lake Nasser, southern Egypt (22.6N, 31.9E) | 0.68 | 849 km (Wadi Rum) |
+| Gale crater, Mars | Southern Peru coast | 0.73 | Eastern Yemen, south of the Rub' al Khali (15.4N, 50.9E) | 0.65 | 1,144 km (Dallol, Danakil Depression) |
+| Marius Hills lava-tube pit, Moon | Harrat lava fields, NW Saudi Arabia | 0.73 | Southern Libya, north of the Tibesti Mountains (23.1N, 18.6E) | 0.71 | 1,609 km (Balos Cove, Santorini) |
+| Arcadia Planitia, Mars | Qaidam Basin, China | 0.70 | Southern Taklamakan, Xinjiang, China (37.9N, 84.6E) | 0.69 | 618 km (Dalangtan playa, Qaidam Basin) |
+| Malapert Massif, Moon | Baluchistan, Iran and Pakistan border (28.6N, 61.1E) | 0.46 | Same place: the best match is already far from known sites | 0.46 | 1,685 km (Tso Kar Valley, Ladakh) |
+| Shackleton crater rim, Moon | McMurdo Dry Valleys, Antarctica | 0.42 | Kunlun Mountains, China (36.6N, 84.9E) | 0.39 | 629 km (Dalangtan playa, Qaidam Basin) |
+
+![The New sites sheet in the app](docs/img/new-sites-sheet.png)
+
+These are candidates from satellite and climate data; nobody has field-checked them yet, and access and permits are not assessed. Match quality: strong from 0.70, moderate from 0.50, weak below. Every number in this table comes from [`scoring/new_candidates.mjs`](scoring/new_candidates.mjs), which runs the app's own engine and writes [`results/new_candidates.json`](results/new_candidates.json) and [`.md`](results/new_candidates.md); rerun it with `node scoring/new_candidates.mjs`.
+
+## Why a score can differ between the video, the app and this table
+
+Mission weights change the score. For the Jezero best cell (Pampa del Tamarugal), the rover and science mission parts used in the demo weight terrain, dryness and rock more, so it scores 0.86; the Rosalind Franklin mission weights give 0.83; balanced weights give 0.81, the number in the table above. The app shows the same line under any mission score, for example "Mission weights give 0.86 here; balanced weights give 0.81."
+
+## In numbers
+
+- 349,031 land cells on a 0.25° grid (about 25 km); 29,846 cells of bare ground scored against each target.
+- 7 targets (3 on the Moon, 4 on Mars), 7 dimensions in every score: cold, dryness, terrain, surface, ice, sunlight and rock type.
+- 24 of our 175 top sites sit within 300 km of a known analog site, against 10.2 expected from random bare ground (Poisson p about 0.00015). See [results/validation.md](results/validation.md).
+- "Your conditions" reruns the same maths in the browser: it reproduces six of the seven official best scores to within 0.002 (Marius Hills to within 0.003). A full rescore of every cell takes about 0.2 to 0.3 s in Node.
+
+## Limits
+
+A 25 km grid, no soil chemistry, and nobody has visited these sites yet. Nothing on Earth is as cold as any target, so cold is scored on a gentler scale and flagged, and the Moon's polar sites top out near 0.5.
+
+---
 
 The web app is in [`zenith-app/`](zenith-app/) (open `zenith-app/index.html`, no build step). Data sources are listed in [SOURCES.md](SOURCES.md).
 
 This is the team's working repository. The copy submitted to NASA is https://github.com/elmallah111-design/zenith-app (a snapshot of this repo at submission time).
 
----
-
 ## What Zenith does
 
 1. Scores every 0.25° bare-ground cell on Earth against seven Moon and Mars base sites.
-2. Scores six dimensions: thermal, aridity, terrain, surface, ice and illumination.
+2. Scores seven dimensions: cold, dryness, terrain, surface, ice, sunlight and rock type.
 3. Combines them with one fixed scoring method (`scoring/score_v16.py`) and weights.
-4. The mission-plan layer (`app/`) reports which Earth site can test which part of a mission plan.
+4. For every target it shows two answers: the best match overall and the best new candidate, 500 km or more from every known analog site.
 5. It also reports what can only be tested in space: gravity, vacuum or atmosphere, and radiation.
 
 ## Folder map
@@ -36,9 +73,9 @@ This is the team's working repository. The copy submitted to NASA is https://git
 | `docs/` | Pitch slides, 200-word summary, submission checklist, AI-use disclosure. |
 | `SOURCES.md` | Every dataset: agency, link, resolution, use, who added it. |
 
-## Open the demo
+## Open the app
 
-Open `app/index.html` in a browser. Double-click works, no server needed. `app/zenith-plan-demo.html` is the same page in one file, for sharing.
+Open `zenith-app/index.html` in a browser. Double-click works, no server or build step, and it runs offline. The older mission-plan prototype is in `app/` (`app/index.html`).
 
 ## Rerun scoring
 
