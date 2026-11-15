@@ -134,7 +134,7 @@
     S.plan = { target: plan.target, subsystems: plan.subsystems || A.partsFromWeights(plan.weights), weights: plan.weights || null, real: plan.real || null, why: plan.why, guessed: plan.guessed };
     S.report = A.assess(S.plan);
     // a new search is a camera flight, a short title card, then the panel
-    const id = ++flight, cine = !reduce, res = $("#result"), body = document.body;
+    const id = ++flight, cine = !reduce && !go.quiet, res = $("#result"), body = document.body;
     clearTimeout(flightEnd);
     body.classList.remove("is-home", "card-in");
     body.classList.add("is-result");
@@ -197,12 +197,12 @@
     $("#prev").disabled = !S.pick && S.idx === 0; $("#next").disabled = !S.pick && S.idx === R.ranked.length - 1;
     const b = [];
     const nk = s.nearest_known;
-    if (nk.km < 150) b.push(`<span class="tag" title="${nk.km} km from ${esc(nk.name)}">Known analog site</span>`);
-    else if (nk.km < A.NEW_KM) b.push(`<span class="tag" title="${nk.km} km from ${esc(nk.name)}, a known analog site">Known analog region</span>`);
-    else if (s.eligible) b.push(`<span class="tag gem" title="Nearest known analog site: ${esc(nk.name)}">New candidate</span>`);
+    if (nk.km >= A.NEW_KM) { if (s.eligible) b.push(`<span class="tag gem" title="Nearest known analog site: ${esc(nk.name)}">New candidate, ${nk.km.toLocaleString("en")} km from the nearest known analog</span>`); }
+    else b.push(`<span class="tag" title="${nk.km.toLocaleString("en")} km from ${esc(nk.name)}">Near ${esc(nk.name.split(",")[0])}, a known analog site</span>`);
     if (!S.pick && R.fresh > 0) b.push(isFresh ? `<button class="tag jump" data-jump="0">‹ Best match</button>` : `<button class="tag jump" data-jump="${R.fresh}">New candidate ›</button>`);
     if (r.stability != null) b.push(`<span class="tag ${r.stability >= 0.5 ? "" : "warn"}" title="In the top 1% in ${Math.round(r.stability * 100)}% of 200 random weightings">${r.stability >= 0.5 ? "Stable" : "Weight-sensitive"}</span>`);
     $("#rBadges").innerHTML = b.join("");
+    mwLine(s);
     G.select(s.id);
     const ms = opts.fly === false ? 0 : G.flyTo(s.lat, s.lon, { cinematic: !!opts.cine });
     // a cinematic search holds the panel back until 80% of the flight; text types in as it appears
@@ -216,6 +216,12 @@
     try { if (window.ZenithGround) window.ZenithGround.show(s, t, { name: nameOf(s), place: placeOf(s) }, { delay: opts.cine ? ms : 0 }); } catch (e) { console.warn("ground view", e); }
     try { if (window.ZenithSound) window.ZenithSound.update(s, t, { name: nameOf(s), place: placeOf(s), match: r.overall }); } catch (e) { console.warn("sound", e); }
     return ms;
+  }
+  // When mission weights give a different score from balanced weights for this cell, say both. The engine scores balanced in site(), once per cell and target.
+  function mwLine(s) {
+    const el = $("#rMW"), a = s.score, c = s.balanced, on = s.eligible && a != null && c != null && a === a && c === c && a.toFixed(2) !== c.toFixed(2);
+    el.hidden = !on;
+    if (on) el.textContent = `Mission weights give ${a.toFixed(2)} here; balanced weights give ${c.toFixed(2)}.`;
   }
   $("#rBadges").addEventListener("click", e => { const b = e.target.closest("[data-jump]"); if (b) show(+b.dataset.jump); });
   $("#prev").onclick = () => (S.pick ? show(S.idx) : show(S.idx - 1));
@@ -676,6 +682,80 @@
     const fl = $("#flagFromSheet"); if (fl) fl.onclick = () => { setFlags(true); closeSheet(); G.zoom(1); };
   }
   function closeSheet() { $("#sheet").hidden = true; }
+
+  /* ---------- new sites: the best new place for each target, from data/new-candidates.js ---------- */
+  const NC = window.ZENITH_NEW_CANDIDATES || { rule: { text: "" }, targets: [], overall_top_10: [] };
+  const nq = v => (v >= 0.7 ? "strong" : v >= 0.5 ? "moderate" : "weak");
+  const ncPlace = c => (c.readme_name && c.readme_name !== c.name ? c.readme_name : c.name);
+  const km0 = v => Number(v).toLocaleString("en");
+  const sheetCandidates = {};
+  const dimList = a => (a || []).map(d => `${esc(d.label.toLowerCase())} ${d.score.toFixed(2)}`).join(", ");
+  function ncCard(t) {
+    const m = t.best_match, n = t.best_new, near = m.nearest_known_km < A.NEW_KM;
+    sheetCandidates[n.id + "|" + t.target_id] = n;
+    const fly = c => `<button class="chip ns-fly" data-cid="${esc(c.id)}" data-tid="${esc(t.target_id)}">Fly there</button>`;
+    const head = `<p class="kicker">${esc(t.body)}</p><h3>${esc(t.target_name)}</h3>`;
+    if (t.same_place) return `<article class="ns-card" data-t="${esc(t.target_id)}">${head}
+      <p class="ns-row"><span>Best match and best new candidate</span><b>${esc(ncPlace(n))}</b><em>${n.score.toFixed(2)}, ${nq(n.score)} match</em></p>
+      <p>The best match is already far from known sites: ${km0(n.nearest_known_km)} km from the nearest known analog (${esc(n.nearest_known_name)}).</p>
+      <p class="ns-dims"><span>Best: ${dimList(n.best_dimensions.slice(0, 2))}</span><span>Worst: ${dimList(n.worst_dimensions.slice(0, 2))}</span></p>
+      <p class="ns-why">${esc(n.why)}</p><p class="ns-meta">${esc(n.label)}</p>${fly(n)}</article>`;
+    return `<article class="ns-card" data-t="${esc(t.target_id)}">${head}
+      <p class="ns-row"><span>Best match</span><b>${esc(m.name)}</b><em>${m.score.toFixed(2)}, ${nq(m.score)} match</em></p>
+      ${near ? `<p class="ns-meta">Near ${esc(m.nearest_known_name.split(",")[0])}, a known analog site</p>` : ""}
+      <p class="ns-row"><span>Best new candidate</span><b>${esc(ncPlace(n))}</b><em>${n.score.toFixed(2)}, ${nq(n.score)} match</em></p>
+      ${n.readme_name && n.readme_name !== n.name ? `<p class="ns-meta">Region label in the app: ${esc(n.name)}</p>` : ""}
+      <p class="ns-meta">${km0(n.nearest_known_km)} km from the nearest known analog (${esc(n.nearest_known_name)})</p>
+      <p class="ns-dims"><span>Best: ${dimList(n.best_dimensions.slice(0, 2))}</span><span>Worst: ${dimList(n.worst_dimensions.slice(0, 2))}</span></p>
+      <p class="ns-why">${esc(n.why)}</p><p class="ns-meta">${esc(n.label)}</p>${fly(n)}</article>`;
+  }
+  function newSitesSheet() {
+    const top = NC.overall_top_10.map((c, i) => { sheetCandidates[c.id + "|" + c.target_id] = c; return `<li><span class="ns-n">${i + 1}</span><span class="ns-t"><b>${esc(ncPlace(c))}</b><small>${esc(c.target_name)}, ${km0(c.nearest_known_km)} km from ${esc(c.nearest_known_name.split(",")[0])}</small></span><em>${c.score.toFixed(2)}</em><button class="chip ns-fly" data-cid="${esc(c.id)}" data-tid="${esc(c.target_id)}" aria-label="Fly to ${esc(ncPlace(c))}">Fly there</button></li>`; }).join("");
+    return `<h2>New places to test</h2>
+      <p class="lede">${esc(NC.rule.text)} Listing the Atacama again adds nothing, and a place that only looks like Mars is not enough. These match on what matters to hardware.</p>
+      <p class="note">Match quality: strong from 0.70, moderate from 0.50, weak below.</p>
+      <div class="ns-cards">${NC.targets.map(ncCard).join("")}</div>
+      <h3>Top 10 new candidates across all targets</h3>
+      <ol class="ns-top">${top}</ol>
+      <p class="note">Candidates from satellite and climate data. Nobody has field-checked them yet.</p>`;
+  }
+  SHEETS["new-sites"] = newSitesSheet;
+  // Opens a candidate through the app's own path: the target is scored, the cell is selected and the globe flies to it.
+  function flyToCandidate(c, tid) {
+    closeSheet();
+    const w = S.report && S.report.weights, same = S.plan && S.plan.target === tid && w && Object.values(w).every(v => v === 1);
+    if (!same) { q.value = `${A.target(tid).name}: where on Earth?`; go.quiet = true; try { go(q.value, { target: tid, subsystems: [] }); } finally { go.quiet = false; } }
+    inspect(c.lat, c.lon);
+    G.flyTo(c.lat, c.lon);
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".ns-fly"); if (!b) return;
+    const c = sheetCandidates[b.dataset.cid + "|" + b.dataset.tid];
+    if (c) flyToCandidate(c, b.dataset.tid);
+  });
+  // globe layer: the 7 best new places plus the overall top 10, one marker per place (same id, or within 50 km, counts once)
+  let ncList = null;
+  function newCandidates() {
+    if (ncList) return ncList;
+    ncList = [];
+    const all = NC.targets.map(t => Object.assign({ target_id: t.target_id, target_name: t.target_name }, t.best_new)).concat(NC.overall_top_10);
+    for (const c of all) if (!ncList.some(x => x.id === c.id || A.km(x.lat, x.lon, c.lat, c.lon) < 50)) ncList.push(c);
+    return ncList;
+  }
+  function setNewLayer(on) {
+    S.newLayer = on;
+    G.setLayer(on ? newCandidates().map(c => ({ id: c.id, lat: c.lat, lon: c.lon, label: ncPlace(c).split(",")[0].replace(/\s*\(.*$/, "") })) : []);
+    $("#newBtn").setAttribute("aria-pressed", on); $("#layerKey").hidden = !on;
+  }
+  $("#newBtn").onclick = () => setNewLayer(!S.newLayer);
+  G.onLayerPick(f => { const x = newCandidates().find(k => k.id === f.id); if (x) flyToCandidate(x, x.target_id); });
+  // deep links: #sheet=<id> opens that sheet, on load and when the hash changes
+  function fromHash() {
+    const m = /[#&]sheet=([\w-]+)/.exec(location.hash);
+    if (m && (SHEETS[m[1]] || m[1] === "conditions" || m[1] === "simulate")) openSheet(m[1]);
+  }
+  addEventListener("hashchange", fromHash);
+  document.addEventListener("DOMContentLoaded", fromHash);
   document.querySelectorAll("[data-sheet]").forEach(b => b.onclick = () => ($("#sheet").hidden || $("#sheet").dataset.id !== b.dataset.sheet ? openSheet(b.dataset.sheet) : closeSheet()));
   $("#sheetClose").onclick = closeSheet;
   $("#sheet").addEventListener("click", e => { if (e.target === $("#sheet")) closeSheet(); });
@@ -698,7 +778,7 @@
     if (e.key === "/") { e.preventDefault(); q.focus(); }
     if (e.key === "h") $("#heatBtn").click();
   });
-  $(".brand").onclick = e => { e.preventDefault(); S.report = null; S.pick = null; document.body.className = "is-home"; $("#result").hidden = true; $("#tools").hidden = true; $("#legend").hidden = true; G.heat(false); S.heat = false; $("#heatBtn").setAttribute("aria-pressed", false); G.setMarkers([]); setFlags(false); G.zoom(1); G.spin(true); q.value = ""; layout(); closeSheet(); };
+  $(".brand").onclick = e => { e.preventDefault(); S.report = null; S.pick = null; document.body.className = "is-home"; $("#result").hidden = true; $("#tools").hidden = true; $("#legend").hidden = true; G.heat(false); S.heat = false; $("#heatBtn").setAttribute("aria-pressed", false); setNewLayer(false); G.setMarkers([]); setFlags(false); G.zoom(1); G.spin(true); q.value = ""; layout(); closeSheet(); };
 
   // used by the Design controls' "Replay flight"
   window.ZenithReplay = () => (S.plan ? go(S.text, { target: S.plan.target, subsystems: S.plan.subsystems.slice() }) : pick(LIBRARY[0]));

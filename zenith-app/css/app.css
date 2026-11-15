@@ -770,3 +770,32 @@ select.target option, select.target optgroup { color: #111; background: #fff; }
 .navlink:hover { color: #fff; background: rgba(255,255,255,.1); }
 body:not(.is-home) .play, body:not(.is-home) .qrhome, .searching .play, .searching .qrhome, .is-sim .play, .is-sim .qrhome { display: none !important; }
 @media (max-width: 900px) { .play { top: 112px; bottom: auto; padding: 10px 20px; } .play span { display: none; } .qrhome { display: none !important; } .navlink { padding: 6px; font-size: 12px; } }
+
+/* new sites, badge, layer, demo */
+.r-score small.mw { margin-top: 4px; max-width: 230px; }
+.tag.gem { white-space: normal; text-align: left; line-height: 1.25; }
+.layer-key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; width: 100%; margin: 4px 0 0 4px; color: #fff; font-size: 12px; text-shadow: 0 1px 4px #000; }
+.layer-key span { display: inline-flex; align-items: center; gap: 6px; }
+.layer-key i { display: inline-block; width: 9px; height: 9px; }
+.layer-key .k-sq { border: 1.5px solid #ffd23f; background: rgba(0, 0, 0, .55); }
+.layer-key .k-di { background: #4de3ff; transform: rotate(45deg); box-shadow: 0 0 0 1px #03222b; }
+.ns-cards { display: grid; gap: 12px; margin: 14px 0 6px; }
+.ns-card { border: 1px solid var(--card-line); border-radius: 12px; padding: 14px 16px; }
+.ns-card h3 { margin: 0 0 8px; font-size: 17px; }
+.ns-card p { margin: 0 0 6px; font-size: 14px; }
+.ns-row { display: grid; grid-template-columns: 1fr auto; gap: 0 12px; align-items: baseline; }
+.ns-row span { grid-column: 1 / -1; font-size: 12px; font-weight: 700; color: var(--muted); }
+.ns-row b { font-size: 15px; }
+.ns-row em { font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ns-meta { color: var(--muted); font-size: 13px !important; }
+.ns-dims { display: grid; gap: 2px; font-size: 13px !important; }
+.ns-why { font-size: 13px !important; }
+.ns-top { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 6px; }
+.ns-top li { display: grid; grid-template-columns: 22px 1fr auto auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--card-line); }
+.ns-top .ns-n { color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+.ns-top .ns-t b { display: block; font-size: 14px; }
+.ns-top .ns-t small { color: var(--muted); font-size: 12px; }
+.ns-top em { font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; }
+.sheet .ns-fly { margin-top: 4px; }
+.ns-top .ns-fly { margin: 0; }
+@media (max-width: 600px) { .ns-top li { grid-template-columns: 20px 1fr auto; } .ns-top .ns-fly { grid-column: 2 / -1; justify-self: start; } }

@@ -22,6 +22,7 @@
   <header class="top">
     <a class="brand" href="./" aria-label="Zenith home"><i aria-hidden="true"></i>ZENITH</a>
     <nav class="nav" aria-label="More">
+      <button data-sheet="new-sites">New sites</button>
       <a class="navlink" href="game/index.html">Drill game</a>
       <button data-sheet="simulate">Simulate</button>
       <button data-sheet="conditions">Your conditions</button>
@@ -50,7 +51,9 @@
   <div id="tools" class="tools" hidden>
     <button id="heatBtn" aria-pressed="false" title="Colour every scored cell by its match (H)">Score layer</button>
     <button id="flagBtn" aria-pressed="false" title="Show the analog sites agencies already use">Known sites</button>
+    <button id="newBtn" aria-pressed="false" title="Show the best new candidate for each target, and the top 10 overall">New candidates</button>
     <div id="legend" class="legend" hidden></div>
+    <div id="layerKey" class="layer-key" hidden><span><i class="k-sq"></i>Known analog site</span><span><i class="k-di"></i>New candidate</span></div>
   </div>
   <div id="toast" class="toast" role="status" hidden></div>
 
@@ -61,7 +64,7 @@
         <h1 id="rName"></h1>
         <p id="rWhere" class="r-where"></p>
       </div>
-      <div class="r-score"><span id="rPct">0.00</span><small>match score</small><small id="rSub" class="sub"></small></div>
+      <div class="r-score"><span id="rPct">0.00</span><small>match score</small><small id="rSub" class="sub"></small><small id="rMW" class="sub mw" hidden></small></div>
     </header>
     <div class="r-nav">
       <button id="prev" class="step" aria-label="Previous site">‹</button>
@@ -92,6 +95,7 @@
   <script src="js/vendor/three.min.js"></script>
   <script src="js/vendor/qrcode.js"></script>
   <script src="js/ground.js"></script>
+  <script src="data/new-candidates.js"></script>
   <script src="js/app.js"></script>
   <script src="js/simulate.js"></script>
   <script src="js/design.js"></script>

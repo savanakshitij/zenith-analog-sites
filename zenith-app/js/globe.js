@@ -18,7 +18,7 @@
   let markers = [], selected = null, onPick = null;
   // layout eases toward goal each frame, so the globe glides when the panel opens
   let layout = { cx: 0.5, cy: 0.5, r: 0.36, maxX: 1 }, goal = { ...layout }, placed = false;
-  let flags = [], onClick = null, heatOn = false, heatTex = null;
+  let flags = [], layer = [], onLayerPick = null, onClick = null, heatOn = false, heatTex = null;
   const t0 = performance.now();
   const easeInOutCubic = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const easeInOutSine = t => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -236,6 +236,13 @@ void main() {
       ctx.strokeStyle = "#ffd23f"; ctx.lineWidth = 1.5; ctx.strokeRect(x - 4, y - 4, 8, 8);
       if (f.label && zoom > 1.6) { ctx.font = "600 11px "; ctx.font = `600 11px ${theme.font}`; ctx.fillStyle = "#ffd23f"; ctx.fillText(f.label, x + 8, y + 4); }
     }
+    for (const f of layer) {                                // new candidates: filled diamonds
+      if (d3.geoDistance([f.lon, f.lat], center) > Math.PI / 2 - 0.03) continue;
+      const p = projection([f.lon, f.lat]), x = p[0], y = p[1];
+      ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.lineTo(x + 6, y); ctx.lineTo(x, y + 7); ctx.lineTo(x - 6, y); ctx.closePath();
+      ctx.fillStyle = "#4de3ff"; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = "#03222b"; ctx.stroke();
+      if (zoom > 1.6) { ctx.font = `600 11px ${theme.font}`; ctx.fillStyle = "#4de3ff"; ctx.fillText(f.label, x + 9, y + 4); }
+    }
     const list = markers.slice().sort((a, b) => (a.id === selected) - (b.id === selected) || b.rank - a.rank);
     for (const m of list) {
       if (d3.geoDistance([m.lon, m.lat], center) > Math.PI / 2 - 0.03) continue;
@@ -345,13 +352,18 @@ void main() {
     addEventListener("pointerup", e => {
       if (drag && !drag.moved && onPick) {
         projection.translate([W * layout.cx, H * layout.cy]).scale(Math.min(W, H) * layout.r * zoom).rotate(rotation);
-        let best = null, bd = 14;
+        let best = null, bd = 14, lp = null;
+        for (const f of layer) {
+          const p = projection([f.lon, f.lat]), d = Math.hypot(p[0] - e.clientX, p[1] - e.clientY);
+          if (d < 12 && d3.geoDistance([f.lon, f.lat], projection.invert([W * layout.cx, H * layout.cy])) < Math.PI / 2) lp = f;
+        }
         for (const m of markers) {
           const p = projection([m.lon, m.lat]);
           const d = Math.hypot(p[0] - e.clientX, p[1] - e.clientY);
           if (d < bd && d3.geoDistance([m.lon, m.lat], projection.invert([W * layout.cx, H * layout.cy])) < Math.PI / 2) { bd = d; best = m; }
         }
         if (best) onPick(best.id);
+        else if (lp && onLayerPick) onLayerPick(lp);
         else if (onClick && Math.hypot(e.clientX - W * layout.cx, e.clientY - H * layout.cy) < Math.min(W, H) * layout.r * zoom && e.target === canvas) {
           const ll = projection.invert([e.clientX, e.clientY]);
           if (ll) onClick(ll[1], ll[0]);
@@ -381,7 +393,7 @@ void main() {
     init, flyTo, countryOf,
     isPhotoreal: () => !!(gl && ready),
     setMarkers: (m) => { markers = m; },
-    setFlags: (f) => { flags = f; }, setHeat, heat: (on) => { heatOn = !!on; }, hasGL: () => !!gl,
+    setFlags: (f) => { flags = f; }, setLayer: (l) => { layer = l; }, onLayerPick: (fn) => { onLayerPick = fn; }, setHeat, heat: (on) => { heatOn = !!on; }, hasGL: () => !!gl,
     onClick: (fn) => { onClick = fn; }, zoom: (z) => { zoom = z; },
     select: (id) => { selected = id; },
     setLayout: (l) => { goal = { ...goal, ...l }; if (!placed || reduceMotion) layout = { ...goal }; placed = true; },
