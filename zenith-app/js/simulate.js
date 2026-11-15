@@ -26,7 +26,7 @@
     }[d];
   }
 
-  let id = null, on = [], dimS = {}, elig = null, nAll = 0, shown = 0, timer = 0, busy = false, edge = null;
+  let id = null, on = [], dimS = {}, elig = null, nAll = 0, shown = 0, timer = 0, busy = false, edge = null, closest = null;
   const ones = () => { const w = {}; A.DIMS.forEach(d => (w[d] = 0)); return w; };
 
   function prepare(tid) {
@@ -95,7 +95,10 @@
     $("#simLine").innerHTML = line;
     $("#simWhy").hidden = !(on.length && st.n === 0);
     if (!$("#simWhy").hidden) $("#simWhy").innerHTML = why(st);
-    $("#simBest").innerHTML = p && on.length ? `${st.n ? "Best place still in" : "Closest anyway"}: <b>${esc(p.name)}</b> <span>${(st.n ? st.bestScore : st.overallScore).toFixed(2)}</span>` : "";
+    const sc = st.n ? st.bestScore : st.overallScore, q = sc >= 0.7 ? "strong" : sc >= 0.5 ? "moderate" : "weak";
+    closest = p && !st.n ? p : null;
+    $("#simBest").innerHTML = p && on.length ? `${st.n ? "Best place still in" : "Closest place anyway"}: <b>${esc(p.name)}</b> <span>${sc.toFixed(2)}</span>${st.n ? "" : ` <small>${q} match on the conditions switched on</small> <button class="chip" id="simOpen">Open this place</button>`}` : "";
+    if ($("#simOpen")) $("#simOpen").onclick = openClosest;
     document.querySelectorAll("#simChips [data-d]").forEach(b => b.setAttribute("aria-pressed", on.includes(b.dataset.d)));
     $("#simNext").disabled = done; $("#simPlay").disabled = done;
     $("#simEnd").hidden = !done;
@@ -112,9 +115,17 @@
       ? `${esc(A.target(id).name)} gets down to ${c(f.temp_min_K)} °C at night with a ${Math.round(f.temp_daynight_range_K)} K day–night swing. The coldest bare ground we score on Earth reaches ${c(edge.cold)} °C (its coldest monthly-mean night), and the widest swing is ${Math.round(edge.swing)} K.`
       : `The conditions switched on are past anything Earth's bare ground offers.`;
     return `<b>Why it drops to zero</b>
+      <p>The big number counts places that pass every condition switched on. It is not a match score, and no place scores 0.</p>
       <p>${facts} A place stays in only while it is at least half way to the target on every condition switched on, so one condition Earth cannot reach knocks out every place at once.</p>
       <p>This is the honest result, not a bug. No place on Earth is a perfect copy of the Moon or Mars, so ${cold ? "cold is" : "these are"} tested in a thermal vacuum chamber instead. Zenith's real scores never hit zero: where a target is past anything on Earth, that condition is scored on a wider, gentler scale and flagged.</p>
-      <p>The closest place anyway is shown below.</p>`;
+      <p>The closest place anyway is below. Open it to see what matches and what does not.</p>`;
+  }
+
+  // leave the simulation and open the closest place in the normal result panel (same path as clicking the globe)
+  function openClosest() {
+    const c = closest; if (!c) return;
+    stop(true);
+    setTimeout(() => window.ZenithUI.inspect(c.lat, c.lon), 60);
   }
 
   function add(d) {
