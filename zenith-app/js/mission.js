@@ -5,7 +5,7 @@
   const EXAMPLES = [
     { id: "polar-base", title: "Crewed base at the lunar south pole that mines ice", target: "shackleton", subsystems: ["habitat", "drill", "eva", "power"] },
     { id: "malapert-lander", title: "Solar-powered lander on the Malapert ridge", target: "malapert", subsystems: ["landing", "power", "rover"] },
-    { id: "lava-tube", title: "Shelter a crew inside a lunar lava tube", target: "marius", subsystems: ["habitat", "eva", "rover"] },
+    { id: "lava-tube", title: "Shelter a crew inside a lunar lava tube", target: "marius", subsystems: ["habitat", "rover", "science"] },
     { id: "arcadia-ice", title: "Drill buried ice for a Mars base in Arcadia", target: "arcadia", subsystems: ["drill", "habitat", "power"] },
     { id: "jezero-life", title: "Rover searching for ancient life in Jezero's river delta", target: "jezero", subsystems: ["rover", "science"] },
     { id: "gale-climb", title: "Climb Mount Sharp in Gale crater with a rover", target: "gale", subsystems: ["rover", "science", "landing"] },

@@ -51,7 +51,7 @@
     const hit = m => !v || m.title.toLowerCase().includes(v) || A.target(m.target).name.toLowerCase().includes(v) || A.target(m.target).body.toLowerCase().includes(v) || (m.real && (m.real.mission + m.real.agency).toLowerCase().includes(v));
     const items = LIBRARY.filter(hit);
     if (v && !items.length) return parse(v).unknown ? [{ none: true, title: q.value.trim() }, { conditions: true, title: "Set your own conditions with sliders instead" }] : [{ free: true, title: q.value.trim() }];
-    return items.concat(v ? [] : [{ conditions: true, title: "Set your own conditions with sliders" }]);
+    return (v ? [] : [{ conditions: true, title: "Set your own conditions with sliders" }]).concat(items);
   }
   function showSuggest() {
     const items = suggestions(); active = -1;
@@ -196,11 +196,11 @@
       : isFresh && r.extra ? `Best new candidate, #${s.rank.toLocaleString("en")}` : `${S.idx + 1} of ${R.ranked.length}`;
     $("#prev").disabled = !S.pick && S.idx === 0; $("#next").disabled = !S.pick && S.idx === R.ranked.length - 1;
     const b = [];
-    const nk = s.nearest_known, nkName = esc(nk.name.split(",")[0]);
+    const nk = s.nearest_known;
     if (nk.km < 150) b.push(`<span class="tag" title="${nk.km} km from ${esc(nk.name)}">Known analog site</span>`);
-    else if (nk.km < A.NEW_KM) b.push(`<span class="tag" title="${nk.km} km from ${esc(nk.name)}, a known analog site">Known analog region, ${nk.km.toLocaleString("en")} km from ${nkName}</span>`);
-    else if (s.eligible) b.push(`<span class="tag gem" title="Nearest known analog site: ${esc(nk.name)}">New candidate, ${nk.km.toLocaleString("en")} km from any known site</span>`);
-    if (!S.pick && R.fresh > 0) b.push(isFresh ? `<button class="tag jump" data-jump="0">‹ Best match overall</button>` : `<button class="tag jump" data-jump="${R.fresh}">Best new candidate ›</button>`);
+    else if (nk.km < A.NEW_KM) b.push(`<span class="tag" title="${nk.km} km from ${esc(nk.name)}, a known analog site">Known analog region</span>`);
+    else if (s.eligible) b.push(`<span class="tag gem" title="Nearest known analog site: ${esc(nk.name)}">New candidate</span>`);
+    if (!S.pick && R.fresh > 0) b.push(isFresh ? `<button class="tag jump" data-jump="0">‹ Best match</button>` : `<button class="tag jump" data-jump="${R.fresh}">New candidate ›</button>`);
     if (r.stability != null) b.push(`<span class="tag ${r.stability >= 0.5 ? "" : "warn"}" title="In the top 1% in ${Math.round(r.stability * 100)}% of 200 random weightings">${r.stability >= 0.5 ? "Stable" : "Weight-sensitive"}</span>`);
     $("#rBadges").innerHTML = b.join("");
     G.select(s.id);
@@ -537,8 +537,8 @@
     cases: () => `<h2>Case studies</h2><p class="lede">Three places the engine ranked highly, checked by hand against imagery and the literature.</p>
       <div class="cases">
         <a class="case" href="cases/taklamakan/index.html" target="_blank" rel="noopener"><p class="kicker">Arcadia Planitia, Mars</p><h3>Southern Taklamakan, China</h3><p>Score 0.68, top 0.04%. Flat sediment plains that match Arcadia's slope, roughness, brightness and Sun angle. No ground ice, and no analog study found at this spot.</p><span class="go">Read the case study</span></a>
-        <a class="case" href="cases/yungay-jezero/index.html" target="_blank" rel="noopener"><p class="kicker">Jezero crater, Mars</p><h3>Yungay against our best Atacama cell</h3><p>The famous NASA test site scores 0.62. A cell 390 km north in the same desert scores 0.81. Same desert, a closer match on terrain and Sun angle.</p><span class="go">Read the case study</span></a>
-        <button class="case" data-case="saudi"><p class="kicker">Marius Hills lava tube, Moon</p><h3>Harrat lava fields, Saudi Arabia</h3><p>Score 0.73 against the Marius Hills pit. The best known analog site we scored reaches 0.62. Basalt, dry, and the right terrain. Our most novel candidate.</p><span class="go">Open on the globe</span></button>
+        <a class="case" href="cases/yungay-jezero/index.html" target="_blank" rel="noopener"><p class="kicker">Jezero crater, Mars</p><h3>Yungay against our best Atacama cell</h3><p>Yungay, the well-known Atacama test site, scores 0.62. A cell 390 km north in the same desert scores 0.81. Same desert, a closer match on terrain and Sun angle.</p><span class="go">Read the case study</span></a>
+        <button class="case" data-case="saudi"><p class="kicker">Marius Hills lava tube, Moon</p><h3>Harrat lava fields, Saudi Arabia</h3><p>Score 0.73 against the Marius Hills pit. The best known analog site we scored reaches 0.62. Basalt, dry, and the right terrain. We found no analog study of this lava field; the nearest known site is Wadi Rum, 310 km away.</p><span class="go">Open on the globe</span></button>
       </div>
       <p class="note">These are candidate sites from satellite-scale data. Nobody on the team has been there.</p>`,
     evidence: () => {
@@ -556,10 +556,15 @@
       <button class="chip" id="flagFromSheet">Show the known analog sites on the globe</button>
       <p class="note">Rules were fixed before the run (scoring/DECISIONS_v1_6.md). Full tables: results/validation.md.</p>`;
     },
-    phone: () => `<h2>Try your own mission</h2><p class="lede">Scan, type any Moon or Mars mission, and the same engine scores Earth for it on your phone.</p>
-      <img class="qr" src="assets/qr.png" alt="QR code for the phone version" onerror="this.remove()">
-      <p class="mono">claude.ai/artifact/JtAaSX7SWvchKxmahMjHQZ</p>
-      <p class="note">Runs in the browser, so nothing is sent anywhere. About 11 MB on first load.</p>`,
+    phone: () => {
+      const url = location.href.split("#")[0].split("?")[0];
+      let svg = "";
+      try { const qr = qrcode(0, "M"); qr.addData(url); qr.make(); svg = qr.createSvgTag({ cellSize: 6, margin: 3, scalable: true }); } catch (e) { /* no QR, the address below still works */ }
+      return `<h2>Open it on your phone</h2><p class="lede">Scan the code and the same app opens on your phone, with the same engine and data.</p>
+      <div class="qr">${svg}</div>
+      <p class="mono">${esc(url.replace(/^https?:\/\//, ""))}</p>
+      <p class="note">Runs in the browser, so nothing is sent anywhere. About 20 MB on first load.</p>`;
+    },
   };
   /* ---------- your own conditions: sliders -> a custom target, scored over all of Earth live ---------- */
   const RLOG = Math.log1p(2000); // the ruggedness slider is logarithmic: most of Earth is under 200 m
@@ -691,11 +696,13 @@
     if (e.key === "/") { e.preventDefault(); q.focus(); }
     if (e.key === "h") $("#heatBtn").click();
   });
-  $(".brand").onclick = e => { e.preventDefault(); S.report = null; S.pick = null; document.body.className = "is-home"; $("#result").hidden = true; $("#tools").hidden = true; $("#legend").hidden = true; G.heat(false); S.heat = false; $("#heatBtn").setAttribute("aria-pressed", false); G.setMarkers([]); G.zoom(1); G.spin(true); q.value = ""; layout(); closeSheet(); };
+  $(".brand").onclick = e => { e.preventDefault(); S.report = null; S.pick = null; document.body.className = "is-home"; $("#result").hidden = true; $("#tools").hidden = true; $("#legend").hidden = true; G.heat(false); S.heat = false; $("#heatBtn").setAttribute("aria-pressed", false); G.setMarkers([]); setFlags(false); G.zoom(1); G.spin(true); q.value = ""; layout(); closeSheet(); };
 
   // used by the Design controls' "Replay flight"
   window.ZenithReplay = () => (S.plan ? go(S.text, { target: S.plan.target, subsystems: S.plan.subsystems.slice() }) : pick(LIBRARY[0]));
 
+  // "On your phone" shows a QR code of this page's own address, so it only appears when the page is on the web
+  if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname)) $("#phoneBtn").hidden = false;
   G.init($("#globe"));
   layout();
   window.ZenithUI = { go, pick, inspect, state: () => S };

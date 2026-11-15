@@ -712,3 +712,25 @@ select.target option, select.target optgroup { color: #111; background: #fff; }
 .cf.is-off .cf-on span { opacity: .6; }
 .dim.off { opacity: .25; }
 .cta:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- second prototype polish ---------- */
+.qr { width: 220px; background: #fff; border-radius: 10px; padding: 6px; margin: 4px 0 12px; }
+.qr svg { display: block; width: 100%; height: auto; }
+#rRank { white-space: nowrap; }
+.r-badges { flex-wrap: wrap; justify-content: flex-end; }
+.r-badges .tag { white-space: nowrap; }
+[hidden] { display: none !important; }
+@media (max-width: 900px) {
+  .r-head { gap: 10px; }
+  .r-title { min-width: 0; }
+  .r-score span { font-size: 44px; }
+  .r-score small.sub { max-width: 150px; }
+  .r-nav { flex-wrap: wrap; }
+  .is-result .top { position: absolute; }
+  .tools { top: calc(52vh - 8px); transform: translateY(-100%); flex-wrap: wrap-reverse; }
+  .legend { margin: 0; flex-basis: 100%; }
+  .legend > * { text-shadow: 0 1px 4px #000; }
+  .legend i { width: 70px; }
+  .legend em { display: none; }
+}
+.qr { height: auto; image-rendering: auto; }
