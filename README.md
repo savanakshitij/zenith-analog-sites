@@ -2,6 +2,8 @@
 
 Team Zenith, NASA Space Apps Challenge 2026 (Heilbronn). Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars.*
 
+Zenith scores every patch of bare ground on Earth against seven Moon and Mars base sites, using NASA and other open satellite and climate data, and shows where to test a mission first, including places nobody uses yet.
+
 - **Live app:** https://zenith-analog-sites.vercel.app (opens straight to the new analog sites: https://zenith-analog-sites.vercel.app/#sheet=new-sites)
 - **Demo video (30 s):** https://zenith-space-apps.vercel.app/demo.mp4
 - **Drill game:** https://zenith-analog-sites.vercel.app/game/index.html
@@ -23,6 +25,12 @@ Found from satellite and climate data. **Not field-checked yet:** the satellites
 | Kunlun Mountains, China (36.6N, 84.9E) | Shackleton crater rim, Moon | 0.39 | 629 km (Dalangtan playa, Qaidam Basin) |
 
 ![The New analog sites sheet in the app](docs/img/new-sites-sheet.png)
+
+**Does it work?** We never told the engine where agencies test. Of its 175 top sites, 24 landed within 300 km of a known analog site; random bare ground gives about 10 (10.2, Poisson p about 0.00015). Details in [results/validation.md](results/validation.md).
+
+## AI use
+
+Built with AI assistance. The team used Claude (Anthropic) for code, the data and scoring scripts, debugging and writing text. Every score comes from the documented scoring rules in [scoring/DECISIONS_v1_6.md](scoring/DECISIONS_v1_6.md) and the public data listed in [SOURCES.md](SOURCES.md); the team reviewed the results. The new analog sites are model output from satellite and climate data, not field observations.
 
 ## Two traps
 
@@ -124,4 +132,4 @@ Current version: **data v1.6**. Every rescoring gets a new version number. Slide
 - **One scoring method.** Nobody adds weights or scores outside `scoring/`.
 - **Files over 50 MB go on the shared Drive, not git.** Note the Drive link in `SOURCES.md`.
 
-Built with AI assistance (Claude). All data sources are listed in [SOURCES.md](SOURCES.md).
+Built with AI assistance (see AI use above). All data sources are listed in [SOURCES.md](SOURCES.md). Code under the [MIT license](LICENSE).

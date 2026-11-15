@@ -78,7 +78,7 @@ const eng = A.eng;
 const noIce = eng.targets.find(t => !t.ice_cells_allowed);
 const counts = { land_cells: eng.n, bare_ground_scored: A.pass(A.target(noIce.id), A.weightsFor({ target: noIce.id, subsystems: [] })).n };
 
-const rule = { new_km: NEW_KM, known_sites: N_KNOWN, weights: "balanced", text: `A new candidate is the best cell at least ${NEW_KM} km from all ${N_KNOWN} known analog sites.` };
+const rule = { new_km: NEW_KM, known_sites: N_KNOWN, weights: "balanced", text: `A new analog site is the best cell at least ${NEW_KM} km from all ${N_KNOWN} known analog sites.` };
 const out = { rule, counts, targets, overall_top_10: overall };
 const json = JSON.stringify(out, null, 2) + "\n";
 fs.mkdirSync(path.join(root, "results"), { recursive: true });

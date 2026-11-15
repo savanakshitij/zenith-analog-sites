@@ -3,7 +3,7 @@
     "new_km": 500,
     "known_sites": 37,
     "weights": "balanced",
-    "text": "A new candidate is the best cell at least 500 km from all 37 known analog sites."
+    "text": "A new analog site is the best cell at least 500 km from all 37 known analog sites."
   },
   "counts": {
     "land_cells": 349031,

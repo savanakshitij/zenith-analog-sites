@@ -1,6 +1,6 @@
 # New candidates
 
-A new candidate is the best cell at least 500 km from all 37 known analog sites.
+A new analog site is the best cell at least 500 km from all 37 known analog sites.
 
 Balanced weights, as the app uses with no mission picked. Same rule and code as the app (NEW_KM = 500 in zenith-app/js/bridge.js). Regenerate with `node scoring/new_candidates.mjs`.
 
