@@ -59,8 +59,12 @@ p { margin: 0 0 8px; }
 .label span { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
 .label em { display: block; font-style: normal; font-size: 26px; font-weight: 900; color: var(--good); margin-top: 2px; }
 .cover { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at center, rgba(4,6,12,.55), rgba(4,6,12,.92)); z-index: 5; padding: 20px; }
-.cover .panel { position: relative; width: min(560px, 100%); padding: 30px 32px; }
+.cover .panel { position: relative; width: min(560px, 100%); padding: 30px 32px; max-height: calc(100vh - 40px); overflow-y: auto; }
+#final .panel { animation: boardIn 450ms cubic-bezier(.2,.8,.2,1) both; }
+@keyframes boardIn { from { opacity: 0; transform: translateY(14px) scale(.97); } }
+#final .verdict { margin-bottom: 14px; }
 .cover h1 { font-size: 34px; }
+.cover h2.howto { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; margin: 16px 0 6px; }
 .steps { margin: 14px 0 6px; padding-left: 20px; color: var(--muted); }
 .steps li { margin-bottom: 6px; } .steps b { color: var(--ink); }
 .hint { position: fixed; left: 50%; bottom: 118px; transform: translateX(-50%); font-size: 12.5px; color: var(--muted); text-shadow: 0 1px 6px #000; pointer-events: none; }
@@ -168,14 +172,17 @@ kbd { font: 700 11px Inter, sans-serif; border: 1px solid var(--line); border-ra
   <div class="panel">
     <p class="kicker">Team Zenith · NASA Space Apps 2026</p>
     <h1>Analog Lab</h1>
-    <p>Before a rover flies to Mars, it is tested somewhere on Earth that is as much like Mars as possible. Your job: pick the better place, then drill.</p>
+    <p>This is Zenith's idea in game form: find the place on Earth that best matches Mars.</p>
+    <h2 class="howto">How to play</h2>
+    <p><b>The objective:</b> a real mission will drill for evidence of ancient life on Mars, in Jezero crater. Before it flies, the drill is tested on Earth. Compare the numbers and choose the place closest to Mars. Its conditions are similar, so it's easy to drill. The wrong place is harder to dig.</p>
     <ol class="steps">
-      <li><b>Read the facts</b> about two real places on Earth and Jezero crater on Mars.</li>
-      <li><b>Pick the place</b> you think is more like Mars.</li>
-      <li><b>Drill it.</b> 8 seconds, tap as fast as you can. The closer your place is to the target, the deeper every tap digs.</li>
-      <li><b>Get the verdict.</b> Our engine scores every site with real climate, terrain and rock data. Deepest total drill tops the chart.</li>
+      <li><b>Compare</b> the two real places' numbers (rain, cold, slope, rock, sunlight) with Mars.</li>
+      <li><b>Pick</b> the place closest to Mars's conditions, just like a real mission team would. Tap it or press 1 or 2.</li>
+      <li><b>Drill.</b> Tap <b>DRILL</b> or press Space as fast as you can for 8 seconds. Reach 30 m to finish.</li>
+      <li><b>See your rank.</b> The ranking board opens by itself.</li>
     </ol>
-    <p class="muted">Your depth goes on the live ranking board, shared by everyone playing. All data is real, from our engine.</p>
+    <p><b>Tip:</b> looks can fool you. Trust the numbers.</p>
+    <p class="muted">All numbers are real, from our engine (data v1.6).</p>
     <input class="name" id="pname" maxlength="18" placeholder="Your name" autocomplete="off">
     <button class="cta" id="go">Start the mission</button>
     <button class="linkbtn" id="seeBoard">See the ranking board</button>
@@ -463,10 +470,11 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
     $("#inspect").insertAdjacentHTML("afterbegin", `<div class="verdict ${right ? "yes" : "no"}"><b>${right ? "Good call!" : "Not quite."}</b> Site ${LET[rank[0].k]}, ${esc(best.name)}, is closer to ${esc(r.body === "Moon" ? "the Moon" : "Mars")}. You drilled <b>${lastDepth.toFixed(1)} m</b>.</div>`);
     $("#inspect").insertAdjacentHTML("beforeend", `<div class="bars">${rank.map(x => `<div class="bar ${x === rank[0] ? "win" : ""}"><b>${LET[x.k]}</b><span class="tr"><i data-w="${Math.round(x.c.score * 100)}"></i></span><span class="n">${x.c.score.toFixed(2)}</span><small>${esc(x.c.name)}: match score from our engine${x === rank[0] ? "" : ""}</small></div>`).join("")}</div>
       <p>${esc(SIMPLE[r.id] || r.lesson)}</p>
-      <p class="muted">Green = like Mars, amber = partly, red = not like Mars. Each tap drilled ${eff(mine.score).toFixed(2)} m at your site${right ? "" : `; at ${esc(best.name)} it would have been ${eff(best.score).toFixed(2)} m`}.</p>
-      <button class="cta" id="nextR">See the ranking board</button>`);
+      <p class="muted">Green = like Mars, amber = partly, red = not like Mars. Each tap drilled ${eff(mine.score).toFixed(2)} m at your site${right ? "" : `; at ${esc(best.name)} it would have been ${eff(best.score).toFixed(2)} m`}.</p>`);
     requestAnimationFrame(() => document.querySelectorAll(".bar .tr i").forEach(i => (i.style.width = i.dataset.w + "%")));
-    $("#nextR").onclick = () => { round++; round < R.length ? startRound() : finish(); };
+    // the round is over: open the ranking board in the middle of the screen by itself, with the verdict on top
+    verdict = `<div class="verdict ${right ? "yes" : "no"}"><b>${right ? "Good call!" : "Not quite."}</b> ${esc(best.name)} is closer to ${esc(r.body === "Moon" ? "the Moon" : "Mars")} (${best.score.toFixed(2)} against ${rank[1].c.score.toFixed(2)}).</div>`;
+    setTimeout(() => { round++; round < R.length ? startRound() : finish(); }, 1200);
   }
   function reveal() { /* after locking, clicking a site does nothing more */ }
 
@@ -474,7 +482,7 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
   // metres per tap from the engine score: Atacama 0.81 -> 0.65 m, Iceland 0.21 -> 0.16 m.
   // Reaching the 30 m finish in 8 s needs about 47 taps (6 a second) at the better site, and is impossible at the worse one.
   const SECS = 8, GOAL = 30, eff = sc => 0.12 + 0.8 * sc * sc;
-  let X = null, lastDepth = 0, total = 0, player = "", lastFinish = null;
+  let X = null, lastDepth = 0, total = 0, player = "", lastFinish = null, verdict = "";
   function startDrill(k) {
     if (X || locked) return;
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); // Space must tap the drill, not press a focused button
@@ -706,7 +714,7 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
       $("#save2").onclick = go2; $("#pname2").addEventListener("keydown", e => { if (e.key === "Enter") { e.stopPropagation(); go2(); } }); $("#pname2").focus();
       return;
     }
-    $("#finalIn").innerHTML = `<p class="kicker">${r.shared ? "Live ranking board" : "Ranking board"} · ${esc(name)}</p><h1>${lastFinish ? `Finished in ${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m drilled`}</h1>
+    $("#finalIn").innerHTML = `${verdict}<p class="kicker">${r.shared ? "Live ranking board" : "Ranking board"} · ${esc(name)}</p><h1>${lastFinish ? `Finished in ${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m drilled`}</h1>
       <p>You are <b>#${r.place}</b> of ${r.total} participant${r.total === 1 ? "" : "s"}${r.shared ? " so far, on every phone and screen playing" : ""}. The more Mars-like your place, the deeper every tap went. Finishers rank by time.</p>
       ${r.note ? `<p class="muted">${esc(r.note)}</p>` : ""}
       ${chart(r.rows, r.me)}
@@ -717,7 +725,7 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
       <button class="cta" id="again">Next participant</button>
       ${r.shared ? "" : `<button class="linkbtn" id="wipe">Clear the chart</button>`}`;
     growBars();
-    $("#again").onclick = () => { $("#final").hidden = true; round = 0; total = 0; $("#pts").textContent = "0.0 m"; $("#pname").value = ""; $("#intro").hidden = false; startRound(); setTimeout(() => $("#pname").focus(), 50); };
+    $("#again").onclick = () => { $("#final").hidden = true; round = 0; total = 0; verdict = ""; $("#pts").textContent = "0.0 m"; $("#pname").value = ""; $("#intro").hidden = false; startRound(); setTimeout(() => $("#pname").focus(), 50); };
     if ($("#wipe")) $("#wipe").onclick = () => { try { localStorage.removeItem(BKEY); } catch (e) {} mem = null; $("#wipe").textContent = "Chart cleared"; };
   }
   async function showBoard() {
