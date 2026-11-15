@@ -14,12 +14,22 @@
   function build() {
     el = document.createElement("div");
     el.id = "tour"; el.className = "tour"; el.setAttribute("role", "region"); el.setAttribute("aria-label", "Guided tour");
-    el.innerHTML = '<p class="t-kick" id="tKick" hidden></p><p class="t-cap" id="tCap" aria-live="polite"></p><p class="t-sub" id="tSub"></p><div class="t-ctl"><button type="button" id="tSkip">Skip</button><button type="button" id="tResume" hidden>Resume</button></div>';
+    el.innerHTML = '<div class="t-place" id="tPlace" hidden></div><p class="t-kick" id="tKick" hidden></p><p class="t-cap" id="tCap" aria-live="polite"></p><p class="t-sub" id="tSub"></p><div class="t-ctl"><button type="button" id="tSkip">Skip</button><button type="button" id="tResume" hidden>Resume</button></div>';
     document.body.appendChild(el);
     el.querySelector("#tSkip").onclick = () => end();
     el.querySelector("#tResume").onclick = () => resume();
   }
-  function say(cap, sub, kick) { const k = el.querySelector("#tKick"); k.textContent = kick || ""; k.hidden = !kick; el.querySelector("#tCap").textContent = cap; el.querySelector("#tSub").textContent = sub || ""; el.querySelector("#tSub").hidden = !sub; }
+  const esc = x => String(x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // A new analog site, shown as a small readout: what it is, where, its score and how far from known sites.
+  function place(t) {
+    const n = t.best_new, pl = el.querySelector("#tPlace");
+    el.querySelector("#tKick").hidden = true; el.querySelector("#tCap").hidden = true; el.querySelector("#tSub").hidden = true;
+    pl.hidden = false;
+    pl.innerHTML = `<p class="tp-kick"><i></i>New analog site for ${esc(t.target_name)}</p><p class="tp-name">${esc(short(n))}</p>` +
+      `<div class="tp-stats"><div><b>${n.score.toFixed(2)}</b><span>Match score</span></div><div><b>${fmt(n.nearest_known_km)} km</b><span>From the nearest known site</span></div></div>` +
+      `<p class="tp-tag">Not field-checked yet</p>`;
+  }
+  function say(cap, sub, kick) { el.querySelector("#tPlace").hidden = true; el.querySelector("#tCap").hidden = false; const k = el.querySelector("#tKick"); k.textContent = kick || ""; k.hidden = !kick; el.querySelector("#tCap").textContent = cap; el.querySelector("#tSub").textContent = sub || ""; el.querySelector("#tSub").hidden = !sub; }
   function fly(lat, lon) { G.flyTo(lat, lon, { zoom: 2.2 }); }
 
   function steps() {
@@ -30,9 +40,9 @@
       { ms: 7000, run() { body.classList.add("is-touring"); N.setLayer(true); G.setLayerPulse(true); G.setTourLabel(null); G.zoom(0.9); G.spin(true);
           say(`We scored all of Earth for ${N.targets.length} Moon and Mars base sites and found ${N.N} new analog sites.`, "Satellites say they match. Next step: someone goes out and field-checks them."); } },
       { ms: 8000, run() { G.setLayerPulse(false); G.spin(false); fly(jez.best_new.lat, jez.best_new.lon);
-          say(`${short(jez.best_new)}. New analog site for ${jez.target_name}, ${jez.best_new.score.toFixed(2)}. ${fmt(jez.best_new.nearest_known_km)} km from any site agencies use. Not field-checked yet.`); } },
-      { ms: 4000, run() { fly(mar.best_new.lat, mar.best_new.lon); say(line(mar)); } },
-      { ms: 4000, run() { fly(arc.best_new.lat, arc.best_new.lon); say(line(arc)); } },
+          place(jez); } },
+      { ms: 4000, run() { fly(mar.best_new.lat, mar.best_new.lon); place(mar); } },
+      { ms: 4000, run() { fly(arc.best_new.lat, arc.best_new.lon); place(arc); } },
       { ms: 8000, run() { fly(sha.best_new.lat, sha.best_new.lon);
           say("Why are the Moon scores lower? No place on Earth is as cold as the Moon's poles, and none has that sunlight, so those conditions cannot match exactly.", "We score them on a gentler scale and flag them as weak. Lower here is expected, not a flaw.", short(sha.best_new) + ". New analog site for " + sha.target_name + ", " + sha.best_new.score.toFixed(2) + ". Not field-checked yet."); } },
       { ms: 9000, run() { const m = jez.best_match; fly(m.lat, m.lon); G.setTourLabel({ lat: m.lat, lon: m.lon, text: "Known analog. Found on its own." });
