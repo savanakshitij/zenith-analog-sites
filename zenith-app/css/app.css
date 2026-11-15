@@ -704,3 +704,11 @@ p.verdict.q-strong b { color: #2fae6f; } p.verdict.q-weak b { color: var(--accen
 .cta { margin-top: 14px; width: 100%; border: 0; border-radius: 8px; padding: 12px; background: var(--accent); color: #fff; font: 800 15px var(--font); cursor: pointer; }
 .cta:active { transform: scale(.99); }
 @media (max-width: 640px) { .cf-grid, .answers { grid-template-columns: 1fr; } }
+
+select.target option, select.target optgroup { color: #111; background: #fff; }
+.cf-on { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.cf-on input { margin: 2px 0 0; accent-color: var(--accent); width: 16px; height: 16px; flex: none; }
+.cf.is-off > :not(.cf-on):not(.cf-edge) { opacity: .3; pointer-events: none; }
+.cf.is-off .cf-on span { opacity: .6; }
+.dim.off { opacity: .25; }
+.cta:disabled { opacity: .4; cursor: not-allowed; }

@@ -27,9 +27,15 @@
     science: { label: "Sampling and science", boost: { aridity: 2, geology: 2 },   tests: ["surface"] },
   };
   function weightsFor(plan) {
-    if (plan.weights) return plan.weights;
-    const w = {}; DIMS.forEach(d => (w[d] = 1));
-    (plan.subsystems || []).forEach(p => { const b = (PARTS[p] || {}).boost || {}; for (const d in b) w[d] = Math.min(5, w[d] + b[d]); });
+    let w;
+    if (plan.weights) w = Object.assign({}, plan.weights);
+    else {
+      w = {}; DIMS.forEach(d => (w[d] = 1));
+      (plan.subsystems || []).forEach(p => { const b = (PARTS[p] || {}).boost || {}; for (const d in b) w[d] = Math.min(5, w[d] + b[d]); });
+    }
+    // your own conditions: a dimension whose conditions are all switched off gets no weight
+    const T = plan.target === "custom" ? CUSTOM : null;
+    if (T) DIMS.forEach(d => { if (!eng.params.dimensions[d].some(n => T.features[n])) w[d] = 0; });
     return w;
   }
   function partsFromWeights(w) {
@@ -119,7 +125,8 @@
       let sum = 0, cap = 0, n = 0;
       for (const id of PARTS[p].tests) {
         const sub = CEIL[id]; if (!sub) continue;
-        const m = sub.dims.reduce((a, d) => a + (s.dims[d] || 0), 0) / sub.dims.length;
+        const used = sub.dims.filter(d => s.dims[d] != null); if (!used.length) continue; // switched-off conditions don't count
+        const m = used.reduce((a, d) => a + s.dims[d], 0) / used.length;
         sum += m * sub.ceiling; cap += sub.ceiling; n++;
       }
       out[p] = n ? { value: sum / n, ceiling: cap / n } : null;
@@ -221,7 +228,7 @@
   /* Slider values of one of the seven sites, to start from. */
   function conditionsOf(id) {
     const t = X.targets[id], T = target(id), f = t.features;
-    return { body: t.body, lat: t.lat, tmin_C: Math.round(f.temp_min_K - 273.15), swing_K: Math.round(f.temp_daynight_range_K), precip: Math.round(f.precip_mm_per_yr || 0),
+    return { body: t.body, lat: Math.round(t.lat * 2) / 2, tmin_C: Math.round(f.temp_min_K - 273.15), swing_K: Math.round(f.temp_daynight_range_K), precip: Math.round(f.precip_mm_per_yr || 0),
       slope: +f.slope_deg.toFixed(1), rough_m: Math.round(f.roughness_tri_m), albedo: +f.albedo_wsa_unitless.toFixed(2), ice: (f.ground_ice_frac || 0) >= 0.5,
       rocks: T.rock_match.slice(), impact: !!T.impact_relevant, from: id };
   }
@@ -234,11 +241,12 @@
   }
   let ver = 0;
   function setCustom(c) {
-    const ice = !!c.ice, E = EDGE[ice ? "icy" : "bare"], like = LIKE[c.body] || "jezero";
+    const off = new Set(c.off || []), ice = !!c.ice && !off.has("ground_ice_frac"), E = EDGE[ice ? "icy" : "bare"], like = LIKE[c.body] || "jezero";
     const raw = { temp_min_K: c.tmin_C + 273.15, temp_daynight_range_K: c.swing_K, precip_mm_per_yr: c.precip, slope_deg: c.slope, roughness_tri_m: c.rough_m,
       albedo_wsa_unitless: c.albedo, ground_ice_frac: ice ? 1 : 0, sun_noon_elev_mean_deg: sunNoonMean(c.lat, TILT[c.body] || 0), geology_match: 1 };
     const features = {}, outE = {}, outX = {}, gap = {};
     for (const name in raw) {
+      if (off.has(name)) continue; // switched off: not part of the match at all
       const lg = eng.params.log1p.includes(name), x = lg ? Math.log1p(Math.max(0, raw[name])) : raw[name];
       if (!E[name]) { features[name] = { target: raw[name], clamped_target: x, scale: SCALE[name], clamped: false }; continue; }
       const ct = Math.min(E[name][1], Math.max(E[name][0], x)), clamped = ct !== x, scale = clamped ? WIDE[name] : SCALE[name];
@@ -248,6 +256,7 @@
     }
     const allRocks = eng.params.rocks.filter(r => r !== "nd" && r !== "wb" && r !== "ig");
     const rocks = c.rocks && c.rocks.length ? c.rocks.slice() : allRocks;
+    if (!Object.keys(features).length) return null;
     CUSTOM = { id: "custom", name: c.name || "Your conditions", body: c.body, features, rock_match: rocks, impact_relevant: !!c.impact, ice_cells_allowed: ice,
       earth_testable_dims: DIMS.filter(d => eng.params.dimensions[d].every(n => !(gap[n] > 1))), not_testable_on_earth: [], out_of_earth_range: outE,
       n_eligible: 0, cdf_full: [0, 1], cdf_earth_testable: [0, 1], _wi: "v" + (++ver) };

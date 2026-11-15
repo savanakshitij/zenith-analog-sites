@@ -236,7 +236,7 @@
   function split(s, t) {
     const off = t.out_of_earth_range || {};
     const rows = FEAT.map(([f, label, fmt]) => ({ f, label, fmt, e: s.earth[f], tv: t.features[f], d: sim(f, s.earth[f], t), meta: t.meta && t.meta[f] })).filter(x => x.e != null && x.tv != null && x.d != null);
-    rows.push({ f: "geology", label: "Rock type", e: s.tags.rock, tv: t.rock_classes.map(c => ZenithEngine.ROCK_NAMES[c] || c).join(" or "), d: s.dims.geology, txt: true });
+    if (t.engine.features.geology_match) rows.push({ f: "geology", label: "Rock type", e: s.tags.rock, tv: t.rock_classes.map(c => ZenithEngine.ROCK_NAMES[c] || c).join(" or "), d: s.dims.geology, txt: true });
     return { sim: rows.filter(x => x.d >= 0.6 && !off[x.f]), diff: rows.filter(x => x.d < 0.6 && !off[x.f]) };
   }
   /* ---------- fact cards: a stack you swipe through, one card per topic ---------- */
@@ -401,7 +401,7 @@
         : `<div class="sec answers">${ans(best, 0, "Best match overall")}${ans(fr, R.fresh, `Best new candidate (${A.NEW_KM}+ km from known sites)`)}</div>`;
       const ks = Object.entries(A.knownScores[t.id] || {}).filter(([, k]) => k.score != null).sort((a, b) => b[1].score - a[1].score)[0];
       const kn = ks && X.known.find(k => k.id === ks[0]);
-      const dimRow = A.DIMS.map(d => `<span class="dim ${s.dims[d] >= 0.8 ? "hi" : s.dims[d] < 0.4 ? "lo" : ""}" title="${DIM_LABEL[d]}: ${(s.dims[d] || 0).toFixed(2)}, weight ${R.weights[d]}"><i style="height:${Math.round((s.dims[d] || 0) * 100)}%"></i><b>${DIM_LABEL[d]}</b>${R.weights[d] > 1 ? `<em>×${R.weights[d]}</em>` : ""}</span>`).join("");
+      const dimRow = A.DIMS.map(d => `<span class="dim ${!R.weights[d] ? "off" : s.dims[d] >= 0.8 ? "hi" : s.dims[d] < 0.4 ? "lo" : ""}" title="${DIM_LABEL[d]}: ${!R.weights[d] ? "switched off" : `${(s.dims[d] || 0).toFixed(2)}, weight ${R.weights[d]}`}"><i style="height:${Math.round((s.dims[d] || 0) * 100)}%"></i><b>${DIM_LABEL[d]}</b>${R.weights[d] > 1 ? `<em>×${R.weights[d]}</em>` : ""}</span>`).join("");
       return `
       ${m ? `<div class="sec mission"><p class="kicker">${esc(m.agency)}. ${esc(m.status)}</p><h3>${esc(m.mission)}</h3><p>${esc(m.about)}</p>
           ${m.proxy_note ? `<p class="caveat">${esc(m.proxy_note)}</p>` : ""}
@@ -579,22 +579,22 @@
   let COND = null, condT = 0;
   function openConditions(c) {
     COND = Object.assign({}, c || (X.targets.custom && X.targets.custom.conditions) || (S.plan && S.plan.target !== "custom" ? A.conditionsOf(S.plan.target) : A.conditionsOf("jezero")));
-    COND.rocks = (COND.rocks || []).slice();
+    COND.rocks = (COND.rocks || []).slice(); COND.off = (COND.off || []).slice();
     const opts = A.eng.targets.map(x => `<option value="${x.id}" ${x.id === COND.from ? "selected" : ""}>${esc(x.name)}, ${x.body}</option>`).join("");
     $("#sheetBody").innerHTML = `<h2>Your own conditions</h2>
-      <p class="lede">Describe the place you are going. Zenith scores every patch of bare ground on Earth against it, live, with the same formula as the seven sites. If a value goes past anything on Earth, we say so.</p>
+      <p class="lede">Describe the place you are going. Zenith scores every patch of bare ground on Earth against it, live, with the same formula as the seven sites. Untick a condition to leave it out, so you can search on just the ones you care about. If a value goes past anything on Earth, we say so.</p>
       <div class="cf-top">
         <label>Start from <select class="target" id="cfFrom"><option value="">Keep my values</option>${opts}</select></label>
         <div class="seg two" role="group" aria-label="Body"><button data-body="Moon">Moon</button><button data-body="Mars">Mars</button></div>
       </div>
       <div class="cf-grid">${CF.map(f => `<div class="cf" data-k="${f.k}">
-        <label for="cf_${f.k}">${esc(f.label)}</label>
+        <label class="cf-on"><input type="checkbox" data-off="${f.feat}" aria-label="Use ${esc(f.label)}"><span>${esc(f.label)}</span></label>
         <input type="number" id="cfn_${f.k}" min="${f.min}" max="${f.max}" step="${f.step}" aria-label="${esc(f.label)} value">
         <input type="range" id="cf_${f.k}" min="${f.log ? 0 : f.min}" max="${f.log ? 1000 : f.max}" step="${f.log ? 1 : f.step}">
         <p class="cf-edge" id="cfe_${f.k}"></p></div>`).join("")}
-        <div class="cf"><label>Ground ice</label><div class="seg two" role="group" aria-label="Ground ice"><button data-ice="0">No</button><button data-ice="1">Yes</button></div><p class="cf-edge">Yes also lets glaciers and ice sheets count as test ground.</p></div>
+        <div class="cf" data-feat="ground_ice_frac"><label class="cf-on"><input type="checkbox" data-off="ground_ice_frac" aria-label="Use ground ice"><span>Ground ice</span></label><div class="seg two" role="group" aria-label="Ground ice"><button data-ice="0">No</button><button data-ice="1">Yes</button></div><p class="cf-edge">Yes also lets glaciers and ice sheets count as test ground.</p></div>
       </div>
-      <div class="cf"><label>Rock type (none picked = any rock)</label><div class="plan-row">${ROCKS.map(([r, l]) => `<button class="chip" data-rock="${r}">${l}</button>`).join("")}</div></div>
+      <div class="cf" data-feat="geology_match"><label class="cf-on"><input type="checkbox" data-off="geology_match" aria-label="Use rock type"><span>Rock type (none picked = any rock)</span></label><div class="plan-row">${ROCKS.map(([r, l]) => `<button class="chip" data-rock="${r}">${l}</button>`).join("")}</div></div>
       <div id="cfOut" class="cf-out" aria-live="polite"></div>
       <button class="cta" id="cfGo">Show these matches on the globe</button>`;
     $("#sheet").hidden = false; $("#sheet").dataset.id = "conditions";
@@ -603,6 +603,7 @@
       document.querySelectorAll("[data-body]").forEach(b => b.setAttribute("aria-pressed", b.dataset.body === COND.body));
       document.querySelectorAll("[data-ice]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.ice === "1") === !!COND.ice));
       document.querySelectorAll("[data-rock]").forEach(b => b.setAttribute("aria-pressed", COND.rocks.includes(b.dataset.rock)));
+      document.querySelectorAll("[data-off]").forEach(b => { b.checked = !COND.off.includes(b.dataset.off); b.closest(".cf").classList.toggle("is-off", !b.checked); });
       edges(); schedule();
     };
     const set = (k, v) => { COND[k] = v; COND.from = null; $("#cfFrom").value = ""; };
@@ -615,13 +616,15 @@
         set(f.k, v); e.target.value = v; $("#cf_" + f.k).value = toRange(f, v); edges(); schedule();
       });
     });
+    document.querySelectorAll("[data-off]").forEach(b => b.onchange = () => { const a = COND.off.filter(x => x !== b.dataset.off); if (!b.checked) a.push(b.dataset.off); COND.off = a; sync(); });
     $("#cfFrom").onchange = e => { if (e.target.value) { COND = A.conditionsOf(e.target.value); sync(); } };
     document.querySelectorAll("[data-body]").forEach(b => b.onclick = () => { set("body", b.dataset.body); sync(); });
     document.querySelectorAll("[data-ice]").forEach(b => b.onclick = () => { set("ice", b.dataset.ice === "1"); sync(); });
     document.querySelectorAll("[data-rock]").forEach(b => b.onclick = () => { const r = b.dataset.rock, a = COND.rocks; a.includes(r) ? a.splice(a.indexOf(r), 1) : a.push(r); set("rocks", a); sync(); });
     $("#cfGo").onclick = () => {
       const w = {}; A.DIMS.forEach(d => (w[d] = 1));
-      A.setCustom(COND); q.value = "Your own conditions";
+      if (!A.setCustom(COND)) return toast("Switch on at least one condition.");
+      q.value = "Your own conditions";
       go(q.value, { target: "custom", weights: w, why: `your own conditions, ${COND.body}` });
     };
     sync();
@@ -630,6 +633,7 @@
   function edges() {
     CF.forEach(f => {
       const el = $("#cfe_" + f.k);
+      if (COND.off.includes(f.feat)) { el.className = "cf-edge"; el.textContent = "Switched off: not used in the match."; return; }
       if (f.k === "lat") {
         const sun = A.sunNoonMean(COND.lat, A.TILT[COND.body]), e = A.earthEdge(f.feat, sun, COND.ice);
         el.className = "cf-edge" + (e != null ? " out" : "");
@@ -641,17 +645,20 @@
       el.textContent = e == null ? "Within Earth's range." : `Beyond Earth. Closest Earth gets: ${fmtCF(f, f.toF ? Math.round(e - 273.15) : f.k === "albedo" ? e : f.k === "slope" ? Math.round(e * 10) / 10 : Math.round(e))}. Scored against that edge.`;
     });
   }
+  const ALL_FEATS = CF.map(f => [f.feat, f.k === "lat" ? "Sun height" : f.label.split(" (")[0].toLowerCase()]).concat([["ground_ice_frac", "ground ice"], ["geology_match", "rock type"]]);
+  const usedList = () => { const on = ALL_FEATS.filter(([f]) => !COND.off.includes(f)).map(x => x[1]); return on.length === ALL_FEATS.length ? "all conditions" : on.join(", "); };
   function schedule() { clearTimeout(condT); $("#cfOut").classList.add("busy"); condT = setTimeout(score, 180); }
   function score() {
     if ($("#sheet").hidden || !COND) return;
     const w = {}; A.DIMS.forEach(d => (w[d] = 1));
-    A.setCustom(COND);
+    if (!A.setCustom(COND)) { $("#cfOut").classList.remove("busy"); $("#cfOut").innerHTML = `<p class="verdict q-weak"><b>Nothing switched on.</b> Tick at least one condition to search.</p>`; $("#cfGo").disabled = true; return; }
+    $("#cfGo").disabled = false;
     const R = A.assess({ target: "custom", weights: w }), b = R.ranked[0], f = R.ranked[R.fresh];
     const line = (x, lbl) => x ? `<div><span class="kicker">${lbl}</span><b>${esc(nameOf(x.site))}</b><span>${esc(placeOf(x.site))}</span><em>${x.overall.toFixed(2)}</em></div>` : "";
     $("#cfOut").classList.remove("busy");
     $("#cfOut").innerHTML = `<p class="verdict q-${R.quality}"><b>${R.quality[0].toUpperCase() + R.quality.slice(1)} match.</b> ${esc(R.qualityNote)}</p>
       <div class="cf-res">${line(b, "Closest place on Earth")}${R.fresh > 0 ? line(f, `Best new candidate, ${A.NEW_KM}+ km from known sites`) : ""}</div>
-      <p class="note">Scores run 0 to 1 (1 = identical on all seven dimensions). Balanced weights, ${R.pass.n.toLocaleString("en")} cells scored.</p>`;
+      <p class="note">Matched on ${usedList()}. Scores run 0 to 1 (1 = identical on every condition used). ${R.pass.n.toLocaleString("en")} cells scored.</p>`;
   }
 
   function openSheet(id) {
