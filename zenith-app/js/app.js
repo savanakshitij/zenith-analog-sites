@@ -703,6 +703,7 @@
 
   // "On your phone" shows a QR code of this page's own address, so it only appears when the page is on the web
   if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname)) $("#phoneBtn").hidden = false;
+  if (/[?&]design\b/.test(location.search)) document.documentElement.classList.add("show-design");
   G.init($("#globe"));
   layout();
   window.ZenithUI = { go, pick, inspect, state: () => S };

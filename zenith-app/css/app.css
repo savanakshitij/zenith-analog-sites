@@ -734,3 +734,6 @@ select.target option, select.target optgroup { color: #111; background: #fff; }
   .legend em { display: none; }
 }
 .qr { height: auto; image-rendering: auto; }
+/* Design panel hidden for judging; open the page with ?design to get it back */
+:root:not(.show-design) .dz-toggle, :root:not(.show-design) .dz { display: none !important; }
+:root:not(.show-design) .nav { margin-left: 0; }
