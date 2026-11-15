@@ -23,6 +23,7 @@
     <a class="brand" href="./" aria-label="Zenith home"><i aria-hidden="true"></i>ZENITH</a>
     <nav class="nav" aria-label="More">
       <button data-sheet="new-sites">New sites</button>
+      <button id="tourBtn" type="button">Replay tour</button>
       <a class="navlink" href="game/index.html">Drill game</a>
       <button data-sheet="simulate">Simulate</button>
       <button data-sheet="conditions">Your conditions</button>
@@ -48,12 +49,14 @@
     <ul id="suggest" class="suggest" role="listbox" hidden></ul>
   </form>
 
+  <aside id="newCard" class="newcard" aria-label="New analog sites"><div class="nc-text"><b>7 new analog sites found from space</b><span>Not field-checked yet.</span></div><button type="button">See them</button></aside>
+
   <div id="tools" class="tools" hidden>
     <button id="heatBtn" aria-pressed="false" title="Colour every scored cell by its match (H)">Score layer</button>
     <button id="flagBtn" aria-pressed="false" title="Show the analog sites agencies already use">Known sites</button>
-    <button id="newBtn" aria-pressed="false" title="Show the best new candidate for each target, and the top 10 overall">New candidates</button>
+    <button id="newBtn" aria-pressed="false" title="Show the best new analog site for each target, and the top 10 overall">New analog sites</button>
     <div id="legend" class="legend" hidden></div>
-    <div id="layerKey" class="layer-key" hidden><span><i class="k-sq"></i>Known analog site</span><span><i class="k-di"></i>New candidate</span></div>
+    <div id="layerKey" class="layer-key" hidden><span><i class="k-sq"></i>Known analog site</span><span><i class="k-di"></i>New analog site</span></div>
   </div>
   <div id="toast" class="toast" role="status" hidden></div>
 
@@ -99,6 +102,7 @@
   <script src="js/app.js"></script>
   <script src="js/simulate.js"></script>
   <script src="js/design.js"></script>
+<script src="js/tour.js"></script>
 <script src="js/music.js"></script>
 </body>
 </html>
