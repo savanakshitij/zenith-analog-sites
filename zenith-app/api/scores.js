@@ -46,7 +46,7 @@ async function all() {
   const out = []; let cursor;
   for (let page = 0; page < 10; page++) {         // up to 10,000 entries, plenty for one event
     const r = await list({ prefix: PREFIX, cursor, limit: 1000 });
-    r.blobs.forEach(b => { const e = parse(b.pathname); if (e) out.push(e); });
+    r.blobs.forEach(b => { const e = parse(b.pathname); if (e && !/^zzz-check/i.test(e.name)) out.push(e); });   // zzz-check = deploy self-test, hidden
     if (!r.hasMore) break; cursor = r.cursor;
   }
   return out.sort(rankSort);
@@ -93,6 +93,7 @@ module.exports = async (req, res) => {
 
     const me = { id: `${at}_${rand}`, name, m: d10 / 10, s: s100 ? s100 / 100 : null, at };
     const rows = await all();
+    if (/^zzz-check/i.test(name)) return send(res, 201, { id: me.id, place: 0, total: rows.length, top: rows.slice(0, TOP), check: true });
     if (!rows.some(r => r.id === me.id)) rows.push(me), rows.sort(rankSort);  // list can lag a moment behind put
     return send(res, 201, { id: me.id, place: rows.findIndex(r => r.id === me.id) + 1, total: rows.length, top: rows.slice(0, TOP) });
   } catch (e) {
