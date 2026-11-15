@@ -2,21 +2,37 @@
 
 Team Zenith, NASA Space Apps Challenge 2026 (Heilbronn). Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars.*
 
-- **Live app:** https://zenith-analog-sites.vercel.app (opens straight to the new sites: https://zenith-analog-sites.vercel.app/#sheet=new-sites)
+- **Live app:** https://zenith-analog-sites.vercel.app (opens straight to the new analog sites: https://zenith-analog-sites.vercel.app/#sheet=new-sites)
 - **Demo video (30 s):** https://zenith-space-apps.vercel.app/demo.mp4
 - **Drill game:** https://zenith-analog-sites.vercel.app/game/index.html
 
 Team: Surya Pratama, Tahir Atmaca, Mohamed Elmallah, Immanuel Hamonangan, Anas Ahmed, Kshitij Savannah.
 
+## We found 7 new analog sites
+
+Found from satellite and climate data. **Not field-checked yet:** the satellites say these places match, and the next step is someone going out to check them. Nobody has visited them for this project. Each one is the best-matching place at least 500 km from all 37 known analog sites on our list, one per target (Malapert's best match is already that far away, so it counts once).
+
+| Site | Target | Score | Distance to nearest known site |
+|---|---|---|---|
+| Tibesti Mountains, northern Chad (21.4N, 17.4E) | Jezero crater, Mars | 0.73 | 1,836 km (Mount Etna) |
+| Southern Libya, north of the Tibesti Mountains (23.1N, 18.6E) | Marius Hills lava-tube pit, Moon | 0.71 | 1,609 km (Balos Cove, Santorini) |
+| Southern Taklamakan, Xinjiang, China (37.9N, 84.6E) | Arcadia Planitia, Mars | 0.69 | 618 km (Dalangtan playa, Qaidam Basin) |
+| Nubian Desert near Abu Simbel and Lake Nasser, southern Egypt (22.6N, 31.9E) | Meridiani Planum, Mars | 0.68 | 849 km (Wadi Rum) |
+| Eastern Yemen, south of the Rub' al Khali (15.4N, 50.9E) | Gale crater, Mars | 0.65 | 1,144 km (Dallol, Danakil Depression) |
+| Baluchistan, Iran and Pakistan border (28.6N, 61.1E) | Malapert Massif, Moon | 0.46 | 1,685 km (Tso Kar Valley, Ladakh (ISRO HOPE)) |
+| Kunlun Mountains, China (36.6N, 84.9E) | Shackleton crater rim, Moon | 0.39 | 629 km (Dalangtan playa, Qaidam Basin) |
+
+![The New analog sites sheet in the app](docs/img/new-sites-sheet.png)
+
 ## Two traps
 
-An analog-site finder can fail in two ways. **Trap one: rediscovering the usual sites.** The Atacama, Iceland and Devon Island are where agencies already test, so listing them again adds nothing. **Trap two: a place that only looks like Mars.** Red rock is not enough; a test site has to match in the ways that matter to hardware: cold, dryness, slopes and rock type. Zenith scores the whole planet on those measurements and, for every target, always shows a second answer: the best place at least 500 km from all 37 known analog sites on our list. Those are the new places to test.
+An analog-site finder can fail in two ways. **Trap one: rediscovering the usual sites.** The Atacama, Iceland and Devon Island are where agencies already test, so listing them again adds nothing. **Trap two: a place that only looks like Mars.** Red rock is not enough; a test site has to match in the ways that matter to hardware: cold, dryness, slopes and rock type. Zenith scores the whole planet on those measurements and, for every target, always shows a second answer: the best place at least 500 km from all 37 known analog sites on our list: a new analog site, not field-checked yet.
 
-## New places to test
+## Best match and new analog site per target
 
-Balanced weights (every dimension counts the same). The best match overall comes first, then the best new candidate.
+Balanced weights (every dimension counts the same). The best match overall comes first, then the best new analog site (not field-checked yet).
 
-| Target | Best match overall | Score | Best new candidate (500+ km from known sites) | Score | Distance to nearest known analog |
+| Target | Best match overall | Score | Best new analog site (500+ km from known sites) | Score | Distance to nearest known analog |
 |---|---|---|---|---|---|
 | Jezero crater, Mars | Pampa del Tamarugal, Atacama, Chile | 0.81 | Tibesti Mountains, northern Chad (21.4N, 17.4E) | 0.73 | 1,836 km (Mount Etna) |
 | Meridiani Planum, Mars | Atacama Desert, Chile | 0.76 | Nubian Desert near Abu Simbel and Lake Nasser, southern Egypt (22.6N, 31.9E) | 0.68 | 849 km (Wadi Rum) |
@@ -26,9 +42,8 @@ Balanced weights (every dimension counts the same). The best match overall comes
 | Malapert Massif, Moon | Baluchistan, Iran and Pakistan border (28.6N, 61.1E) | 0.46 | Same place: the best match is already far from known sites | 0.46 | 1,685 km (Tso Kar Valley, Ladakh) |
 | Shackleton crater rim, Moon | McMurdo Dry Valleys, Antarctica | 0.42 | Kunlun Mountains, China (36.6N, 84.9E) | 0.39 | 629 km (Dalangtan playa, Qaidam Basin) |
 
-![The New sites sheet in the app](docs/img/new-sites-sheet.png)
 
-These are candidates from satellite and climate data; nobody has field-checked them yet, and access and permits are not assessed. Match quality: strong from 0.70, moderate from 0.50, weak below. Every number in this table comes from [`scoring/new_candidates.mjs`](scoring/new_candidates.mjs), which runs the app's own engine and writes [`results/new_candidates.json`](results/new_candidates.json) and [`.md`](results/new_candidates.md); rerun it with `node scoring/new_candidates.mjs`.
+New analog sites are not field-checked yet, and access and permits are not assessed. Match quality: strong from 0.70, moderate from 0.50, weak below. Every number in this table comes from [`scoring/new_candidates.mjs`](scoring/new_candidates.mjs), which runs the app's own engine and writes [`results/new_candidates.json`](results/new_candidates.json) and [`.md`](results/new_candidates.md); rerun it with `node scoring/new_candidates.mjs`.
 
 ## Why a score can differ between the video, the app and this table
 
@@ -56,7 +71,7 @@ This is the team's working repository. The copy submitted to NASA is https://git
 1. Scores every 0.25° bare-ground cell on Earth against seven Moon and Mars base sites.
 2. Scores seven dimensions: cold, dryness, terrain, surface, ice, sunlight and rock type.
 3. Combines them with one fixed scoring method (`scoring/score_v16.py`) and weights.
-4. For every target it shows two answers: the best match overall and the best new candidate, 500 km or more from every known analog site.
+4. For every target it shows two answers: the best match overall and the best new analog site, 500 km or more from every known analog site (not field-checked yet).
 5. It also reports what can only be tested in space: gravity, vacuum or atmosphere, and radiation.
 
 ## Folder map
