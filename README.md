@@ -72,8 +72,6 @@ A 25 km grid, no soil chemistry, and nobody has visited these sites yet. Nothing
 
 The web app is in [`zenith-app/`](zenith-app/) (open `zenith-app/index.html`, no build step). Data sources are listed in [SOURCES.md](SOURCES.md).
 
-This is the team's working repository. The copy submitted to NASA is https://github.com/elmallah111-design/zenith-app (a snapshot of this repo at submission time).
-
 ## What Zenith does
 
 1. Scores every 0.25° bare-ground cell on Earth against seven Moon and Mars base sites.
