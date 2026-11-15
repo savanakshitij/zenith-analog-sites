@@ -248,7 +248,7 @@ void main() {
       const p = projection([tourLabel.lon, tourLabel.lat]), x = p[0], y = p[1];
       ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(x - 6, y - 6, 12, 12); ctx.strokeStyle = "#ffd23f"; ctx.lineWidth = 2; ctx.strokeRect(x - 6, y - 6, 12, 12);
       ctx.font = "700 16px " + theme.font; const w = ctx.measureText(tourLabel.text).width;
-      ctx.fillStyle = "rgba(0,0,0,.78)"; ctx.fillRect(x + 12, y - 14, w + 16, 28); ctx.fillStyle = "#ffd23f"; ctx.fillText(tourLabel.text, x + 20, y + 6);
+      const lx = x + 12 + w + 16 > innerWidth - 8 ? x - 12 - w - 16 : x + 12; ctx.fillStyle = "rgba(0,0,0,.78)"; ctx.fillRect(lx, y - 14, w + 16, 28); ctx.fillStyle = "#ffd23f"; ctx.fillText(tourLabel.text, lx + 8, y + 6);
     }
     const list = markers.slice().sort((a, b) => (a.id === selected) - (b.id === selected) || b.rank - a.rank);
     for (const m of list) {

@@ -917,3 +917,5 @@ body:not(.is-home) .newcard, .searching .newcard, .is-sim .newcard, .is-touring 
   .newcard { bottom: calc(6vh + 66px); padding-left: 14px; }
   .newcard b { font-size: 15px; }
 }
+
+@media (min-width: 901px) { .newcard { bottom: max(10px, calc(9vh - 70px)); } }
