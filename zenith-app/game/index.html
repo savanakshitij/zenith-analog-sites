@@ -184,7 +184,7 @@ kbd { font: 700 11px Inter, sans-serif; border: 1px solid var(--line); border-ra
     <ol class="steps">
       <li><b>Compare</b> the two real places' numbers (rain, cold, slope, rock, sunlight) with Mars.</li>
       <li><b>Pick</b> the place closest to Mars's conditions, just like a real mission team would. Tap it or press 1 or 2.</li>
-      <li><b>Drill.</b> Tap <b>DRILL</b> or press Space as fast as you can for 8 seconds. Reach 30 m to finish.</li>
+      <li><b>Drill.</b> Tap <b>DRILL</b> or press Space as fast as you can for 10 seconds. Reach 20 m to finish.</li>
       <li><b>See your rank.</b> The ranking board opens by itself.</li>
     </ol>
     <p><b>Tip:</b> looks can fool you. Trust the numbers.</p>
@@ -485,9 +485,10 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
   function reveal() { /* after locking, clicking a site does nothing more */ }
 
   /* ---------- drill challenge: tap fast; a better-matched site digs deeper per tap ---------- */
-  // metres per tap from the engine score: Atacama 0.81 -> 0.65 m, Iceland 0.21 -> 0.16 m.
-  // Reaching the 30 m finish in 8 s needs about 47 taps (6 a second) at the better site, and is impossible at the worse one.
-  const SECS = 8, GOAL = 30, eff = sc => 0.12 + 0.8 * sc * sc;
+  // metres per tap from the engine score: Atacama 0.81 -> 0.90 m, Iceland 0.21 -> 0.20 m.
+  // Reaching the 20 m finish in 10 s needs about 23 taps (just over 2 a second) at the better site; at the worse one it needs
+  // about 100 taps (10 a second), so picking the right place still decides who finishes.
+  const SECS = 10, GOAL = 20, eff = sc => 0.15 + 1.15 * sc * sc;
   let X = null, lastDepth = 0, total = 0, player = "", lastFinish = null, verdict = "";
   function startDrill(k) {
     if (X || locked) return;
