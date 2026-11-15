@@ -758,3 +758,15 @@ select.target option, select.target optgroup { color: #111; background: #fff; }
 #simEnd { margin-top: 8px; background: transparent; border: 1px solid var(--accent); color: var(--ink); }
 .sim-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
 @media (max-width: 640px) { .sim { bottom: 0; border-radius: 16px 16px 0 0; width: 100vw; padding: 14px 16px; } .sim-count b { font-size: 42px; } }
+
+/* ---------- home: drill game button and QR ---------- */
+.play { position: fixed; z-index: 7; left: 50%; top: 84px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 26px; border-radius: 999px; background: var(--accent, #ff4d2e); color: #fff; text-decoration: none; box-shadow: 0 8px 30px rgba(255, 77, 46, .35); transition: transform 150ms; }
+.play:hover { transform: translateX(-50%) scale(1.03); }
+.play b { font-size: 16px; font-weight: 900; } .play span { font-size: 12px; opacity: .9; }
+.qrhome { position: fixed; z-index: 7; right: 24px; bottom: 22px; display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.18); border-radius: 14px; padding: 10px 14px 10px 10px; color: #fff; max-width: 290px; }
+.qrhome > div { width: 92px; flex: none; background: #fff; border-radius: 8px; padding: 4px; } .qrhome svg { display: block; width: 100%; height: auto; }
+.qrhome p { margin: 0; font-size: 12px; color: rgba(255,255,255,.75); } .qrhome b { display: block; color: #fff; font-size: 14px; margin-bottom: 2px; }
+.navlink { color: rgba(255, 255, 255, .88); font: 600 13px var(--font); padding: 6px 10px; border-radius: 999px; text-decoration: none; text-shadow: 0 1px 6px rgba(0,0,0,.8); }
+.navlink:hover { color: #fff; background: rgba(255,255,255,.1); }
+body:not(.is-home) .play, body:not(.is-home) .qrhome, .searching .play, .searching .qrhome, .is-sim .play, .is-sim .qrhome { display: none !important; }
+@media (max-width: 900px) { .play { top: 112px; bottom: auto; padding: 10px 20px; } .play span { display: none; } .qrhome { display: none !important; } .navlink { padding: 6px; font-size: 12px; } }

@@ -704,7 +704,11 @@
   window.ZenithReplay = () => (S.plan ? go(S.text, { target: S.plan.target, subsystems: S.plan.subsystems.slice() }) : pick(LIBRARY[0]));
 
   // "On your phone" shows a QR code of this page's own address, so it only appears when the page is on the web
-  if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname)) $("#phoneBtn").hidden = false;
+  if (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname)) {
+    $("#phoneBtn").hidden = false;
+    // home page QR: the same app on a phone, where people can tour it or play the drill game
+    try { const qr = qrcode(0, "M"); qr.addData(location.href.split("#")[0].split("?")[0]); qr.make(); $("#qrHomeCode").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); $("#qrHome").hidden = false; } catch (e) { /* no QR */ }
+  }
   if (/[?&]design\b/.test(location.search)) document.documentElement.classList.add("show-design");
   G.init($("#globe"));
   layout();
