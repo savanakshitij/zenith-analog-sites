@@ -175,9 +175,10 @@ kbd { font: 700 11px Inter, sans-serif; border: 1px solid var(--line); border-ra
       <li><b>Drill it.</b> 8 seconds, tap as fast as you can. The closer your place is to the target, the deeper every tap digs.</li>
       <li><b>Get the verdict.</b> Our engine scores every site with real climate, terrain and rock data. Deepest total drill tops the chart.</li>
     </ol>
-    <p class="muted">Your depth goes on the ranking board. All data is real, from our engine.</p>
+    <p class="muted">Your depth goes on the live ranking board, shared by everyone playing. All data is real, from our engine.</p>
     <input class="name" id="pname" maxlength="18" placeholder="Your name" autocomplete="off">
     <button class="cta" id="go">Start the mission</button>
+    <button class="linkbtn" id="seeBoard">See the ranking board</button>
   </div>
 </div>
 <div class="cover" id="final" hidden><div class="panel" id="finalIn"></div></div>
@@ -558,16 +559,41 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
   $("#tap").addEventListener("pointerdown", e => { e.preventDefault(); tap(); });
   addEventListener("keydown", e => { if (X && (e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); tap(); } });
 
-  /* ---------- participants' chart (kept in this browser) ---------- */
-  const BKEY = "zenith-analog-lab-board";
-  const board = () => { try { return JSON.parse(localStorage.getItem(BKEY) || "[]"); } catch (e) { return []; } };
-  function save(name, m, fin) { const b = board(); b.push({ name, m: +m.toFixed(1), s: fin ? +fin.toFixed(2) : null, at: Date.now() }); try { localStorage.setItem(BKEY, JSON.stringify(b)); } catch (e) { mem = b; } return b; }
+  /* ---------- participants' chart: shared online board (api/scores.js), this browser as a fallback ---------- */
+  const BKEY = "zenith-analog-lab-board", API = "../api/scores";
+  const online = /^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname);
+  const board = () => { try { return JSON.parse(localStorage.getItem(BKEY) || "[]"); } catch (e) { return mem || []; } };
+  function saveLocal(name, m, fin) { const b = board(); b.push({ name, m: +m.toFixed(1), s: fin ? +fin.toFixed(2) : null, at: Date.now() }); try { localStorage.setItem(BKEY, JSON.stringify(b)); } catch (e) { mem = b; } return b; }
   let mem = null;
   const rankSort = (x, y) => (y.m - x.m) || ((x.s || 99) - (y.s || 99));
-  function chart(b, meAt) {
-    const top = b.slice().sort(rankSort).slice(0, 10), max = GOAL;
-    return `<p class="muted">The bar is depth out of ${GOAL} m. Finishers show their time.</p><div class="board">${top.map((x, i) => `<div class="r ${x.at === meAt ? "me" : ""}"><b>${i + 1}</b><span>${esc(x.name)}</span><span class="tr"><i data-w="${Math.round(x.m / max * 100)}"></i></span><span class="n">${x.s ? `${x.s.toFixed(1)} s` : `${x.m.toFixed(1)} m`}</span></div>`).join("")}</div>`;
+  async function api(opts) {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000);
+    try { const r = await fetch(API, { ...opts, signal: ctl.signal, headers: { "Content-Type": "application/json" } }); const j = await r.json().catch(() => ({})); return { ok: r.ok, status: r.status, ...j }; }
+    finally { clearTimeout(t); }
   }
+  // returns { rows, me, place, total, shared, note }
+  async function save(name, m, fin) {
+    if (online) {
+      try {
+        const r = await api({ method: "POST", body: JSON.stringify({ name, m: +m.toFixed(1), s: fin ? +fin.toFixed(2) : null }) });
+        if (r.ok && r.top) return { rows: r.top, me: r.id, place: r.place, total: r.total, shared: true };
+        if (r.status === 400 && /name/i.test(r.error || "")) return { error: r.error };
+        var note = r.error;
+      } catch (e) { /* offline: fall through */ }
+    }
+    const b = saveLocal(name, m, fin), me = b[b.length - 1].at, sorted = b.slice().sort(rankSort);
+    return { rows: sorted, me, place: sorted.findIndex(x => x.at === me) + 1, total: b.length, shared: false, note: note || (online ? "Could not reach the shared board, so this score is kept on this device." : "") };
+  }
+  async function loadBoard() {
+    if (online) { try { const r = await api({ method: "GET" }); if (r.ok && r.top) return { rows: r.top, total: r.total, shared: true }; } catch (e) {} }
+    const b = board().sort(rankSort); return { rows: b, total: b.length, shared: false };
+  }
+  function chart(rows, meId, n) {
+    const top = rows.slice(0, n || 10), max = GOAL;
+    if (!top.length) return `<p class="muted">No scores yet. Be the first.</p>`;
+    return `<p class="muted">The bar is depth out of ${GOAL} m. Finishers show their time.</p><div class="board">${top.map((x, i) => `<div class="r ${meId != null && (x.id ?? x.at) === meId ? "me" : ""}"><b>${i + 1}</b><span>${esc(x.name)}</span><span class="tr"><i data-w="${Math.round(x.m / max * 100)}"></i></span><span class="n">${x.s ? `${x.s.toFixed(1)} s` : `${x.m.toFixed(1)} m`}</span></div>`).join("")}</div>`;
+  }
+  const growBars = () => requestAnimationFrame(() => document.querySelectorAll(".board .tr i").forEach(i => (i.style.width = i.dataset.w + "%")));
 
   /* ---------- field test: drive the rover on the chosen site ---------- */
   let D = null, samplePts = 0;
@@ -669,25 +695,41 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
     camera.position.lerp(new T.Vector3(wp.x - wf.x, wp.y + 0.42, wp.z - wf.z), 0.12);
     camera.lookAt(wp.x + wf.x * 0.6, wp.y + 0.02, wp.z + wf.z * 0.6);
   }
-  function finish() {
-    const b = save(player, total, lastFinish), me = b[b.length - 1].at, sorted = b.slice().sort(rankSort), place = sorted.findIndex(x => x.at === me) + 1;
-    $("#finalIn").innerHTML = `<p class="kicker">Ranking board · ${esc(player)}</p><h1>${lastFinish ? `Finished in ${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m drilled`}</h1>
-      <p>You are <b>#${place}</b> of ${b.length} participant${b.length === 1 ? "" : "s"}. The more Mars-like your place, the deeper every tap went. Finishers rank by time.</p>
-      ${chart(b, me)}
+  async function finish(retryName) {
+    const name = retryName || player;
+    $("#finalIn").innerHTML = `<p class="kicker">Ranking board · ${esc(name)}</p><h1>Saving your score…</h1>`; $("#final").hidden = false;
+    const r = await save(name, total, lastFinish);
+    if (r.error) {
+      $("#finalIn").innerHTML = `<p class="kicker">Ranking board</p><h1>${lastFinish ? `Finished in ${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m drilled`}</h1><p>${esc(r.error)}</p>
+        <input class="name" id="pname2" maxlength="18" placeholder="Your name" autocomplete="off"><button class="cta" id="save2">Save my score</button>`;
+      const go2 = () => { const v = $("#pname2").value.trim(); if (v) { player = v; finish(v); } };
+      $("#save2").onclick = go2; $("#pname2").addEventListener("keydown", e => { if (e.key === "Enter") { e.stopPropagation(); go2(); } }); $("#pname2").focus();
+      return;
+    }
+    $("#finalIn").innerHTML = `<p class="kicker">${r.shared ? "Live ranking board" : "Ranking board"} · ${esc(name)}</p><h1>${lastFinish ? `Finished in ${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m drilled`}</h1>
+      <p>You are <b>#${r.place}</b> of ${r.total} participant${r.total === 1 ? "" : "s"}${r.shared ? " so far, on every phone and screen playing" : ""}. The more Mars-like your place, the deeper every tap went. Finishers rank by time.</p>
+      ${r.note ? `<p class="muted">${esc(r.note)}</p>` : ""}
+      ${chart(r.rows, r.me)}
+      ${r.place > 10 ? `<p class="muted">You: #${r.place}, ${lastFinish ? `${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m`}.</p>` : ""}
       <ol class="steps"><li><b>Looks can fool you.</b> Iceland looks like Mars, but rain and a low Sun make it a poor match. The Atacama is almost rainless, like Mars.</li>
       <li><b>Earth can't do everything.</b> Nowhere on Earth is as cold as Mars, so cold is tested in chambers.</li></ol>
       <p class="muted">Scores from Team Zenith's engine (data v1.6): climate, terrain, surface, ice, sunlight and rock type for every 0.25° cell of bare ground. Imagery: Esri World Imagery. Target ground is an illustration built from the target's measured slope, ruggedness and brightness.</p>
       <button class="cta" id="again">Next participant</button>
-      <button class="linkbtn" id="wipe">Clear the chart</button>`;
-    $("#final").hidden = false;
-    requestAnimationFrame(() => document.querySelectorAll(".board .tr i").forEach(i => (i.style.width = i.dataset.w + "%")));
+      ${r.shared ? "" : `<button class="linkbtn" id="wipe">Clear the chart</button>`}`;
+    growBars();
     $("#again").onclick = () => { $("#final").hidden = true; round = 0; total = 0; $("#pts").textContent = "0.0 m"; $("#pname").value = ""; $("#intro").hidden = false; startRound(); setTimeout(() => $("#pname").focus(), 50); };
-    $("#wipe").onclick = () => { try { localStorage.removeItem(BKEY); } catch (e) {} mem = null; $("#wipe").textContent = "Chart cleared"; };
+    if ($("#wipe")) $("#wipe").onclick = () => { try { localStorage.removeItem(BKEY); } catch (e) {} mem = null; $("#wipe").textContent = "Chart cleared"; };
+  }
+  async function showBoard() {
+    $("#finalIn").innerHTML = `<p class="kicker">Ranking board</p><h1>Loading…</h1>`; $("#final").hidden = false;
+    const r = await loadBoard();
+    $("#finalIn").innerHTML = `<p class="kicker">${r.shared ? "Live ranking board" : "Ranking board (this device)"}</p><h1>Top drillers</h1><p>${r.total} participant${r.total === 1 ? "" : "s"} so far.</p>${chart(r.rows, null, 20)}<button class="cta" id="back">Back to the game</button>`;
+    growBars(); $("#back").onclick = () => { $("#final").hidden = true; };
   }
   $("#choose").addEventListener("click", e => { const b = e.target.closest("button"); if (b && !locked && !D && !X) inspect(+b.dataset.k); });
   addEventListener("keydown", e => { if (!$("#intro").hidden || !$("#final").hidden) return; const k = ["a", "b"].indexOf(e.key.toLowerCase()) >= 0 ? ["a", "b"].indexOf(e.key.toLowerCase()) : ["1", "2"].indexOf(e.key); if (k >= 0 && !locked && !D && !X) startDrill(k); if (e.key === "Enter" && !locked && sel >= 0 && !D && !X) startDrill(sel); if (e.key === "Escape") { $("#inspect").hidden = true; focus(null); } });
-  const begin = () => { player = ($("#pname").value || "").trim() || `Player ${board().length + 1}`; $("#intro").hidden = true; };
-  $("#go").onclick = begin; $("#pname").addEventListener("keydown", e => { if (e.key === "Enter") { e.stopPropagation(); begin(); } });
+  const begin = () => { player = ($("#pname").value || "").trim() || `Player ${Math.floor(100 + Math.random() * 900)}`; $("#intro").hidden = true; };
+  $("#go").onclick = begin; $("#seeBoard").onclick = showBoard; $("#pname").addEventListener("keydown", e => { if (e.key === "Enter") { e.stopPropagation(); begin(); } });
 
   /* ---------- loop ---------- */
   function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); if (sel < 0) focus(null); }
