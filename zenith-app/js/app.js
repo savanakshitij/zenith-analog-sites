@@ -541,26 +541,49 @@
 
   /* ---------- sheets: case studies, evidence, phone ---------- */
   const SHEETS = {
-    cases: () => `<h2>Case studies</h2><p class="lede">Three places the engine ranked highly, checked by hand against imagery and the literature.</p>
-      <div class="cases">
-        <a class="case" href="cases/taklamakan/index.html" target="_blank" rel="noopener"><p class="kicker">Arcadia Planitia, Mars</p><h3>Southern Taklamakan, China</h3><p>Score 0.68, top 0.04%. Flat sediment plains that match Arcadia's slope, roughness, brightness and Sun angle. No ground ice, and no analog study found at this spot.</p><span class="go">Read the case study</span></a>
-        <a class="case" href="cases/yungay-jezero/index.html" target="_blank" rel="noopener"><p class="kicker">Jezero crater, Mars</p><h3>Yungay against our best Atacama cell</h3><p>Yungay, the well-known Atacama test site, scores 0.62. A cell 390 km north in the same desert scores 0.81. Same desert, a closer match on terrain and Sun angle.</p><span class="go">Read the case study</span></a>
-        <button class="case" data-case="saudi"><p class="kicker">Marius Hills lava tube, Moon</p><h3>Harrat lava fields, Saudi Arabia</h3><p>Score 0.73 against the Marius Hills pit. The best known analog site we scored reaches 0.62. Basalt, dry, and the right terrain. We found no analog study of this lava field; the nearest known site is Wadi Rum, 310 km away.</p><span class="go">Open on the globe</span></button>
+    cases: () => {
+      const stats = a => `<dl class="cs-stats">${a.map(([v, l]) => `<div><dt>${l}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
+      return `<h2>Case studies</h2><p class="lede">Three places the engine ranked highly, checked by hand against imagery and the literature.</p>
+      <div class="cs-list">
+        <article class="cs-card">
+          <img class="cs-thumb" src="cases/taklamakan/closeup.jpg" alt="Satellite close-up of dune ridges and flat plains in the southern Taklamakan" loading="lazy" width="112" height="112">
+          <div class="cs-head"><p class="kicker">Arcadia Planitia, Mars</p><h3>Southern Taklamakan, China</h3><p>Flat sediment plains that match Arcadia's slope, roughness, brightness and Sun angle. There is no ground ice, and we found no analog study at this spot.</p></div>
+          ${stats([["0.68", "Score"], ["0.04%", "Top share of cells"], ["705 km", "Nearest known site"]])}
+          <a class="btn primary" href="cases/taklamakan/index.html" target="_blank" rel="noopener">Read the case study</a>
+        </article>
+        <article class="cs-card">
+          <div class="cs-head"><p class="kicker">Jezero crater, Mars</p><h3>Yungay against our best Atacama cell</h3><p>Yungay, the well-known Atacama test site, matches Jezero less well than a cell in the same desert that sits 390 km to the north.</p></div>
+          ${stats([["0.62", "Yungay"], ["0.81", "Best Atacama cell"], ["390 km", "Apart"]])}
+          <a class="btn primary" href="cases/yungay-jezero/index.html" target="_blank" rel="noopener">Read the case study</a>
+        </article>
+        <article class="cs-card">
+          <div class="cs-head"><p class="kicker">Marius Hills lava tube, Moon</p><h3>Harrat lava fields, Saudi Arabia</h3><p>Basalt, dry, and the right terrain. We found no analog study of this lava field, and the nearest known site is Wadi Rum.</p></div>
+          ${stats([["0.73", "Score"], ["0.62", "Best known analog"], ["310 km", "Nearest known site"]])}
+          <button class="btn primary" data-case="saudi">Open on the globe</button>
+        </article>
       </div>
-      <p class="note">These are candidate sites from satellite-scale data. Nobody on the team has been there.</p>`,
+      <p class="note">These are candidate sites from satellite-scale data. Nobody on the team has been there.</p>`;
+    },
     evidence: () => {
-      const rows = A.eng.targets.map(t => { const r = A.rediscovery[t.id] || {}; return `<tr><td>${esc(t.name)}</td><td>${r.hits}</td><td>${r.expected_by_chance}</td></tr>`; }).join("");
-      const hits = A.eng.targets.reduce((a, t) => a + ((A.rediscovery[t.id] || {}).hits || 0), 0), exp = A.eng.targets.reduce((a, t) => a + ((A.rediscovery[t.id] || {}).expected_by_chance || 0), 0);
-      return `<h2>Does it find the right places?</h2>
-      <p class="lede">The engine was never told where agencies test. It only sees climate, terrain, surface, ice, sunlight and rock type.</p>
-      <div class="stat"><b>${hits}</b><span>of our 175 top sites (25 per target, 300 km apart) sit within 300 km of a known analog site.<br>Random bare ground would give <b class="n">${exp.toFixed(1)}</b>. Poisson p ≈ 0.00015.</span></div>
-      <table class="tbl"><thead><tr><th>Target</th><th>Hits</th><th>By chance</th></tr></thead><tbody>${rows}</tbody></table>
-      <p>Per target the counts are too small to mean much. Together they do.</p>
-      <h3>Two kinds of evidence, one desert</h3>
-      <p>We have no soil chemistry. Using only climate, terrain and rock data, the engine ranks the Atacama first for Jezero. Soil scientists reached the same desert from the other side: Navarro-González et al. (2003) showed Atacama soils near Yungay behave like Mars soils. Different data, same desert.</p>
-      <h3>Where it is weak</h3>
-      <p>No place on Earth is as cold as any of the seven targets, so the Moon's polar sites top out near 0.5. Malapert Massif has no robust analog at all. We show those as weak matches.</p>
-      <button class="chip" id="flagFromSheet">Show the known analog sites on the globe</button>
+      const T = A.eng.targets.map(t => ({ name: t.name, r: A.rediscovery[t.id] || {} }));
+      const hits = T.reduce((a, t) => a + (t.r.hits || 0), 0), exp = T.reduce((a, t) => a + (t.r.expected_by_chance || 0), 0);
+      const max = Math.max(...T.map(t => Math.max(t.r.hits || 0, t.r.expected_by_chance || 0)), 1), scale = Math.ceil(max + 1);
+      const rows = T.map(t => `<li class="ev-row"><span class="ev-name">${esc(t.name)}</span>
+        <span class="ev-track" role="img" aria-label="${t.r.hits} hits, ${t.r.expected_by_chance} expected by chance"><i class="ev-bar" style="width:${(t.r.hits / scale * 100).toFixed(1)}%"></i><i class="ev-tick" style="left:${(t.r.expected_by_chance / scale * 100).toFixed(1)}%"></i></span>
+        <span class="ev-num"><b>${t.r.hits}</b><em>${t.r.expected_by_chance}</em></span></li>`).join("");
+      return `<h2>Does it find the places agencies already use?</h2>
+      <p class="lede">We never told the engine where anyone tests. It only knows climate, terrain, surface, ice, sunlight and rock type.</p>
+      <div class="ev-hero"><div class="ev-big"><b>${hits}</b><span>of our 175 top sites are within 300 km of a known analog site.</span></div>
+        <dl class="ev-facts"><div><dt>Random bare ground</dt><dd>about ${Math.round(exp)} (${exp.toFixed(1)})</dd></div><div><dt>Chance of ${hits} by luck</dt><dd>about 1 in 7,000 (p = 0.00015)</dd></div></dl></div>
+      <h3>Hits for each target</h3>
+      <div class="ev-key"><span><i class="ev-bar"></i>Hits among 25 sites</span><span><i class="ev-tick"></i>Expected by chance</span></div>
+      <ul class="ev-rows">${rows}<li class="ev-row ev-total"><span class="ev-name">All seven</span><span class="ev-track"></span><span class="ev-num"><b>${hits}</b><em>${exp.toFixed(1)}</em></span></li></ul>
+      <p>Each target alone has too few hits to prove anything. Added up, they do.</p>
+      <h3>The Atacama</h3>
+      <p>We have no soil chemistry. From climate, terrain and rock alone, the engine puts the Atacama first for Jezero. Soil scientists picked the same desert for a different reason: Navarro-Gonzalez et al. (2003) found its soils behave like Mars soil.</p>
+      <h3>Weak spots</h3>
+      <p>Nothing on Earth is as cold as these targets, so the Moon's polar sites top out around 0.5. Malapert has no good match anywhere. The app marks these as weak.</p>
+      <button class="btn secondary" id="flagFromSheet">Show the known analog sites on the globe</button>
       <p class="note">Rules were fixed before the run (scoring/DECISIONS_v1_6.md). Full tables: results/validation.md.</p>`;
     },
     phone: () => {
@@ -569,7 +592,8 @@
       try { const qr = qrcode(0, "M"); qr.addData(url); qr.make(); svg = qr.createSvgTag({ cellSize: 6, margin: 3, scalable: true }); } catch (e) { /* no QR, the address below still works */ }
       return `<h2>Open it on your phone</h2><p class="lede">Scan the code and the same app opens on your phone, with the same engine and data.</p>
       <div class="qr">${svg}</div>
-      <p class="mono">${esc(url.replace(/^https?:\/\//, ""))}</p>
+      <p class="mono" id="phoneUrl">${esc(url.replace(/^https?:\/\//, ""))}</p>
+      <button class="btn secondary small" id="copyLink" data-url="${esc(url)}">Copy link</button>
       <p class="note">Runs in the browser, so nothing is sent anywhere. About 20 MB on first load.</p>`;
     },
   };
@@ -679,7 +703,13 @@
     $("#sheetBody").innerHTML = SHEETS[id](); $("#sheet").hidden = false; $("#sheet").dataset.id = id;
     const sa = $("#sheetBody [data-case=saudi]");
     if (sa) sa.onclick = () => { const m = EXAMPLES.find(x => x.id === "lava-tube"); q.value = m.title; const w = {}; A.DIMS.forEach(d => (w[d] = 1)); go(m.title, { target: m.target, weights: w, subsystems: m.subsystems.slice() }); inspect(27.375, 37.375); G.flyTo(27.375, 37.375); };
+    const cp = $("#copyLink"); if (cp) cp.onclick = () => copyText(cp.dataset.url, cp);
     const fl = $("#flagFromSheet"); if (fl) fl.onclick = () => { setFlags(true); closeSheet(); G.zoom(1); };
+  }
+  function copyText(t, btn) {
+    const done = ok => { btn.textContent = ok ? "Copied" : "Copy failed"; setTimeout(() => { btn.textContent = "Copy link"; }, 1600); };
+    const old = () => { try { const x = document.createElement("textarea"); x.value = t; x.style.position = "fixed"; x.style.opacity = "0"; document.body.appendChild(x); x.select(); const ok = document.execCommand("copy"); x.remove(); done(ok); } catch (e) { done(false); } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(() => done(true), old); else old();
   }
   function closeSheet() { $("#sheet").hidden = true; }
 
