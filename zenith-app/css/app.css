@@ -1007,7 +1007,8 @@ a.cta, a.chip { display: inline-flex; align-items: center; justify-content: cent
 :root[data-look="night"] .cs-card .cta, :root[data-look="night"] .ns-fly, :root[data-look="night"] #flagFromSheet, :root[data-look="night"] .sim-btns .chip {
   background: transparent; color: var(--ink); border: 1px solid rgba(237, 237, 234, .32); width: auto; justify-self: start; flex: none;
 }
-:root[data-look="night"] .sim-btns .cta { flex: none; }
+:root[data-look="night"] .sim-btns .cta { flex: 1 1 auto; width: auto; min-width: 0; }
+:root[data-look="night"] .r-badges .tag { display: inline-flex; align-items: center; }
 :root[data-look="night"] .answer { background: transparent; border: 1px solid var(--line); border-radius: 6px; }
 :root[data-look="night"] .answer:hover { border-color: rgba(237, 237, 234, .4); }
 :root[data-look="night"] .answer.on { border-color: var(--ink); box-shadow: inset 2px 0 0 var(--accent); }
