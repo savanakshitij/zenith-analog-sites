@@ -1027,7 +1027,7 @@ a.cta, a.chip { display: inline-flex; align-items: center; justify-content: cent
 :root[data-look="night"] .kicker, :root[data-look="night"] .sec h2, :root[data-look="night"] .cs-stats dt, :root[data-look="night"] .ev-facts dt, :root[data-look="night"] .ns-row span, :root[data-look="night"] .tbl th, :root[data-look="night"] .ev-key, :root[data-look="night"] .ns-top .ns-t small, :root[data-look="night"] .sim-best small {
   font-family: var(--mono); font-size: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted);
 }
-:root[data-look="night"] .cs-stats dd, :root[data-look="night"] .ns-row b, :root[data-look="night"] .sim-count b { font: 700 28px/1.1 var(--font); font-variant-numeric: tabular-nums; color: var(--ink); }
+:root[data-look="night"] .cs-stats dd, :root[data-look="night"] .sim-count b { font: 700 28px/1.1 var(--font); font-variant-numeric: tabular-nums; color: var(--ink); }
 :root[data-look="night"] .r-score span, :root[data-look="night"] .ev-big b { color: var(--ink); }
 :root[data-look="night"] .bar .fill, :root[data-look="night"] .row .meter i, :root[data-look="night"] .ev-bar, :root[data-look="night"] .mo.best .col { background: var(--bar); box-shadow: none; }
 :root[data-look="night"] .ev-tick { background: var(--accent); }
@@ -1048,6 +1048,11 @@ a.cta, a.chip { display: inline-flex; align-items: center; justify-content: cent
   :root[data-look="night"] .sheet h2, :root[data-look="night"] #sheet[data-id] h2 { font-size: 26px; }
 }
 @media (max-width: 520px) { :root[data-look="night"] .sheet .cta { width: auto; } }
+:root[data-look="night"] .ns-row b { font: 700 17px/1.3 var(--font); color: var(--ink); }
+:root[data-look="night"] .card { background: var(--card-solid); border-color: var(--line); box-shadow: none; }
+:root[data-look="night"] p.verdict.q-strong b { color: var(--ink); }
+:root[data-look="night"] .r-target { font: 400 12px/1.4 var(--mono); color: var(--muted); }
+:root[data-look="night"] .r-where { font-family: var(--mono); font-size: 12px; }
 @media (prefers-reduced-motion: reduce) { :root[data-look="night"] * { transition-duration: 0ms !important; animation: none !important; } }
 .sim-why > b { display: block; margin: 0 0 4px; font-size: 15px; font-weight: 800; }
 .sim-why p { margin: 0 0 8px; }
