@@ -38,13 +38,36 @@
   }
 
   const km = (a, b, c, d) => { const r = Math.PI / 180, x = Math.sin((c - a) * r / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin((d - b) * r / 2) ** 2; return 12742 * Math.asin(Math.sqrt(Math.min(1, x))); };
-  const target = id => eng.targets.find(t => t.id === id);
+  let CUSTOM = null; // the "your own conditions" target, rebuilt on every slider change
+  const target = id => (id === "custom" ? CUSTOM : eng.targets.find(t => t.id === id));
+
+  /* Known analog sites. The extras list misses three well-studied ones, so they are added here. */
+  [{ id: "lajoya", name: "La Joya desert, Arequipa", country: "Peru", lat: -16.5, lon: -71.9, cave: false },
+   { id: "dallol", name: "Dallol, Danakil Depression", country: "Ethiopia", lat: 14.24, lon: 40.3, cave: false },
+   { id: "shackletonglacier", name: "Shackleton Glacier soils", country: "Antarctica", lat: -85.0, lon: -176.0, cave: false }]
+    .forEach(k => { if (!X.known.some(x => x.id === k.id)) X.known.push(k); });
+  /* A "new candidate" is at least this far from every known analog site. Closer than this is a known analog region. */
+  const NEW_KM = 500;
+  let far = null; // per cell: 1 when the cell is NEW_KM or more from every known site
+  function farMask() {
+    if (far) return far;
+    far = new Uint8Array(eng.n);
+    const r = Math.PI / 180, K = X.known.map(k => [Math.sin(k.lat * r), Math.cos(k.lat * r), k.lon * r]), cmin = Math.cos(NEW_KM / 6371);
+    for (let i = 0; i < eng.n; i++) {
+      const [la, lo] = eng.cellLatLon(i), sa = Math.sin(la * r), ca = Math.cos(la * r), l = lo * r;
+      let ok = 1;
+      for (const k of K) if (sa * k[0] + ca * k[1] * Math.cos(l - k[2]) > cmin) { ok = 0; break; }
+      far[i] = ok;
+    }
+    return far;
+  }
 
   /* One scoring pass over every cell, cached per target + weights. */
   const cache = new Map();
   function pass(T, weights) {
     const key = T.id + JSON.stringify(weights) + (T._wi || "");
     if (cache.has(key)) return cache.get(key);
+    if (T.id === "custom") for (const k of [...cache.keys()]) if (k.startsWith("custom")) cache.delete(k); // one custom pass at a time
     let s;
     if (T._wi) { eng.targets.push(T); try { s = eng.scoreAll(T.id, { weights }); } finally { eng.targets.pop(); } }
     else s = eng.scoreAll(T.id, { weights });
@@ -83,7 +106,7 @@
       stability: j >= 0 && STAB[T.id] && r.eligible ? STAB[T.id][j] / 200 : null,
       tags: { rock: f.rock, rock_abbr: f.rock_abbr, impact_crater: tg.impact_crater || null, lava_tube: tg.lava_tube || null, geology: r.geologyMatch },
       hazard: { wind_m_s: j >= 0 && WIND[j] !== 255 ? WIND[j] / 10 : null, dust_aod: j >= 0 && DUST[j] !== 255 ? DUST[j] / 100 : null },
-      monthly: monthly(i), nearest_known: nk, kind: nk.km < 150 ? "known-area" : "candidate",
+      monthly: monthly(i), nearest_known: nk, kind: nk.km < 150 ? "known-area" : nk.km < NEW_KM ? "known-region" : "candidate",
       studied: X.studies.map(s => ({ name: s.name, url: s.url, for: s.for, km: Math.round(km(lat, lon, s.lat, s.lon)) })).filter(s => s.km <= 150).sort((a, b) => a.km - b.km).slice(0, 6),
     };
   }
@@ -112,6 +135,14 @@
       out.push({ what: label, target: r.value, earth });
     }
     const o = t.out_of_earth_range;
+    if (T.id === "custom") { // every slider that goes past Earth
+      const L = { temp_min_K: ["Coldest temperature", K, K], temp_daynight_range_K: ["Day–night swing", v => `${Math.round(v)} K`, v => `${Math.round(v)} K`],
+        slope_deg: ["Slope", v => `${v.toFixed(1)}°`, v => `${v.toFixed(1)}°`], roughness_tri_m: ["Ruggedness", v => `${Math.round(v)} m`, v => `${Math.round(v)} m`],
+        albedo_wsa_unitless: ["Brightness", v => v.toFixed(2), v => v.toFixed(2)], precip_mm_per_yr: ["Rain and snow", v => `${Math.round(v)} mm/yr`, v => `${Math.round(v)} mm/yr`],
+        sun_noon_elev_mean_deg: ["Noon Sun height", v => `${Math.round(v)}°`, v => `${Math.round(v)}°`] };
+      for (const f in o) if (L[f]) out.push({ what: L[f][0], target: L[f][1](o[f].target), earth: `Earth's limit ${L[f][2](o[f].earth_edge)}` });
+      return out;
+    }
     if (o.temp_min_K) out.push({ what: "Coldest temperature", target: K(o.temp_min_K.target), earth: `coldest scored ground ${K(o.temp_min_K.earth_edge)}` });
     if (o.temp_daynight_range_K) out.push({ what: "Day–night swing", target: `${Math.round(o.temp_daynight_range_K.target)} K`, earth: `largest ${Math.round(o.temp_daynight_range_K.earth_edge)} K` });
     return out;
@@ -134,8 +165,21 @@
     }
     const parts = plan.subsystems && plan.subsystems.length ? plan.subsystems : partsFromWeights(weights);
     const ranked = picked.map(([i]) => { const s = site(i, T, weights, P); return { site: s, overall: s.score, subsystems: coverage(s, parts), stability: s.stability, tag: s.kind }; });
+    // Two answers: the best match overall, and the best match at least NEW_KM from every known analog site.
+    let fresh = -1;
+    const F = farMask(), fi = P.idx.find(i => F[i]);
+    if (fi != null) {
+      fresh = ranked.findIndex(r => r.site.i === fi);
+      if (fresh < 0) { const s = site(fi, T, weights, P); ranked.push({ site: s, overall: s.score, subsystems: coverage(s, parts), stability: s.stability, tag: s.kind, extra: true }); fresh = ranked.length - 1; }
+    }
     const q = quality(P.best);
-    return { target: Object.assign({}, X.targets[T.id], { engine: T }), weights, parts, ranked, pass: P, cannotTest: cannotTest(T), quality: q, qualityNote: QUALITY_NOTE[q] };
+    let note = QUALITY_NOTE[q];
+    if (T.id === "custom") {
+      const off = Object.keys(T.out_of_earth_range).map(f => CUSTOM_LABEL[f]).filter(Boolean);
+      note = P.best >= 0.7 ? "Earth has close matches for these conditions." : P.best >= 0.5 ? "Earth matches parts of these conditions, not all of them." : P.best >= 0.3 ? "No close Earth match. These are the nearest partial matches, so test each part separately." : "Nothing on Earth is close to these conditions. These are the least-bad places, not analogs.";
+      if (off.length) note += ` Beyond anything on Earth: ${off.join(", ")}.`;
+    }
+    return { target: Object.assign({}, X.targets[T.id], { engine: T }), weights, parts, ranked, fresh, pass: P, cannotTest: cannotTest(T), quality: q, qualityNote: note };
   }
 
   /* Just the top places for a plan (cells 100 km apart), without building full records. */
@@ -155,23 +199,63 @@
   /* The same cell against all seven targets (balanced weights). */
   function allTargets(lat, lon) { const r = eng.scoreAt(lat, lon); return r.land ? r.targets : []; }
 
-  /* What if the target were milder or harsher: shift its cold, day-night swing, slope and ruggedness, re-score every cell. */
-  function whatIf(s, plan) {
-    const T = target(plan.target), weights = weightsFor(plan), tf = (n, v) => (eng.params.log1p.includes(n) ? Math.log1p(Math.max(0, v)) : v);
-    return [-0.2, -0.1, 0, 0.1, 0.2].map(p => {
-      if (!p) return { p, pct: s.percentile };
-      const T2 = JSON.parse(JSON.stringify(T)); T2.id = "__whatif"; T2._wi = String(p);
-      for (const [f, sign] of [["temp_min_K", -1], ["temp_daynight_range_K", 1], ["slope_deg", 1], ["roughness_tri_m", 1]]) {
-        const d = T2.features[f]; if (!d) continue;
-        const v = tf(f, d.target * (1 + sign * p));
-        // a target beyond Earth's range stays pinned to Earth's edge unless the shift brings it back inside
-        d.clamped_target = d.clamped ? (f === "temp_min_K" ? Math.max(d.clamped_target, v) : Math.min(d.clamped_target, v)) : v;
-      }
-      const P2 = pass(T2, weights), r = eng.scoreCell(s.i, T2, null, weights);
-      return { p, pct: P2.pctOf(r.score) };
-    });
+  /* ---------- your own conditions ----------
+     A custom target built from sliders, scored with exactly the same rules as the seven sites (scoring/DECISIONS_v1_6.md):
+     scale = area-weighted IQR of bare cells; a value past Earth's range is clamped to Earth's edge and scored with the
+     wider p5-p95 scale (R2); a dimension leaves the Earth-testable score only if the gap to Earth is bigger than its scale (R3).
+     The numbers below reproduce the engine's own scales and edges (checked against engine_params.json). */
+  const SCALE = { temp_min_K: 11.89, temp_daynight_range_K: 3.1, precip_mm_per_yr: 100.9, slope_deg: 0.816, roughness_tri_m: 1.7343875736003724, albedo_wsa_unitless: 0.1448, sun_noon_elev_mean_deg: 11.07, ground_ice_frac: 1, geology_match: 1 };
+  const WIDE = { temp_min_K: 40.51954119977171, temp_daynight_range_K: 9.3, precip_mm_per_yr: 264.4, slope_deg: 4.501, roughness_tri_m: 4.3279, albedo_wsa_unitless: 0.2857, sun_noon_elev_mean_deg: 25.06 };
+  // Earth's range over the cells that can be scored: bare ground, or bare ground plus ice when the target has ice.
+  const EDGE = {
+    bare: { temp_min_K: [233.62, 302.44], temp_daynight_range_K: [0.38, 29.66], precip_mm_per_yr: [0, 3106.8], slope_deg: [0, 17.461], roughness_tri_m: [0, 7.45], albedo_wsa_unitless: [0.054, 0.625], sun_noon_elev_mean_deg: [11.01, 75.14] },
+    icy: { temp_min_K: [193.71, 302.44], temp_daynight_range_K: [-1.61, 29.66], precip_mm_per_yr: [0, 4516], slope_deg: [0, 18.588], roughness_tri_m: [0, 7.45], albedo_wsa_unitless: [0.054, 0.927], sun_noon_elev_mean_deg: [7.45, 75.14] },
+  };
+  const CUSTOM_LABEL = { temp_min_K: "coldest temperature", temp_daynight_range_K: "day–night swing", precip_mm_per_yr: "rain and snow", slope_deg: "slope", roughness_tri_m: "ruggedness", albedo_wsa_unitless: "brightness", sun_noon_elev_mean_deg: "noon Sun height" };
+  const TILT = { Moon: 1.54, Mars: 25.19 }, LIKE = { Moon: "shackleton", Mars: "jezero" };
+  function sunNoonMean(lat, tilt) { // same as the engine: mean noon Sun height over a year
+    let s = 0; const t = tilt * Math.PI / 180;
+    for (let k = 0; k < 360; k++) { const d = Math.asin(Math.sin(t) * Math.sin(2 * Math.PI * k / 360)) * 180 / Math.PI; s += Math.max(0, 90 - Math.abs(lat - d)); }
+    return Math.round(s / 360 * 100) / 100;
+  }
+  /* Slider values of one of the seven sites, to start from. */
+  function conditionsOf(id) {
+    const t = X.targets[id], T = target(id), f = t.features;
+    return { body: t.body, lat: t.lat, tmin_C: Math.round(f.temp_min_K - 273.15), swing_K: Math.round(f.temp_daynight_range_K), precip: Math.round(f.precip_mm_per_yr || 0),
+      slope: +f.slope_deg.toFixed(1), rough_m: Math.round(f.roughness_tri_m), albedo: +f.albedo_wsa_unitless.toFixed(2), ice: (f.ground_ice_frac || 0) >= 0.5,
+      rocks: T.rock_match.slice(), impact: !!T.impact_relevant, from: id };
+  }
+  /* Where one slider value sits against Earth: null when inside, else Earth's edge in slider units. */
+  function earthEdge(name, v, ice) {
+    const lg = eng.params.log1p.includes(name), x = lg ? Math.log1p(Math.max(0, v)) : v, [lo, hi] = EDGE[ice ? "icy" : "bare"][name];
+    if (x >= lo && x <= hi) return null;
+    const e = x < lo ? lo : hi;
+    return lg ? Math.expm1(e) : e;
+  }
+  let ver = 0;
+  function setCustom(c) {
+    const ice = !!c.ice, E = EDGE[ice ? "icy" : "bare"], like = LIKE[c.body] || "jezero";
+    const raw = { temp_min_K: c.tmin_C + 273.15, temp_daynight_range_K: c.swing_K, precip_mm_per_yr: c.precip, slope_deg: c.slope, roughness_tri_m: c.rough_m,
+      albedo_wsa_unitless: c.albedo, ground_ice_frac: ice ? 1 : 0, sun_noon_elev_mean_deg: sunNoonMean(c.lat, TILT[c.body] || 0), geology_match: 1 };
+    const features = {}, outE = {}, outX = {}, gap = {};
+    for (const name in raw) {
+      const lg = eng.params.log1p.includes(name), x = lg ? Math.log1p(Math.max(0, raw[name])) : raw[name];
+      if (!E[name]) { features[name] = { target: raw[name], clamped_target: x, scale: SCALE[name], clamped: false }; continue; }
+      const ct = Math.min(E[name][1], Math.max(E[name][0], x)), clamped = ct !== x, scale = clamped ? WIDE[name] : SCALE[name];
+      features[name] = { target: raw[name], clamped_target: ct, scale, clamped };
+      gap[name] = Math.abs(x - ct) / scale;
+      if (clamped) { outE[name] = { target: raw[name], earth_edge: lg ? Math.expm1(ct) : ct }; outX[name] = outE[name]; }
+    }
+    const allRocks = eng.params.rocks.filter(r => r !== "nd" && r !== "wb" && r !== "ig");
+    const rocks = c.rocks && c.rocks.length ? c.rocks.slice() : allRocks;
+    CUSTOM = { id: "custom", name: c.name || "Your conditions", body: c.body, features, rock_match: rocks, impact_relevant: !!c.impact, ice_cells_allowed: ice,
+      earth_testable_dims: DIMS.filter(d => eng.params.dimensions[d].every(n => !(gap[n] > 1))), not_testable_on_earth: [], out_of_earth_range: outE,
+      n_eligible: 0, cdf_full: [0, 1], cdf_earth_testable: [0, 1], _wi: "v" + (++ver) };
+    X.targets.custom = { id: "custom", name: CUSTOM.name, body: c.body, lat: c.lat, lon: 0, features: raw, meta: {}, rock_classes: c.rocks && c.rocks.length ? rocks : ["any"],
+      out_of_earth_range: outX, not_matchable: X.targets[like].not_matchable, n_eligible: 0, conditions: Object.assign({}, c) };
+    return CUSTOM;
   }
 
-  window.ZenithApp = { eng, X, PARTS, DIMS, km, target, weightsFor, partsFromWeights, assess, inspect, top, allTargets, whatIf, pass, quality, QUALITY_NOTE,
+  window.ZenithApp = { eng, X, PARTS, DIMS, km, target, weightsFor, partsFromWeights, assess, inspect, top, allTargets, pass, NEW_KM, setCustom, conditionsOf, earthEdge, sunNoonMean, TILT, EDGE, quality, QUALITY_NOTE,
     known: X.known, rediscovery: X.rediscovery, knownScores: X.knownScores };
 })();

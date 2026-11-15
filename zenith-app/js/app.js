@@ -31,7 +31,7 @@
     requestAnimationFrame(tick);
   }
 
-  let S = { text: "", plan: null, report: null, idx: 0, tab: "overview", wi: 2, pick: null, heat: false, flags: false };
+  let S = { text: "", plan: null, report: null, idx: 0, tab: "overview", pick: null, heat: false, flags: false };
 
   /* ---------- names ---------- */
   const cc = new Map();
@@ -50,15 +50,16 @@
     const v = q.value.trim().toLowerCase();
     const hit = m => !v || m.title.toLowerCase().includes(v) || A.target(m.target).name.toLowerCase().includes(v) || A.target(m.target).body.toLowerCase().includes(v) || (m.real && (m.real.mission + m.real.agency).toLowerCase().includes(v));
     const items = LIBRARY.filter(hit);
-    return v && !items.length ? [{ free: true, title: q.value.trim() }] : items;
+    if (v && !items.length) return parse(v).unknown ? [{ none: true, title: q.value.trim() }, { conditions: true, title: "Set your own conditions with sliders instead" }] : [{ free: true, title: q.value.trim() }];
+    return items.concat(v ? [] : [{ conditions: true, title: "Set your own conditions with sliders" }]);
   }
   function showSuggest() {
     const items = suggestions(); active = -1;
     let html = "", group = null;
     items.forEach((m, i) => {
-      const g = m.free ? null : m.real ? "Upcoming missions" : "Example missions";
+      const g = m.free || m.none || m.conditions ? null : m.real ? "Upcoming missions" : "Example missions";
       if (g && g !== group) { html += `<li class="grp">${g}</li>`; group = g; }
-      html += `<li><button type="button" data-i="${i}" role="option"><span class="body">${m.free ? "GO" : esc(m.real ? m.tag : A.target(m.target).body.toUpperCase())}</span><span>${esc(m.title)}${m.real ? `<small>${esc(m.real.status)}</small>` : ""}</span></button></li>`;
+      html += `<li><button type="button" data-i="${i}" role="option"><span class="body">${m.none ? "?" : m.conditions ? "DIY" : m.free ? "GO" : esc(m.real ? m.tag : A.target(m.target).body.toUpperCase())}</span><span>${m.none ? `No Moon or Mars place in “${esc(m.title)}”<small>Try a site, like Jezero, the south pole or a lava tube</small>` : esc(m.title)}${m.real ? `<small>${esc(m.real.status)}</small>` : ""}</span></button></li>`;
     });
     sug.innerHTML = html; sug.hidden = false; sug._items = items;
     document.body.classList.add("searching"); // the ground window and tools step aside while the list is open
@@ -83,11 +84,20 @@
     const text = q.value.trim();
     if (!text) { q.focus(); return showSuggest(); }
     const lib = LIBRARY.find(m => m.title.toLowerCase() === text.toLowerCase());
-    lib ? pick(lib) : go(text, parse(text));
+    lib ? pick(lib) : run(text);
   });
+  // Free text: if nothing in it names a Moon or Mars place or mission part, say so instead of flying somewhere.
+  function run(text) {
+    const plan = parse(text);
+    if (plan.unknown) { showSuggest(); return toast(`We can't read a Moon or Mars place in “${text}”. Name a site (Jezero, Gale, the lunar south pole, a lava tube), pick a mission from the list, or set your own conditions.`, 7000); }
+    go(text, plan);
+    if (plan.noPlace) toast(`No Moon or Mars place named, so this is our default Mars site, ${A.target(plan.target).name}. Change it under Mission plan.`, 6000);
+  }
   function pick(m) {
     if (!m) return;
-    if (m.free) return go(m.title, parse(m.title));
+    if (m.none) return run(m.title);
+    if (m.conditions) { hideSuggest(); return openConditions(); }
+    if (m.free) return run(m.title);
     q.value = m.title;
     go(m.title, m.real ? { target: m.target, weights: m.weights, real: m.real } : { target: m.target, subsystems: m.subsystems.slice() });
   }
@@ -120,7 +130,7 @@
   let flight = 0;
   function go(text, plan) {
     hideSuggest(); q.blur(); closeSheet();
-    S.text = text; S.idx = 0; S.tab = "overview"; S.wi = 2; S.pick = null;
+    S.text = text; S.idx = 0; S.tab = "overview"; S.pick = null;
     S.plan = { target: plan.target, subsystems: plan.subsystems || A.partsFromWeights(plan.weights), weights: plan.weights || null, real: plan.real || null, why: plan.why, guessed: plan.guessed };
     S.report = A.assess(S.plan);
     // a new search is a camera flight, a short title card, then the panel
@@ -181,11 +191,16 @@
     const r = current(); if (!r) return 0;
     const s = r.site, t = R.target;
     $("#rSub").innerHTML = s.eligible ? `top <b>${topFmt(s.percentile)}%</b> of ${R.pass.n.toLocaleString("en")} scored cells` : `not ranked: ${esc(s.why_not)}`;
-    $("#rRank").textContent = S.pick ? (s.eligible ? `Your pick, #${s.rank.toLocaleString("en")} of ${R.pass.n.toLocaleString("en")}` : "Your pick") : `${S.idx + 1} of ${R.ranked.length}`;
+    const isFresh = !S.pick && S.idx === R.fresh;
+    $("#rRank").textContent = S.pick ? (s.eligible ? `Your pick, #${s.rank.toLocaleString("en")} of ${R.pass.n.toLocaleString("en")}` : "Your pick")
+      : isFresh && r.extra ? `Best new candidate, #${s.rank.toLocaleString("en")}` : `${S.idx + 1} of ${R.ranked.length}`;
     $("#prev").disabled = !S.pick && S.idx === 0; $("#next").disabled = !S.pick && S.idx === R.ranked.length - 1;
     const b = [];
-    if (s.nearest_known.km < 150) b.push(`<span class="tag" title="${s.nearest_known.km} km from ${esc(s.nearest_known.name)}">Known analog area</span>`);
-    else if (s.eligible) b.push(`<span class="tag ${s.nearest_known.km >= 300 ? "gem" : ""}" title="Nearest known analog site: ${esc(s.nearest_known.name)}">Nearest analog site ${s.nearest_known.km.toLocaleString("en")} km</span>`);
+    const nk = s.nearest_known, nkName = esc(nk.name.split(",")[0]);
+    if (nk.km < 150) b.push(`<span class="tag" title="${nk.km} km from ${esc(nk.name)}">Known analog site</span>`);
+    else if (nk.km < A.NEW_KM) b.push(`<span class="tag" title="${nk.km} km from ${esc(nk.name)}, a known analog site">Known analog region, ${nk.km.toLocaleString("en")} km from ${nkName}</span>`);
+    else if (s.eligible) b.push(`<span class="tag gem" title="Nearest known analog site: ${esc(nk.name)}">New candidate, ${nk.km.toLocaleString("en")} km from any known site</span>`);
+    if (!S.pick && R.fresh > 0) b.push(isFresh ? `<button class="tag jump" data-jump="0">‹ Best match overall</button>` : `<button class="tag jump" data-jump="${R.fresh}">Best new candidate ›</button>`);
     if (r.stability != null) b.push(`<span class="tag ${r.stability >= 0.5 ? "" : "warn"}" title="In the top 1% in ${Math.round(r.stability * 100)}% of 200 random weightings">${r.stability >= 0.5 ? "Stable" : "Weight-sensitive"}</span>`);
     $("#rBadges").innerHTML = b.join("");
     G.select(s.id);
@@ -201,11 +216,12 @@
     try { if (window.ZenithGround) window.ZenithGround.show(s, t, { name: nameOf(s), place: placeOf(s) }, { delay: opts.cine ? ms : 0 }); } catch (e) { console.warn("ground view", e); }
     return ms;
   }
+  $("#rBadges").addEventListener("click", e => { const b = e.target.closest("[data-jump]"); if (b) show(+b.dataset.jump); });
   $("#prev").onclick = () => (S.pick ? show(S.idx) : show(S.idx - 1));
   $("#next").onclick = () => (S.pick ? show(S.idx) : show(S.idx + 1));
 
   /* ---------- tabs ---------- */
-  const TABS = [["overview", "Overview"], ["similar", "Matches"], ["different", "Gaps"], ["season", "Season"], ["whatif", "What if"], ["hazards", "Hazards"], ["research", "Studies"], ["fits", "Also fits"]];
+  const TABS = [["overview", "Overview"], ["similar", "Matches"], ["different", "Gaps"], ["season", "Season"], ["hazards", "Hazards"], ["research", "Studies"], ["fits", "Also fits"]];
   const FEAT = [
     ["temp_min_K", "Coldest night", v => `${Math.round(v - 273.15)} °C`],
     ["temp_daynight_range_K", "Day–night swing", v => `${Math.round(v)} K`],
@@ -226,7 +242,7 @@
   /* ---------- fact cards: a stack you swipe through, one card per topic ---------- */
   const panel = $("#panel"), sbar = $("#slideBar"), N = TABS.length;
   let cardIdx = 0, counts = {}, cards = [], busy = false, lazyArgs = null, built = new Set();
-  const LAZY = new Set(["whatif", "fits"]);
+  const LAZY = new Set(["fits"]);
   function ensureCard(k) {
     const id = TABS[k][0];
     if (!LAZY.has(id) || built.has(id) || !lazyArgs) return;
@@ -237,8 +253,7 @@
   function renderSlides(typeAt = 0) {
     const r = current(), t = S.report.target, sp = split(r.site, t);
     counts = { similar: sp.sim.length, different: sp.diff.length + S.report.cannotTest.length };
-    // "What if" re-scores the whole Earth four times and "Also fits" scores every library mission, so those two
-    // cards are built the first time they reach the top, not on every site change.
+    // "Also fits" scores every library mission, so that card is built the first time it reaches the top.
     lazyArgs = { r, t, sp }; built = new Set();
     panel.innerHTML = TABS.map(([id, label], k) =>
       `<section class="card" data-card="${id}" role="group" aria-roledescription="card" aria-label="${label}, ${k + 1} of ${N}"><div class="card-body">${LAZY.has(id) ? "" : PANELS[id](r, t, sp)}</div></section>`).join("");
@@ -379,7 +394,11 @@
     overview(r, t) {
       const s = r.site, R = S.report, m = S.plan.real;
       const kImg = s.nearest_known.km < 40 && (IMG.SITE_IMAGES[s.nearest_known.id] || [])[0], tImg = (IMG.BASE_IMAGES[t.id] || [])[0];
-      const opts = ["Moon", "Mars"].map(b => `<optgroup label="${b}">${A.eng.targets.filter(x => x.body === b).map(x => `<option value="${x.id}" ${x.id === S.plan.target ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`).join("");
+      const opts = (S.plan.target === "custom" ? `<option value="custom" selected>Your conditions (${esc(t.body)})</option>` : "") + ["Moon", "Mars"].map(b => `<optgroup label="${b}">${A.eng.targets.filter(x => x.body === b).map(x => `<option value="${x.id}" ${x.id === S.plan.target ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>`).join("");
+      const best = R.ranked[0], fr = R.ranked[R.fresh];
+      const ans = (x, k, lbl) => x ? `<button class="answer ${S.idx === k && !S.pick ? "on" : ""}" data-jump="${k}"><span class="kicker">${lbl}</span><b>${esc(nameOf(x.site))}</b><span>${x.overall.toFixed(2)} · ${x.site.nearest_known.km < A.NEW_KM ? `${x.site.nearest_known.km.toLocaleString("en")} km from ${esc(x.site.nearest_known.name.split(",")[0])}, a known analog site` : `${x.site.nearest_known.km.toLocaleString("en")} km from any known analog site`}</span></button>` : "";
+      const two = R.fresh === 0 ? `<div class="sec answers one">${ans(best, 0, "Best match, and already a new candidate")}</div>`
+        : `<div class="sec answers">${ans(best, 0, "Best match overall")}${ans(fr, R.fresh, `Best new candidate (${A.NEW_KM}+ km from known sites)`)}</div>`;
       const ks = Object.entries(A.knownScores[t.id] || {}).filter(([, k]) => k.score != null).sort((a, b) => b[1].score - a[1].score)[0];
       const kn = ks && X.known.find(k => k.id === ks[0]);
       const dimRow = A.DIMS.map(d => `<span class="dim ${s.dims[d] >= 0.8 ? "hi" : s.dims[d] < 0.4 ? "lo" : ""}" title="${DIM_LABEL[d]}: ${(s.dims[d] || 0).toFixed(2)}, weight ${R.weights[d]}"><i style="height:${Math.round((s.dims[d] || 0) * 100)}%"></i><b>${DIM_LABEL[d]}</b>${R.weights[d] > 1 ? `<em>×${R.weights[d]}</em>` : ""}</span>`).join("");
@@ -389,6 +408,7 @@
           <p class="src">${m.sources.map(x => `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>`).join(", ")}. Checked ${esc((window.ZENITH_MISSIONS || {}).status_checked || "")}</p></div>`
         : S.plan.why ? `<p class="read">Read as <b>${esc(t.name)}</b> (${esc(S.plan.why)}). Change it under Mission plan.</p>` : ""}
       <p class="verdict q-${R.quality}"><b>${R.quality[0].toUpperCase() + R.quality.slice(1)} match.</b> ${esc(R.qualityNote)}</p>
+      ${two}
       <div class="sec"><h2>Why this place</h2><div class="dims">${dimRow}</div>
         <p class="note">Closeness to ${esc(t.name)} on each of seven dimensions, 0 to 1. The score is their weighted geometric mean, so one bad dimension pulls it down. Balanced weights give this cell ${s.balanced != null ? s.balanced.toFixed(2) : "–"}.</p></div>
       <div class="sec pair">
@@ -399,6 +419,7 @@
         <p class="note">Coverage, not similarity: dimension match × the most an Earth test can prove for that part (the tick, a team assumption). Gravity, air pressure and radiation are never covered.</p></div>
       <div class="sec"><h2>Mission plan</h2>
         <select class="target" id="targetSel" aria-label="Base site">${opts}</select>
+        <button class="chip edit-cond" id="editCond">${S.plan.target === "custom" ? "Edit your conditions" : `Change ${esc(t.name)}'s conditions with sliders`}</button>
         <div class="plan-row">${Object.keys(A.PARTS).map(id => `<button class="chip" data-sub="${id}" aria-pressed="${S.plan.subsystems.includes(id)}">${esc(A.PARTS[id].label)}</button>`).join("")}</div>
         <p class="note">${S.plan.weights ? (S.plan.real ? "Using this mission's own weights. Pick parts to replace them." : "Balanced weights: all seven dimensions count the same. Pick parts to change that.") : "Each part you pick adds weight to the dimensions it depends on. No dimension is ever dropped."}</p></div>
       ${kn ? `<div class="sec"><h2>Against the best known analog</h2><div class="kv one"><div><span>${esc(kn.name)} (best cell at the site)</span><span>${ks[1].score.toFixed(2)}</span></div><div><span>This cell, same balanced weights</span><span>${s.balanced != null ? s.balanced.toFixed(2) : "–"}</span></div></div></div>` : ""}`;
@@ -419,12 +440,6 @@
       return `<p class="big-line">${esc(bm.label)}</p>
         <div class="sec months">${bm.months.map((m, i) => `<div class="mo ${m.best ? "best" : ""} ${m.dark ? "dark" : ""}" title="${m.name}: low ${m.tmin.toFixed(0)} °C · ${m.precip.toFixed(2)} mm/day${m.dark ? " · polar night" : ""}"><span>${Math.round(m.tmin)}°</span><div class="col" style="height:${Math.round(12 + 88 * (hi - m.tmin) / Math.max(1, hi - lo))}%;animation-delay:${i * 30}ms"></div><span>${m.name[0]}</span></div>`).join("")}</div>
         <p class="note">The coldest, driest months with daylight. Bars show the average daily low. Pale bars are polar night. NASA POWER (MERRA-2) long-term monthly means.</p>`;
-    },
-    whatif() {
-      return `<div class="seg" role="group" aria-label="Target conditions">${["−20%", "−10%", "As is", "+10%", "+20%"].map((l, i) => `<button data-i="${i}" aria-pressed="${i === S.wi}">${l}</button>`).join("")}</div>
-        <div class="seg-ends"><span>Milder target</span><span>Harsher target</span></div>
-        <div id="wiOut"></div>
-        <p class="note">Shifts the target's cold, day–night swing, slope and ruggedness, then re-scores every cell on Earth. Where the target is already beyond Earth's range, harsher changes nothing.</p>`;
     },
     hazards(r) {
       return `<div class="list">${F.hazards(r.site).map(h => `<div class="item"><span class="sev ${h.level}">${h.level === "high" ? "HIGH" : h.level === "low" ? "LOW" : "MED"}</span><span><b>${esc(h.risk)}</b><p>${esc(h.prep)}</p></span></div>`).join("")}</div>
@@ -451,6 +466,8 @@
   };
   const BIND = {
     overview() {
+      document.querySelectorAll(".answer[data-jump]").forEach(b => b.onclick = () => show(+b.dataset.jump));
+      $("#editCond").onclick = () => openConditions(S.plan.target === "custom" ? X.targets.custom.conditions : A.conditionsOf(S.plan.target));
       $("#targetSel").onchange = e => { S.plan.target = e.target.value; S.plan.real = null; S.plan.weights = null; S.plan.why = null; rerun(); };
       document.querySelectorAll(".chip[data-sub]").forEach(b => b.onclick = () => {
         const id = b.dataset.sub; let a = S.plan.subsystems;
@@ -458,19 +475,6 @@
         else if (a.includes(id)) { if (a.length > 1) a.splice(a.indexOf(id), 1); } else a.push(id);
         S.plan.why = null; rerun();
       });
-    },
-    whatif(r) {
-      if (!r.site.eligible) { $("#wiOut").innerHTML = `<div class="empty"><b>Not ranked</b>${esc(r.site.why_not)}</div>`; return; }
-      let wi = null;
-      const upd = () => {
-        wi = wi || A.whatIf(r.site, S.plan);
-        const w = wi[S.wi], base = wi[2].pct, top = 100 - w.pct;
-        const v = top <= 1 ? ["Holds in the top 1%", ""] : top <= 5 ? ["Still top 5%", ""] : ["Drops out of the top 5%", "down"];
-        $("#wiOut").innerHTML = `<div class="readout"><b>Top ${topFmt(w.pct)}%</b></div><span class="verdict-s ${v[1]}">${v[0]}</span>${S.wi !== 2 ? ` <span class="note">(${w.pct - base >= 0 ? "+" : ""}${(w.pct - base).toFixed(2)} points)</span>` : ""}`;
-        document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.i === S.wi));
-      };
-      document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { S.wi = +b.dataset.i; upd(); });
-      upd();
     },
     fits() {
       document.querySelectorAll(".fit[data-id]").forEach(b => b.onclick = () => pick(LIBRARY.find(m => m.id === b.dataset.id)));
@@ -483,7 +487,7 @@
   };
 
   /* ---------- click anywhere ---------- */
-  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 3200); }
+  function toast(msg, ms = 3200) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), ms); }
   function inspect(lat, lon) {
     if (!S.report) {                       // from the home screen: open the target this place fits best
       const all = A.allTargets(lat, lon);
@@ -496,7 +500,7 @@
     if (!r.land) return toast("That is ocean. Click on land.");
     const hit = S.report.ranked.findIndex(x => x.site.i === r.site.i);
     if (hit >= 0) return show(hit, false);
-    S.pick = r; S.tab = S.tab === "whatif" && !r.site.eligible ? "overview" : S.tab;
+    S.pick = r;
     markers(); show(null, false);
     if (!r.site.eligible) toast(`Not ranked: ${r.site.why_not}. The numbers still show how it compares.`);
   }
@@ -557,7 +561,101 @@
       <p class="mono">claude.ai/artifact/JtAaSX7SWvchKxmahMjHQZ</p>
       <p class="note">Runs in the browser, so nothing is sent anywhere. About 11 MB on first load.</p>`,
   };
+  /* ---------- your own conditions: sliders -> a custom target, scored over all of Earth live ---------- */
+  const RLOG = Math.log1p(2000); // the ruggedness slider is logarithmic: most of Earth is under 200 m
+  const CF = [
+    { k: "lat", label: "Latitude on the Moon or Mars", min: -90, max: 90, step: 0.5, unit: "°", note: "Sets the Sun: how high it gets at noon, from the body's tilt", feat: "sun_noon_elev_mean_deg" },
+    { k: "tmin_C", label: "Coldest temperature", min: -270, max: 60, step: 1, unit: "°C", feat: "temp_min_K", toF: v => v + 273.15 },
+    { k: "swing_K", label: "Day–night swing", min: 0, max: 320, step: 1, unit: "K", feat: "temp_daynight_range_K" },
+    { k: "slope", label: "Slope", min: 0, max: 40, step: 0.1, unit: "°", feat: "slope_deg" },
+    { k: "rough_m", label: "Ruggedness (height change between neighbouring points)", min: 0, max: 2000, step: 1, unit: "m", feat: "roughness_tri_m", log: true },
+    { k: "albedo", label: "Brightness (albedo, 0 black to 1 white)", min: 0.02, max: 0.95, step: 0.01, unit: "", feat: "albedo_wsa_unitless" },
+    { k: "precip", label: "Rain and snow", min: 0, max: 3000, step: 10, unit: "mm/yr", feat: "precip_mm_per_yr" },
+  ];
+  const ROCKS = [["vb", "Basalt"], ["pb", "Anorthosite, gabbro"], ["ss", "Sandstone, mudstone"], ["su", "Loose sediment"], ["sm", "Mixed sediment"], ["ev", "Salts"], ["sc", "Carbonate"], ["va", "Acid volcanic"], ["vi", "Intermediate volcanic"], ["py", "Pyroclastics"], ["mt", "Metamorphic"], ["pa", "Granite"]];
+  const fmtCF = (f, v) => (f.k === "lat" ? `${Math.abs(v)}°${v >= 0 ? "N" : "S"}` : f.k === "albedo" ? (+v).toFixed(2) : `${v}${f.unit ? " " + f.unit : ""}`);
+  const toRange = (f, v) => (f.log ? Math.round(Math.log1p(Math.max(0, v)) / RLOG * 1000) : v);
+  const fromRange = (f, u) => (f.log ? Math.round(Math.expm1(u / 1000 * RLOG)) : +u);
+  let COND = null, condT = 0;
+  function openConditions(c) {
+    COND = Object.assign({}, c || (X.targets.custom && X.targets.custom.conditions) || (S.plan && S.plan.target !== "custom" ? A.conditionsOf(S.plan.target) : A.conditionsOf("jezero")));
+    COND.rocks = (COND.rocks || []).slice();
+    const opts = A.eng.targets.map(x => `<option value="${x.id}" ${x.id === COND.from ? "selected" : ""}>${esc(x.name)}, ${x.body}</option>`).join("");
+    $("#sheetBody").innerHTML = `<h2>Your own conditions</h2>
+      <p class="lede">Describe the place you are going. Zenith scores every patch of bare ground on Earth against it, live, with the same formula as the seven sites. If a value goes past anything on Earth, we say so.</p>
+      <div class="cf-top">
+        <label>Start from <select class="target" id="cfFrom"><option value="">Keep my values</option>${opts}</select></label>
+        <div class="seg two" role="group" aria-label="Body"><button data-body="Moon">Moon</button><button data-body="Mars">Mars</button></div>
+      </div>
+      <div class="cf-grid">${CF.map(f => `<div class="cf" data-k="${f.k}">
+        <label for="cf_${f.k}">${esc(f.label)}</label>
+        <input type="number" id="cfn_${f.k}" min="${f.min}" max="${f.max}" step="${f.step}" aria-label="${esc(f.label)} value">
+        <input type="range" id="cf_${f.k}" min="${f.log ? 0 : f.min}" max="${f.log ? 1000 : f.max}" step="${f.log ? 1 : f.step}">
+        <p class="cf-edge" id="cfe_${f.k}"></p></div>`).join("")}
+        <div class="cf"><label>Ground ice</label><div class="seg two" role="group" aria-label="Ground ice"><button data-ice="0">No</button><button data-ice="1">Yes</button></div><p class="cf-edge">Yes also lets glaciers and ice sheets count as test ground.</p></div>
+      </div>
+      <div class="cf"><label>Rock type (none picked = any rock)</label><div class="plan-row">${ROCKS.map(([r, l]) => `<button class="chip" data-rock="${r}">${l}</button>`).join("")}</div></div>
+      <div id="cfOut" class="cf-out" aria-live="polite"></div>
+      <button class="cta" id="cfGo">Show these matches on the globe</button>`;
+    $("#sheet").hidden = false; $("#sheet").dataset.id = "conditions";
+    const sync = () => {
+      CF.forEach(f => { $("#cf_" + f.k).value = toRange(f, COND[f.k]); $("#cfn_" + f.k).value = COND[f.k]; });
+      document.querySelectorAll("[data-body]").forEach(b => b.setAttribute("aria-pressed", b.dataset.body === COND.body));
+      document.querySelectorAll("[data-ice]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.ice === "1") === !!COND.ice));
+      document.querySelectorAll("[data-rock]").forEach(b => b.setAttribute("aria-pressed", COND.rocks.includes(b.dataset.rock)));
+      edges(); schedule();
+    };
+    const set = (k, v) => { COND[k] = v; COND.from = null; $("#cfFrom").value = ""; };
+    CF.forEach(f => {
+      $("#cf_" + f.k).addEventListener("input", e => { set(f.k, fromRange(f, e.target.value)); $("#cfn_" + f.k).value = COND[f.k]; edges(); schedule(); });
+      $("#cfn_" + f.k).addEventListener("change", e => {
+        let v = parseFloat(e.target.value);
+        if (!isFinite(v)) v = COND[f.k];
+        v = Math.max(f.min, Math.min(f.max, v)); // inputs past the slider ends are pulled back to them
+        set(f.k, v); e.target.value = v; $("#cf_" + f.k).value = toRange(f, v); edges(); schedule();
+      });
+    });
+    $("#cfFrom").onchange = e => { if (e.target.value) { COND = A.conditionsOf(e.target.value); sync(); } };
+    document.querySelectorAll("[data-body]").forEach(b => b.onclick = () => { set("body", b.dataset.body); sync(); });
+    document.querySelectorAll("[data-ice]").forEach(b => b.onclick = () => { set("ice", b.dataset.ice === "1"); sync(); });
+    document.querySelectorAll("[data-rock]").forEach(b => b.onclick = () => { const r = b.dataset.rock, a = COND.rocks; a.includes(r) ? a.splice(a.indexOf(r), 1) : a.push(r); set("rocks", a); sync(); });
+    $("#cfGo").onclick = () => {
+      const w = {}; A.DIMS.forEach(d => (w[d] = 1));
+      A.setCustom(COND); q.value = "Your own conditions";
+      go(q.value, { target: "custom", weights: w, why: `your own conditions, ${COND.body}` });
+    };
+    sync();
+  }
+  // marks every slider that goes past what Earth has
+  function edges() {
+    CF.forEach(f => {
+      const el = $("#cfe_" + f.k);
+      if (f.k === "lat") {
+        const sun = A.sunNoonMean(COND.lat, A.TILT[COND.body]), e = A.earthEdge(f.feat, sun, COND.ice);
+        el.className = "cf-edge" + (e != null ? " out" : "");
+        el.textContent = `Noon Sun about ${Math.round(sun)}° up.` + (e != null ? ` Beyond Earth: no scored ground has a Sun ${sun < e ? "this low" : "this high"} (Earth's limit ${Math.round(e)}°).` : "");
+        return;
+      }
+      const e = A.earthEdge(f.feat, f.toF ? f.toF(COND[f.k]) : COND[f.k], COND.ice);
+      el.className = "cf-edge" + (e != null ? " out" : "");
+      el.textContent = e == null ? "Within Earth's range." : `Beyond Earth. Closest Earth gets: ${fmtCF(f, f.toF ? Math.round(e - 273.15) : f.k === "albedo" ? e : f.k === "slope" ? Math.round(e * 10) / 10 : Math.round(e))}. Scored against that edge.`;
+    });
+  }
+  function schedule() { clearTimeout(condT); $("#cfOut").classList.add("busy"); condT = setTimeout(score, 180); }
+  function score() {
+    if ($("#sheet").hidden || !COND) return;
+    const w = {}; A.DIMS.forEach(d => (w[d] = 1));
+    A.setCustom(COND);
+    const R = A.assess({ target: "custom", weights: w }), b = R.ranked[0], f = R.ranked[R.fresh];
+    const line = (x, lbl) => x ? `<div><span class="kicker">${lbl}</span><b>${esc(nameOf(x.site))}</b><span>${esc(placeOf(x.site))}</span><em>${x.overall.toFixed(2)}</em></div>` : "";
+    $("#cfOut").classList.remove("busy");
+    $("#cfOut").innerHTML = `<p class="verdict q-${R.quality}"><b>${R.quality[0].toUpperCase() + R.quality.slice(1)} match.</b> ${esc(R.qualityNote)}</p>
+      <div class="cf-res">${line(b, "Closest place on Earth")}${R.fresh > 0 ? line(f, `Best new candidate, ${A.NEW_KM}+ km from known sites`) : ""}</div>
+      <p class="note">Scores run 0 to 1 (1 = identical on all seven dimensions). Balanced weights, ${R.pass.n.toLocaleString("en")} cells scored.</p>`;
+  }
+
   function openSheet(id) {
+    if (id === "conditions") return openConditions();
     $("#sheetBody").innerHTML = SHEETS[id](); $("#sheet").hidden = false; $("#sheet").dataset.id = id;
     const sa = $("#sheetBody [data-case=saudi]");
     if (sa) sa.onclick = () => { const m = EXAMPLES.find(x => x.id === "lava-tube"); q.value = m.title; const w = {}; A.DIMS.forEach(d => (w[d] = 1)); go(m.title, { target: m.target, weights: w, subsystems: m.subsystems.slice() }); inspect(27.375, 37.375); G.flyTo(27.375, 37.375); };
