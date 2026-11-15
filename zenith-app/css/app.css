@@ -330,18 +330,20 @@ a.link:hover b, .fit .go { color: var(--accent); }
 /* Night glass (default): very see-through smoked glass with light text. Earth shows through,
    lightly blurred and dimmed (--panel-dim) so the text stays readable even over ice and cloud. */
 :root[data-look="night"] {
-  --panel-rgb: 9, 13, 24; --panel-alpha: .16; --panel-blur: 7px; --panel-sat: 150%; --panel-dim: .82;
-  --panel-border: rgba(255, 255, 255, .14);
-  --panel-shadow: 0 30px 80px -30px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .08);
-  --panel-scheme: dark; --radius: 24px;
-  --ink: #f2f5fa; --muted: rgba(226, 233, 245, .62); --line: rgba(255, 255, 255, .12);
-  --fill: rgba(255, 255, 255, .08); --track: rgba(255, 255, 255, .12); --soft: rgba(255, 255, 255, .06);
-  --col: rgba(255, 255, 255, .22); --warn-bg: rgba(252, 61, 33, .18); --ctl-bg: rgba(255, 255, 255, .06);
-  --data: #6ea0ff; --sel: #2f6bff;
-  --card-bg: rgba(160, 185, 255, .07); --card-solid: rgba(17, 23, 40, .94); --card-line: rgba(255, 255, 255, .16); --card-blur: 14px;
-  --card-shadow: 0 14px 30px -18px rgba(0, 0, 0, .8);
+  --panel-rgb: 14, 15, 17; --panel-alpha: .97; --panel-blur: 0px; --panel-sat: 100%; --panel-dim: 1;
+  --panel-border: rgba(255, 255, 255, .09);
+  --panel-shadow: 0 24px 60px -24px rgba(0, 0, 0, .85);
+  --panel-scheme: dark; --radius: 10px;
+  --ink: #EDEDEA; --muted: #9A9A94; --line: rgba(255, 255, 255, .08);
+  --fill: rgba(255, 255, 255, .04); --track: rgba(255, 255, 255, .08); --soft: rgba(255, 255, 255, .03);
+  --col: rgba(255, 255, 255, .16); --warn-bg: rgba(252, 61, 33, .12); --ctl-bg: transparent;
+  --data: #EDEDEA; --bar: #C9C9C4; --sel: #EDEDEA; --sel-ink: #0e0f11; --accent: #fc3d21;
+  --card-bg: transparent; --card-solid: rgb(14, 15, 17); --card-line: rgba(255, 255, 255, .09); --card-blur: 0px;
+  --card-shadow: none;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  --label-bg: rgb(14, 15, 17); --label-ink: #EDEDEA; --dot-bg: var(--accent);
 }
-:root[data-look="night"] .result { text-shadow: 0 1px 2px rgba(0, 0, 0, .4); }
+:root[data-look="night"] .result { text-shadow: none; }
 
 /* Hologram: a see-through pane of NASA-blue glass (#0b3d91) with white type and data marks.
    Corner brackets, scanlines, a light sweep, and a projector flicker when it appears.
@@ -501,7 +503,7 @@ a.link:hover b, .fit .go { color: var(--accent); }
 /* on phones the panel is in the page flow: keep the hologram sweep inside it */
 @media (max-width: 900px) { .result { overflow-x: clip; } }
 /* on phones the panel scrolls over the bright day side of the globe: keep it more solid there */
-@media (max-width: 900px) { :root[data-look="night"] { --panel-alpha: .62; --panel-blur: 18px; --panel-dim: .6; } }
+@media (max-width: 900px) { :root[data-look="night"] { --panel-alpha: .97; --panel-blur: 0px; --panel-dim: 1; } }
 
 /* ---------- ground comparison window: Earth and target terrain in 3D ---------- */
 .ground {

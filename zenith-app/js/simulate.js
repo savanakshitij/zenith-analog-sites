@@ -137,10 +137,10 @@
   const next = () => { const d = ORDER.find(x => !on.includes(x)); if (d) add(d); };
   function play() {
     clearInterval(timer);
-    if ($("#simPlay").getAttribute("aria-pressed") === "true") { $("#simPlay").setAttribute("aria-pressed", "false"); $("#simPlay").textContent = "Play ▶"; return; }
-    $("#simPlay").setAttribute("aria-pressed", "true"); $("#simPlay").textContent = "Pause ❚❚";
+    if ($("#simPlay").getAttribute("aria-pressed") === "true") { $("#simPlay").setAttribute("aria-pressed", "false"); $("#simPlay").textContent = "Play"; return; }
+    $("#simPlay").setAttribute("aria-pressed", "true"); $("#simPlay").textContent = "Pause";
     next();
-    timer = setInterval(() => { if (on.length === ORDER.length) { clearInterval(timer); $("#simPlay").setAttribute("aria-pressed", "false"); $("#simPlay").textContent = "Play ▶"; return; } next(); }, 3200);
+    timer = setInterval(() => { if (on.length === ORDER.length) { clearInterval(timer); $("#simPlay").setAttribute("aria-pressed", "false"); $("#simPlay").textContent = "Play"; return; } next(); }, 3200);
   }
 
   function start(tid) {
@@ -149,7 +149,7 @@
     document.body.classList.add("is-sim");
     $("#sim").hidden = false;
     $("#simChips").innerHTML = ORDER.map(d => `<button class="chip" data-d="${d}" aria-pressed="false">${NAME[d]}</button>`).join("");
-    $("#simPlay").setAttribute("aria-pressed", "false"); $("#simPlay").textContent = "Play ▶";
+    $("#simPlay").setAttribute("aria-pressed", "false"); $("#simPlay").textContent = "Play";
     G.setMarkers([]); G.spin(false); G.zoom(1);
     G.setLayout({ cx: 0.5, cy: innerWidth <= 900 ? 0.36 : 0.42, r: innerWidth <= 900 ? 0.4 : 0.34, maxX: 1 });
     render(null);
@@ -179,7 +179,7 @@
     <div class="sim-why" id="simWhy" hidden></div>
     <p class="sim-best" id="simBest"></p>
     <div class="plan-row" id="simChips"></div>
-    <div class="sim-btns"><button class="cta" id="simNext">Add a condition ›</button><button class="chip" id="simPlay">Play ▶</button></div>
+    <div class="sim-btns"><button class="cta" id="simNext">Add a condition</button><button class="chip" id="simPlay">Play</button></div>
     <button class="cta" id="simEnd" hidden></button>
   </section>`);
   $("#simChips").addEventListener("click", ev => { const b = ev.target.closest("[data-d]"); if (b) add(b.dataset.d); });
