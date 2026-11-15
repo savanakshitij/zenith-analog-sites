@@ -8,7 +8,7 @@ Zenith scores every patch of bare ground on Earth against seven Moon and Mars ba
 - **Demo video (30 s):** https://zenith-space-apps.vercel.app/demo.mp4
 - **Drill game:** https://zenith-analog-sites.vercel.app/game/index.html
 
-Team: Surya Pratama, Tahir Atmaca, Mohamed Elmallah, Immanuel Hamonangan, Anas Ahmed, Kshitij Savannah.
+Team: Surya Pratama, Tahir Atmaca, Mohamed Elmallah, Immanuel Hamonangan, Anas Ahmed, Kshitij Savanna.
 
 ## We found 7 new analog sites
 
