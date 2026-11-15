@@ -1,5 +1,5 @@
 # case-studies/
 
-One folder per site: slide, screenshot, GeoTIFFs for the zoom.
+The two written case studies are in the web app: [`zenith-app/cases/taklamakan/`](../zenith-app/cases/taklamakan/) and [`zenith-app/cases/yungay-jezero/`](../zenith-app/cases/yungay-jezero/).
 
-Keep each GeoTIFF under 50 MB. Files over 50 MB go on the shared Drive, and the folder gets a `DRIVE_LINK.md` pointing to them.
+GeoTIFFs for the zooms stay on the shared Drive (files over 50 MB never go in git).
