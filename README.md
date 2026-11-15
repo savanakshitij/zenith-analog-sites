@@ -1,6 +1,18 @@
-# Zenith Analog Sites
+# Zenith: where on Earth to test a Moon or Mars mission
 
-Team Zenith, NASA Space Apps 2026. Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars.*
+Team Zenith, NASA Space Apps Challenge 2026 (Heilbronn). Challenge: *Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars.*
+
+- **Live prototype:** https://zenith-space-apps.vercel.app
+- **Demo video (30 s):** https://zenith-space-apps.vercel.app/demo.mp4
+- **Drill game:** https://zenith-space-apps.vercel.app/game/index.html
+
+Team: Surya Pratama, Tahir Atmaca, Mohamed Elmallah, Immanuel Hamonangan, Anas Ahmed, Kshitij Savannah.
+
+The web app is in [`zenith-app/`](zenith-app/) (open `zenith-app/index.html`, no build step). Data sources are listed in [SOURCES.md](SOURCES.md).
+
+This is the team's working repository. The copy submitted to NASA is https://github.com/elmallah111-design/zenith-app (a snapshot of this repo at submission time).
+
+---
 
 ## What Zenith does
 
