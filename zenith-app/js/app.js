@@ -668,6 +668,7 @@
 
   function openSheet(id) {
     if (id === "conditions") return openConditions();
+    if (id === "simulate") { $("#sheetBody").innerHTML = window.ZenithSim.sheet(); $("#sheet").hidden = false; $("#sheet").dataset.id = id; return window.ZenithSim.bind(); }
     $("#sheetBody").innerHTML = SHEETS[id](); $("#sheet").hidden = false; $("#sheet").dataset.id = id;
     const sa = $("#sheetBody [data-case=saudi]");
     if (sa) sa.onclick = () => { const m = EXAMPLES.find(x => x.id === "lava-tube"); q.value = m.title; const w = {}; A.DIMS.forEach(d => (w[d] = 1)); go(m.title, { target: m.target, weights: w, subsystems: m.subsystems.slice() }); inspect(27.375, 37.375); G.flyTo(27.375, 37.375); };
@@ -706,5 +707,9 @@
   if (/[?&]design\b/.test(location.search)) document.documentElement.classList.add("show-design");
   G.init($("#globe"));
   layout();
-  window.ZenithUI = { go, pick, inspect, state: () => S };
+  function restore() {
+    if (S.report) { layout(); markers(); if (S.heat) { heatShown = null; paintHeat(); } else G.heat(false); show(S.idx, { fly: true }); }
+    else { G.heat(false); G.spin(true); layout(); }
+  }
+  window.ZenithUI = { go, pick, inspect, restore, closeSheet, state: () => S };
 })();

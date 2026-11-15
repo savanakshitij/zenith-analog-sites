@@ -737,3 +737,24 @@ select.target option, select.target optgroup { color: #111; background: #fff; }
 /* Design panel hidden for judging; open the page with ?design to get it back */
 :root:not(.show-design) .dz-toggle, :root:not(.show-design) .dz { display: none !important; }
 :root:not(.show-design) .nav { margin-left: 0; }
+
+/* ---------- simulation ---------- */
+.is-sim .hero, .is-sim .search, .is-sim .foot, .is-sim #result, .is-sim .tools, .is-sim .ground, .is-sim .g-pill, .is-sim .cine-card { display: none !important; }
+.sim { position: fixed; z-index: 8; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(620px, calc(100vw - 32px)); background: rgba(var(--panel-rgb), .94); color: var(--ink); border: 1px solid var(--card-line, rgba(255,255,255,.12)); border-radius: 16px; padding: 18px 22px 18px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); transition: opacity 150ms; }
+.sim.busy { opacity: .85; }
+.sim .x { position: absolute; top: 8px; right: 12px; border: 0; background: none; color: var(--muted); font-size: 24px; cursor: pointer; }
+.sim .kicker { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 800; }
+.sim-count { display: flex; align-items: baseline; gap: 12px; }
+.sim-count b { font-size: 56px; font-weight: 900; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; font-family: var(--num-font, inherit); color: var(--data, #6ea8ff); }
+.sim-count span { font-size: 15px; font-weight: 700; display: flex; flex-direction: column; }
+.sim-count small { font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+.sim-line { margin: 10px 0 2px; font-size: 14px; min-height: 1.4em; }
+.sim-best { margin: 0 0 10px; font-size: 13px; color: var(--muted); min-height: 1.3em; }
+.sim-best span { font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sim .plan-row { margin-bottom: 12px; }
+.sim-btns { display: flex; gap: 8px; }
+.sim-btns .cta { margin: 0; flex: 1; }
+.sim-btns .chip { flex: none; }
+#simEnd { margin-top: 8px; background: transparent; border: 1px solid var(--accent); color: var(--ink); }
+.sim-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
+@media (max-width: 640px) { .sim { bottom: 0; border-radius: 16px 16px 0 0; width: 100vw; padding: 14px 16px; } .sim-count b { font-size: 42px; } }

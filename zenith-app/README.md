@@ -10,6 +10,7 @@ Type a Moon or Mars mission. Zenith scores every patch of bare ground on Earth a
 
 - **Search.** Suggestions are 9 real upcoming missions (status checked 14 Nov 2026, with sources) and 7 example missions. Free text works too: keyword rules pick the target and the mission parts. Text that names no Moon or Mars place or mission part gets a message, not a guess.
 - **Two answers.** Every search gives the best match overall and the best new candidate: the best cell at least 500 km from every known analog site. A best match inside 500 km is labelled a known analog region.
+- **Simulate ("Turn Earth into Mars").** For presenting live. Pick a target, then add its conditions one at a time (or let the room pick, or press Play). A place stays in only while its closeness is 0.5 or more on every condition switched on, so the count only goes down. A condition past anything on Earth (cold, for all seven targets) lets nothing through. The globe paints the survivors and flies to the best one. Space or the right arrow adds the next condition.
 - **Your conditions.** Sliders and number boxes for latitude (Sun height), coldest temperature, day–night swing, slope, ruggedness, brightness, rain, ground ice and rock type. Each can be switched off. It builds a custom target with the same v1.6 rules and scores all of Earth live. Values past Earth's range are marked, and a weak best score is reported as no close match.
 - **Result.** The camera flies to the best site. The panel shows the match score (0 to 1, a geometric mean over seven dimensions), where the cell ranks among all scored cells, how far the nearest known analog site is, and whether the rank is stable under 200 random weightings.
 - **Seven fact cards.** Overview (real-mission note, match quality, the two answers, the seven dimensions, photos, field-test coverage, editable plan), Matches, Gaps (including what Earth can never test), Season, Hazards, Studies, Also fits.
@@ -36,6 +37,7 @@ Every score is computed live in the browser by `js/zenith-engine.js`, the same f
 | `js/coverage.js` | The team's mission-plan layer (same file as `app/`) |
 | `js/bridge.js` | Connects the page to both: ranking, per-cell records, coverage, new candidates, custom conditions |
 | `js/app.js` | UI |
+| `js/simulate.js` | The Simulate mode |
 | `js/mission.js` | Plain words to a plan, the real missions and the examples |
 | `js/features.js` | Season, hazards |
 | `js/globe.js` | WebGL Earth, markers, camera flights, score layer |
