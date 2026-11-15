@@ -397,6 +397,23 @@
       <span>${x.txt ? esc(x.tv) : x.fmt(x.tv)}${x.meta && x.meta.status && x.meta.status !== "computed" ? `<span class="st">${esc(x.meta.status)}</span>` : ""}</span>
       <span class="meter" title="closeness ${(x.d || 0).toFixed(2)}"><i style="width:${Math.round((x.d || 0) * 100)}%"></i></span></div>`).join("");
 
+  /* your own conditions: the exact values you searched with, next to this place's, only for conditions switched on */
+  function searchedRows(s, t) {
+    const c = t.conditions; if (!c) return "";
+    const off = c.off || [], fe = Object.fromEntries(FEAT.map(x => [x[0], x[2]])), rows = [];
+    const meter = d => `<span class="meter" title="closeness ${(d || 0).toFixed(2)}"><i style="width:${Math.round((d || 0) * 100)}%"></i></span>`;
+    const row = (lbl, you, here, d) => rows.push(`<div class="row ${d != null && d < 0.6 ? "bad" : ""}"><span class="lbl">${esc(lbl)}</span><span>${esc(you)}</span><span>${esc(here)}</span>${d != null ? meter(d) : "<span></span>"}</div>`);
+    for (const f of CF) {
+      if (off.includes(f.feat)) continue;
+      const e = s.earth[f.feat], here = e == null ? "no data" : fe[f.feat](e), d = sim(f.feat, e, t);
+      if (f.k === "lat") row("Latitude (sets noon Sun)", `${fmtCF(f, c.lat)} on ${c.body}, Sun ${Math.round(A.sunNoonMean(c.lat, A.TILT[c.body]))}°`, `Sun ${here}`, d);
+      else row(f.label.split(" (")[0], fmtCF(f, c[f.k]), here, d);
+    }
+    if (!off.includes("ground_ice_frac")) { const e = s.earth.ground_ice_frac; row("Ground ice", c.ice ? "Yes" : "No", e == null ? "no data" : e >= 0.5 ? "Yes" : "No", sim("ground_ice_frac", e, t)); }
+    if (!off.includes("geology_match")) row("Rock type", c.rocks && c.rocks.length ? c.rocks.map(r => (ROCKS.find(x => x[0] === r) || [r, r])[1]).join(", ") : "Any rock", s.tags.rock || "unknown", s.dims.geology);
+    return `<div class="sec rows searched"><h2>Your search against this place</h2><div class="row head"><span></span><span>You searched</span><span>This place</span><span>Close</span></div>${rows.join("")}
+      <p class="note">Only the conditions you switched on. ${c.body} target, edit them under Mission plan.</p></div>`;
+  }
   const PANELS = {
     overview(r, t) {
       const s = r.site, R = S.report, m = S.plan.real;
@@ -415,6 +432,7 @@
           <p class="src">${m.sources.map(x => `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>`).join(", ")}. Checked ${esc((window.ZENITH_MISSIONS || {}).status_checked || "")}</p></div>`
         : S.plan.why ? `<p class="read">Read as <b>${esc(t.name)}</b> (${esc(S.plan.why)}). Change it under Mission plan.</p>` : ""}
       <p class="verdict q-${R.quality}"><b>${R.quality[0].toUpperCase() + R.quality.slice(1)} match.</b> ${esc(R.qualityNote)}</p>
+      ${S.plan.target === "custom" ? searchedRows(s, t) : ""}
       ${two}
       <div class="sec"><h2>Why this place</h2><div class="dims">${dimRow}</div>
         <p class="note">Closeness to ${esc(t.name)} on each of seven dimensions, 0 to 1. The score is their weighted geometric mean, so one bad dimension pulls it down. Balanced weights give this cell ${s.balanced != null ? s.balanced.toFixed(2) : "–"}.</p></div>
@@ -549,12 +567,12 @@
           <img class="cs-thumb" src="cases/taklamakan/closeup.jpg" alt="Satellite close-up of dune ridges and flat plains in the southern Taklamakan" loading="lazy" width="112" height="112">
           <div class="cs-head"><p class="kicker">Arcadia Planitia, Mars</p><h3>Southern Taklamakan, China</h3><p>Flat sediment plains that match Arcadia's slope, roughness, brightness and Sun angle. There is no ground ice, and we found no analog study at this spot.</p></div>
           ${stats([["0.68", "Score"], ["0.04%", "Top share of cells"], ["705 km", "Nearest known site"]])}
-          <a class="cta" href="cases/taklamakan/index.html" target="_blank" rel="noopener">Read the case study</a>
+          <a class="cta" href="cases/taklamakan/index.html">Read the case study</a>
         </article>
         <article class="cs-card">
           <div class="cs-head"><p class="kicker">Jezero crater, Mars</p><h3>Yungay against our best Atacama cell</h3><p>Yungay, the well-known Atacama test site, matches Jezero less well than a cell in the same desert that sits 390 km to the north.</p></div>
           ${stats([["0.62", "Yungay"], ["0.81", "Best Atacama cell"], ["390 km", "Apart"]])}
-          <a class="cta" href="cases/yungay-jezero/index.html" target="_blank" rel="noopener">Read the case study</a>
+          <a class="cta" href="cases/yungay-jezero/index.html">Read the case study</a>
         </article>
         <article class="cs-card">
           <div class="cs-head"><p class="kicker">Marius Hills lava tube, Moon</p><h3>Harrat lava fields, Saudi Arabia</h3><p>Basalt, dry, and the right terrain. We found no analog study of this lava field, and the nearest known site is Wadi Rum.</p></div>
@@ -609,7 +627,7 @@
     { k: "precip", label: "Rain and snow", min: 0, max: 3000, step: 10, unit: "mm/yr", feat: "precip_mm_per_yr" },
   ];
   const ROCKS = [["vb", "Basalt"], ["pb", "Anorthosite, gabbro"], ["ss", "Sandstone, mudstone"], ["su", "Loose sediment"], ["sm", "Mixed sediment"], ["ev", "Salts"], ["sc", "Carbonate"], ["va", "Acid volcanic"], ["vi", "Intermediate volcanic"], ["py", "Pyroclastics"], ["mt", "Metamorphic"], ["pa", "Granite"]];
-  const fmtCF = (f, v) => (f.k === "lat" ? `${Math.abs(v)}°${v >= 0 ? "N" : "S"}` : f.k === "albedo" ? (+v).toFixed(2) : `${v}${f.unit ? " " + f.unit : ""}`);
+  const fmtCF = (f, v) => (f.k === "lat" ? `${Math.abs(v)}°${v >= 0 ? "N" : "S"}` : f.k === "albedo" ? (+v).toFixed(2) : `${v}${f.unit === "°" ? "°" : f.unit ? " " + f.unit : ""}`);
   const toRange = (f, v) => (f.log ? Math.round(Math.log1p(Math.max(0, v)) / RLOG * 1000) : v);
   const fromRange = (f, u) => (f.log ? Math.round(Math.expm1(u / 1000 * RLOG)) : +u);
   let COND = null, condT = 0;
@@ -811,6 +829,21 @@
     if (e.key === "h") $("#heatBtn").click();
   });
   $(".brand").onclick = e => { e.preventDefault(); S.report = null; S.pick = null; document.body.className = "is-home"; $("#result").hidden = true; $("#tools").hidden = true; $("#legend").hidden = true; G.heat(false); S.heat = false; $("#heatBtn").setAttribute("aria-pressed", false); setNewLayer(true); G.setMarkers([]); setFlags(false); G.zoom(1); G.spin(true); q.value = ""; layout(); closeSheet(); };
+
+  /* ---------- Back: one button (and the browser or phone back) steps out one level: sheet, then result, then home ---------- */
+  const backBtn = $("#backBtn");
+  const inside = () => !$("#sheet").hidden || document.body.classList.contains("is-result");
+  function stepBack() { if (!$("#sheet").hidden) closeSheet(); else if (document.body.classList.contains("is-result")) $(".brand").click(); }
+  function syncBack() {
+    const on = inside(); backBtn.hidden = !on;
+    if (on && !(history.state && history.state.zenith)) { try { history.pushState({ zenith: 1 }, ""); } catch (e) { /* file:// in some browsers */ } }
+  }
+  // the logo also goes home: drop our history step so the browser back is never a dead press
+  $(".brand").addEventListener("click", e => { if (e.isTrusted && history.state && history.state.zenith) setTimeout(() => history.back(), 0); });
+  backBtn.onclick = e => { e.stopPropagation(); if (history.state && history.state.zenith) history.back(); else stepBack(); };
+  addEventListener("popstate", () => { stepBack(); syncBack(); });
+  new MutationObserver(syncBack).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+  new MutationObserver(syncBack).observe($("#sheet"), { attributes: true, attributeFilter: ["hidden"] });
 
   // used by the Design controls' "Replay flight"
   window.ZenithReplay = () => (S.plan ? go(S.text, { target: S.plan.target, subsystems: S.plan.subsystems.slice() }) : pick(LIBRARY[0]));
