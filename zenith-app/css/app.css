@@ -981,6 +981,74 @@ a.cta, a.chip { display: inline-flex; align-items: center; justify-content: cent
 .sim { background: rgba(var(--panel-rgb), calc(var(--panel-alpha) + .4)); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 16px 24px; -webkit-backdrop-filter: blur(var(--panel-blur)); backdrop-filter: blur(var(--panel-blur)); }
 .sim-count b { color: var(--data); }
 .sim-why { margin: 8px 0; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 15px; line-height: 1.5; max-width: 60ch; max-height: 32vh; overflow-y: auto; }
+/* redesign: "instrument, not dashboard" for the default (night) look. Graphite, opaque, hairlines, mono labels, one red accent. */
+:root[data-look="night"] .result, :root[data-look="night"] .search, :root[data-look="night"] .suggest, :root[data-look="night"] .sheet-in, :root[data-look="night"] .sim {
+  background: rgb(var(--panel-rgb)); -webkit-backdrop-filter: none; backdrop-filter: none; border: 1px solid var(--panel-border); box-shadow: var(--panel-shadow); text-shadow: none;
+}
+:root[data-look="night"] .result, :root[data-look="night"] .sheet-in, :root[data-look="night"] .sim, :root[data-look="night"] .search, :root[data-look="night"] .suggest { border-radius: var(--radius); }
+:root[data-look="night"] .sheet { background: rgba(0, 0, 0, .55); }
+/* buttons: primary solid ink, secondary hairline, both 40 px, 6 px corners */
+:root[data-look="night"] .cta, :root[data-look="night"] .chip, :root[data-look="night"] .seg button, :root[data-look="night"] .step, :root[data-look="night"] .music-btn, :root[data-look="night"] .play, :root[data-look="night"] .qrhome {
+  min-height: 40px; border-radius: 6px; box-shadow: none; filter: none; text-shadow: none; font: 600 14px/1 var(--font); letter-spacing: 0; text-transform: none;
+}
+:root[data-look="night"] .cta { background: var(--ink); color: #0e0f11; border: 1px solid var(--ink); padding: 0 18px; }
+:root[data-look="night"] .cta:hover { background: #fff; }
+:root[data-look="night"] .chip, :root[data-look="night"] .step, :root[data-look="night"] .seg button, :root[data-look="night"] .music-btn, :root[data-look="night"] .qrhome {
+  background: transparent; color: var(--ink); border: 1px solid rgba(237, 237, 234, .32); padding: 0 14px;
+}
+:root[data-look="night"] .chip:hover, :root[data-look="night"] .step:hover, :root[data-look="night"] .music-btn:hover { border-color: var(--ink); }
+:root[data-look="night"] .chip[aria-pressed=true], :root[data-look="night"] .seg button[aria-pressed=true], :root[data-look="night"] .tabs button[aria-selected=true] { background: var(--ink); color: #0e0f11; border-color: var(--ink); }
+:root[data-look="night"] .music-btn, :root[data-look="night"] .qrhome, :root[data-look="night"] .tools .chip { background: rgb(var(--panel-rgb)); }
+:root[data-look="night"] .play { background: var(--ink); color: #0e0f11; border: 0; padding: 0 20px; }
+:root[data-look="night"] .cta:focus-visible, :root[data-look="night"] .chip:focus-visible, :root[data-look="night"] .answer:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+:root[data-look="night"] .search button[type=submit] { background: var(--ink); color: #0e0f11; border-radius: 6px; width: 40px; height: 40px; box-shadow: none; }
+:root[data-look="night"] .is-result .search button[type=submit] { width: 36px; height: 36px; }
+/* repeated actions are secondary and sized to their label */
+:root[data-look="night"] .cs-card .cta, :root[data-look="night"] .ns-fly, :root[data-look="night"] #flagFromSheet, :root[data-look="night"] .sim-btns .chip {
+  background: transparent; color: var(--ink); border: 1px solid rgba(237, 237, 234, .32); width: auto; justify-self: start; flex: none;
+}
+:root[data-look="night"] .sim-btns .cta { flex: none; }
+:root[data-look="night"] .answer { background: transparent; border: 1px solid var(--line); border-radius: 6px; }
+:root[data-look="night"] .answer:hover { border-color: rgba(237, 237, 234, .4); }
+:root[data-look="night"] .answer.on { border-color: var(--ink); box-shadow: inset 2px 0 0 var(--accent); }
+/* tags and badges: new candidate = accent outline + filled diamond; near known = muted outline + hollow square */
+:root[data-look="night"] .tag { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; font: 500 12px/1.3 var(--mono); padding: 4px 10px; }
+:root[data-look="night"] .tag.gem { color: var(--ink); border-color: var(--accent); background: transparent; }
+:root[data-look="night"] .tag.gem::before { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 7px 1px 1px; background: var(--accent); transform: rotate(45deg); }
+:root[data-look="night"] .tag.near { border-color: var(--muted); }
+:root[data-look="night"] .tag.near::before { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 7px 0 1px; border: 1px solid var(--muted); }
+:root[data-look="night"] .tag.warn { border-color: rgba(252, 61, 33, .5); color: var(--ink); background: transparent; }
+:root[data-look="night"] .tag.jump { background: transparent; color: var(--ink); border: 1px solid rgba(237, 237, 234, .32); }
+/* type: one scale */
+:root[data-look="night"] .sheet h2, :root[data-look="night"] #sheet[data-id] h2 { font: 700 30px/1.15 var(--font); letter-spacing: -.02em; }
+:root[data-look="night"] .sheet h3, :root[data-look="night"] .cs-head h3, :root[data-look="night"] .ns-card h3, :root[data-look="night"] .case h3, :root[data-look="night"] .sim-why > b { font-size: 17px; font-weight: 700; }
+:root[data-look="night"] .sheet p, :root[data-look="night"] .sheet .lede { font-size: 15px; line-height: 1.55; max-width: 64ch; }
+:root[data-look="night"] .sheet .note, :root[data-look="night"] .ns-meta { font-size: 13px; }
+:root[data-look="night"] .kicker, :root[data-look="night"] .sec h2, :root[data-look="night"] .cs-stats dt, :root[data-look="night"] .ev-facts dt, :root[data-look="night"] .ns-row span, :root[data-look="night"] .tbl th, :root[data-look="night"] .ev-key, :root[data-look="night"] .ns-top .ns-t small, :root[data-look="night"] .sim-best small {
+  font-family: var(--mono); font-size: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted);
+}
+:root[data-look="night"] .cs-stats dd, :root[data-look="night"] .ns-row b, :root[data-look="night"] .sim-count b { font: 700 28px/1.1 var(--font); font-variant-numeric: tabular-nums; color: var(--ink); }
+:root[data-look="night"] .r-score span, :root[data-look="night"] .ev-big b { color: var(--ink); }
+:root[data-look="night"] .bar .fill, :root[data-look="night"] .row .meter i, :root[data-look="night"] .ev-bar, :root[data-look="night"] .mo.best .col { background: var(--bar); box-shadow: none; }
+:root[data-look="night"] .ev-tick { background: var(--accent); }
+/* sheets: 40 px padding, hairline sections, no boxes in boxes, one card structure */
+:root[data-look="night"] .sheet-in, :root[data-look="night"] #sheet[data-id] .sheet-in { padding: 40px; max-width: 680px; }
+:root[data-look="night"] .cs-thumb { display: none; }
+:root[data-look="night"] .cs-head, :root[data-look="night"] .cs-thumb + .cs-head { grid-column: 1 / -1; grid-row: auto; }
+:root[data-look="night"] .ns-card, :root[data-look="night"] .cs-card, :root[data-look="night"] .ev-facts div, :root[data-look="night"] .pair .ph, :root[data-look="night"] .empty { background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-look="night"] .g-stage { background: #000; }
+/* globe overlays on the same graphite surface */
+:root[data-look="night"] .legend, :root[data-look="night"] .layer-key { font-family: var(--mono); color: var(--ink); text-shadow: none; }
+:root[data-look="night"] .legend em { color: var(--muted); }
+:root[data-look="night"] .layer-key { width: auto; background: rgb(var(--panel-rgb)); border: 1px solid var(--panel-border); border-radius: 6px; padding: 6px 10px; }
+:root[data-look="night"] .layer-key .k-di { background: var(--accent); box-shadow: none; transform: rotate(45deg) scale(.85); }
+:root[data-look="night"] .cine-card span { font-family: var(--mono); letter-spacing: 0; text-transform: none; font-weight: 400; font-size: 12px; }
+@media (max-width: 900px) {
+  :root[data-look="night"] .sheet-in, :root[data-look="night"] #sheet[data-id] .sheet-in { padding: 24px; max-width: none; border-radius: var(--radius) var(--radius) 0 0; border-bottom: 0; }
+  :root[data-look="night"] .sheet h2, :root[data-look="night"] #sheet[data-id] h2 { font-size: 26px; }
+}
+@media (max-width: 520px) { :root[data-look="night"] .sheet .cta { width: auto; } }
+@media (prefers-reduced-motion: reduce) { :root[data-look="night"] * { transition-duration: 0ms !important; animation: none !important; } }
 .sim-why > b { display: block; margin: 0 0 4px; font-size: 15px; font-weight: 800; }
 .sim-why p { margin: 0 0 8px; }
 .sim-why p:last-child { margin-bottom: 0; }
