@@ -956,6 +956,7 @@ a.cta, a.chip { display: inline-flex; align-items: center; justify-content: cent
 .ns-card { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 16px 0; }
 .ns-card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 800; }
 .ns-card p { font-size: 14px; margin: 0 0 8px; }
+.ns-row { margin-top: 12px; }
 .ns-row span { font-size: 12px; }
 .ns-row b { font-size: 15px; }
 .ns-meta, .ns-dims, .ns-why { font-size: 14px !important; }
@@ -982,6 +983,8 @@ a.cta, a.chip { display: inline-flex; align-items: center; justify-content: cent
 .sim-why p { margin: 0 0 8px; }
 .sim-why p:last-child { margin-bottom: 0; }
 .sim-best small { display: block; margin: 4px 0 8px; font-size: 12px; }
+#simOpen { color: var(--ink); }
+.sim-why { max-height: 26vh; }
 #simEnd { margin-top: 8px; border-color: var(--line); }
 
 /* no coloured glow on the home button */
