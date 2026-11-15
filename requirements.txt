@@ -5,4 +5,4 @@ pandas
 scikit-learn
 fastapi
 uvicorn
-pyarrow  # pandas needs it to read/write the Parquet tables in data/processed/
+pyarrow  # pandas needs it for Parquet files
