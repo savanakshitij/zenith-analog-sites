@@ -214,6 +214,7 @@
     renderSlides(at);
     // the 3D terrain is built after the camera flight, in idle time, so it never lands on a flight frame
     try { if (window.ZenithGround) window.ZenithGround.show(s, t, { name: nameOf(s), place: placeOf(s) }, { delay: opts.cine ? ms : 0 }); } catch (e) { console.warn("ground view", e); }
+    try { if (window.ZenithSound) window.ZenithSound.update(s, t, { name: nameOf(s), place: placeOf(s), match: r.overall }); } catch (e) { console.warn("sound", e); }
     return ms;
   }
   $("#rBadges").addEventListener("click", e => { const b = e.target.closest("[data-jump]"); if (b) show(+b.dataset.jump); });
