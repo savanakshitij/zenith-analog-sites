@@ -268,6 +268,7 @@ void main() {
     const w = ctx.measureText(text).width + 16, ly = y - 30;
     let lx = x + 12;
     if (lx + w > Math.min(W * layout.maxX - 8, maxX + 30)) lx = x - 12 - w;
+    lx = Math.max(8, Math.min(lx, W - w - 8)); // keep the whole label on screen (phones)
     ctx.fillStyle = theme.label;
     ctx.beginPath(); ctx.roundRect ? ctx.roundRect(lx, ly, w, 22, 6) : ctx.rect(lx, ly, w, 22); ctx.fill();
     ctx.strokeStyle = `rgba(${theme.reticle},.55)`; ctx.lineWidth = 1; ctx.stroke(); // hairline, so a dark label holds against the ocean

@@ -32,13 +32,16 @@ This is the team's working repository. The copy submitted to NASA is https://git
 | `results/` | Scores per preset, the plan pool, validation, and run summary for data v1.6. |
 | `app/` | Mission-plan layer and demo page (`index.html`, `coverage.js`, `data.js`, `data.json`, `build_data.py`, `test.js`). |
 | `patches/` | New data layers, one file each. |
-| `case-studies/` | One folder per site: slide, screenshot, GeoTIFFs. |
-| `docs/` | Pitch slides, 200-word summary, submission checklist, AI-use disclosure. |
+| `zenith-app/` | **The web app judges see**: globe, search, results, Simulate, drill game, case studies (`zenith-app/cases/`). |
+| `missions/` | Real upcoming Moon and Mars missions and their weights (`missions.json`). |
+| `case-studies/`, `docs/` | Placeholders. The written case studies live in `zenith-app/cases/`; slides and the summary were kept on the team Drive. |
 | `SOURCES.md` | Every dataset: agency, link, resolution, use, who added it. |
 
 ## Open the demo
 
-Open `app/index.html` in a browser. Double-click works, no server needed. `app/zenith-plan-demo.html` is the same page in one file, for sharing.
+- **Main app:** open `zenith-app/index.html` in a browser. Double-click works, no server needed.
+- **Mission-plan layer demo:** `app/index.html` (or `app/zenith-plan-demo.html`, the same page in one file).
+- **Engine map:** `app/map/map.html` loads binary data with `fetch`, so it needs a local server: run `python3 -m http.server` in `app/map/` and open http://localhost:8000/map.html.
 
 ## Rerun scoring
 
