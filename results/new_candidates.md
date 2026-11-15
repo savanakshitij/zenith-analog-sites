@@ -12,10 +12,10 @@ Land cells: 349,031. Bare-ground cells scored: 29,846.
 |---|---|---|---|---|---|
 | Shackleton crater rim | McMurdo Dry Valleys | 0.42 | Kunlun Mountains, China (36.6N, 84.9E) | 0.39 | 629 (Dalangtan playa, Qaidam Basin) |
 | Malapert Massif | Baluchistan, Iran–Pakistan border | 0.46 | same place | 0.46 | 1,685 (Tso Kar Valley, Ladakh (ISRO HOPE)) |
-| Marius Hills lava-tube pit | Harrat lava fields, NW Saudi Arabia | 0.73 | Sahara, Libya (23.1N, 18.6E) | 0.71 | 1,609 (Balos Cove, Santorini) |
+| Marius Hills lava-tube pit | Harrat lava fields, NW Saudi Arabia | 0.73 | Southern Libya, north of the Tibesti Mountains (23.1N, 18.6E) | 0.71 | 1,609 (Balos Cove, Santorini) |
 | Arcadia Planitia | Qaidam Basin, China | 0.70 | Southern Taklamakan, Xinjiang, China (37.9N, 84.6E) | 0.69 | 618 (Dalangtan playa, Qaidam Basin) |
 | Jezero crater | Pampa del Tamarugal, Atacama, Chile | 0.81 | Tibesti Mountains, northern Chad (21.4N, 17.4E) | 0.73 | 1,836 (Mount Etna) |
-| Gale crater | Southern Peru coast | 0.73 | Rub' al Khali, Arabia (15.4N, 50.9E) | 0.65 | 1,144 (Dallol, Danakil Depression) |
+| Gale crater | Southern Peru coast | 0.73 | Eastern Yemen, south of the Rub' al Khali (15.4N, 50.9E) | 0.65 | 1,144 (Dallol, Danakil Depression) |
 | Meridiani Planum | Atacama Desert, Chile | 0.76 | Nubian Desert near Abu Simbel and Lake Nasser, southern Egypt (22.6N, 31.9E) | 0.68 | 849 (Wadi Rum) |
 
 ## Why each new candidate

@@ -142,7 +142,7 @@
       "best_new": {
         "id": "c182268",
         "name": "Sahara, Libya",
-        "readme_name": "Sahara, Libya (23.1N, 18.6E)",
+        "readme_name": "Southern Libya, north of the Tibesti Mountains (23.1N, 18.6E)",
         "lat": 23.125,
         "lon": 18.625,
         "score": 0.71,
@@ -316,7 +316,7 @@
       "best_new": {
         "id": "c168255",
         "name": "Rub' al Khali, Arabia",
-        "readme_name": "Rub' al Khali, Arabia (15.4N, 50.9E)",
+        "readme_name": "Eastern Yemen, south of the Rub' al Khali (15.4N, 50.9E)",
         "lat": 15.375,
         "lon": 50.875,
         "score": 0.65,
