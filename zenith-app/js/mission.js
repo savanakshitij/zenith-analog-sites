@@ -5,7 +5,7 @@
   const EXAMPLES = [
     { id: "polar-base", title: "Crewed base at the lunar south pole that mines ice", target: "shackleton", subsystems: ["habitat", "drill", "eva", "power"] },
     { id: "malapert-lander", title: "Solar-powered lander on the Malapert ridge", target: "malapert", subsystems: ["landing", "power", "rover"] },
-    { id: "lava-tube", title: "Shelter a crew inside a lunar lava tube", target: "marius", subsystems: ["habitat", "eva", "rover"] },
+    { id: "lava-tube", title: "Shelter a crew inside a lunar lava tube", target: "marius", subsystems: ["habitat", "rover", "science"] },
     { id: "arcadia-ice", title: "Drill buried ice for a Mars base in Arcadia", target: "arcadia", subsystems: ["drill", "habitat", "power"] },
     { id: "jezero-life", title: "Rover searching for ancient life in Jezero's river delta", target: "jezero", subsystems: ["rover", "science"] },
     { id: "gale-climb", title: "Climb Mount Sharp in Gale crater with a rover", target: "gale", subsystems: ["rover", "science", "landing"] },
@@ -30,12 +30,12 @@
   const MOON = ["moon", "lunar", "artemis", "regolith"], MARS = ["mars", "martian", "red planet"];
   const DEFAULT = { Moon: "shackleton", Mars: "jezero" };
   const SUB_WORDS = {
-    rover: ["rover", "drive", "driving", "vehicle", "traverse", "explore", "mobility", "long-range", "climb"],
+    rover: ["rover", "driving", "vehicle", "traverse", "mobility", "long-range", "climb"],
     drill: ["drill", "mine", "mining", "ice", "isru", "extract", "water", "dig", "excavat"],
-    habitat: ["habitat", "base", "shelter", "outpost", "live", "camp", "station", "crewed", "settle", "colony"],
-    eva: ["crew", "astronaut", "spacesuit", "eva", "walk", "human", "people"],
+    habitat: ["habitat", " base", "shelter", "outpost", "station", "crewed", "settle", "colony"],
+    eva: ["crew", "astronaut", "spacesuit", " eva ", "moonwalk", "spacewalk"],
     power: ["solar", "power", "energy", "sunlight", "battery"],
-    science: ["sample", "science", "geology", "life", "search", "study", "rock", "fossil", "find"],
+    science: ["sample", "science", "geology", "life", "rock", "fossil"],
     landing: ["land ", "lander", "landing", "ascent", "touchdown", "hop"],
   };
 
@@ -51,8 +51,11 @@
     }
     const target = best || DEFAULT[body || "Mars"];
     let subsystems = Object.entries(SUB_WORDS).filter(([, ws]) => ws.some(has)).map(([k]) => k);
+    // Nothing we can read: no site, no Moon or Mars, no mission part. Say so instead of guessing a site.
+    if (!best && !body && !subsystems.length) return { unknown: true, text: String(text || "").trim() };
+    const noPlace = !best && !body;
     if (!subsystems.length) subsystems = (EXAMPLES.find(m => m.target === target) || EXAMPLES[0]).subsystems.slice();
-    return { target, subsystems, guessed: !best, why: best ? `matched “${TARGET_WORDS[best].find(has)}”` : body ? `no site named, so the usual ${body} site` : "no site named, so our default Mars site" };
+    return { target, subsystems, guessed: !best, noPlace, why: best ? `matched “${TARGET_WORDS[best].find(has)}”` : body ? `no site named, so the usual ${body} site` : "no site named, so our default Mars site" };
   }
 
   /* Place names for cells: centre lat, lon, radius km. The closest centre within its radius wins. */

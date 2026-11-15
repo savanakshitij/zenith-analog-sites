@@ -60,7 +60,7 @@
       out.push({ level: "med", risk: `Rugged terrain (ruggedness ${Math.round(e.roughness_tri_m)} m)`,
         prep: "Check wheel and suspension clearance, scout routes from imagery first." });
     if (e.ground_ice_frac != null && e.ground_ice_frac >= 0.5)
-      out.push({ level: "med", risk: `Frozen ground (${Math.round(e.ground_ice_frac * 100)}% ground-ice indicator, ${site.ground_ice_source || "layer"})`,
+      out.push({ level: "med", risk: "Frozen ground or ice",
         prep: "Heated structures can thaw and sink: raise habitats on pads. Good place to test ice drills." });
     if (e.precip_mm_per_yr != null && e.precip_mm_per_yr >= 150)
       out.push({ level: "med", risk: `Rain or snow, ${Math.round(e.precip_mm_per_yr)} mm a year`,
@@ -75,32 +75,10 @@
     return out;
   }
 
-  /* 3. What-if: the site's percentile when the target gets milder or harsher (precomputed over all eligible cells). */
-  function whatIf(site) {
-    const w = site.whatif || {};
-    return [
-      { p: -20, pct: w["-20"] }, { p: -10, pct: w["-10"] }, { p: 0, pct: site.percentile },
-      { p: 10, pct: w["+10"] }, { p: 20, pct: w["+20"] },
-    ];
-  }
-
-  /* 5. Collaboration: other example missions whose top results include this place. */
-  function alsoFits(site, currentPlan, data, assess, library) {
-    const hits = [];
-    for (const m of library) {
-      if (m.target === currentPlan.target && m.subsystems.join() === currentPlan.subsystems.join()) continue;
-      let rep;
-      try { rep = assess({ target: m.target, subsystems: m.subsystems }, data); } catch (e) { continue; }
-      const i = rep.ranked.slice(0, 15).findIndex(r => km(r.site.lat, r.site.lon, site.lat, site.lon) < 150);
-      if (i >= 0) hits.push({ mission: m, rank: i + 1, km: Math.round(km(rep.ranked[i].site.lat, rep.ranked[i].site.lon, site.lat, site.lon)) });
-    }
-    return hits.sort((a, b) => a.rank - b.rank);
-  }
-
   function km(a, b, c, d) {
     const r = Math.PI / 180, x = Math.sin(((c - a) * r) / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(((d - b) * r) / 2) ** 2;
     return 6371 * 2 * Math.asin(Math.sqrt(x));
   }
 
-  window.ZenithFeatures = { bestMonths, hazards, whatIf, alsoFits, km, MONTHS };
+  window.ZenithFeatures = { bestMonths, hazards, km, MONTHS };
 })();

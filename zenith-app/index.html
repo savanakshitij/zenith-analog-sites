@@ -22,15 +22,20 @@
   <header class="top">
     <a class="brand" href="./" aria-label="Zenith home"><i aria-hidden="true"></i>ZENITH</a>
     <nav class="nav" aria-label="More">
+      <a class="navlink" href="game/index.html">Drill game</a>
+      <button data-sheet="simulate">Simulate</button>
+      <button data-sheet="conditions">Your conditions</button>
       <button data-sheet="cases">Case studies</button>
       <button data-sheet="evidence">Evidence</button>
-      <button data-sheet="phone">On your phone</button>
+      <button data-sheet="phone" id="phoneBtn" hidden>On your phone</button>
     </nav>
   </header>
 
+  <a class="play" href="game/index.html"><b>Play the drill game</b><span>Pick the more Mars-like place, then drill. 1 minute.</span></a>
+  <aside class="qrhome" id="qrHome" hidden><div id="qrHomeCode"></div><p><b>Take it with you</b>Scan to tour Zenith or play the drill game on your phone.</p></aside>
   <div class="hero">
     <h1>Where on Earth would you test it?</h1>
-    <p>Name a Moon or Mars mission. We score every patch of bare ground on Earth against the place it is going.</p>
+    <p>Name a Moon or Mars mission, or set your own conditions. We score every patch of bare ground on Earth against the place it is going.</p>
   </div>
   <p class="foot">Team Zenith, NASA Space Apps Challenge 2026. Data v1.6. Click any land to score it.</p>
 
@@ -86,8 +91,10 @@
   <script src="js/features.js"></script>
   <script src="js/globe.js"></script>
   <script src="js/vendor/three.min.js"></script>
+  <script src="js/vendor/qrcode.js"></script>
   <script src="js/ground.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/simulate.js"></script>
   <script src="js/design.js"></script>
 </body>
 </html>
