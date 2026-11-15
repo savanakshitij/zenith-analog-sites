@@ -890,3 +890,119 @@ body:not(.is-home) .play, body:not(.is-home) .qrhome, .searching .play, .searchi
   #flagFromSheet { width: 100%; }
 }
 .cs-head { grid-column: 1 / -1; } .cs-thumb + .cs-head { grid-column: 1; grid-row: 1; }
+
+/* ================= craft pass: one type scale, tokens only, hairlines instead of boxes, one button system =================
+   Scale (shared by the result panel, conditions and every sheet): h2 26/800, lede 15 muted, section heading 16/800,
+   kicker 12/700 muted, body 15 (14 in rows), caption 12 muted. Spacing on a 4/8 px rhythm; corners derive from var(--radius). */
+.sheet-in, #sheet[data-id=evidence] .sheet-in, #sheet[data-id=cases] .sheet-in { width: min(680px, 100%); padding: 32px 32px 28px; }
+#sheet[data-id=phone] .sheet-in { width: min(480px, 100%); padding: 32px 32px 28px; }
+.sheet h2, #sheet[data-id=evidence] h2, #sheet[data-id=cases] h2, #sheet[data-id=phone] h2 { font: 800 26px/1.15 var(--head-font); letter-spacing: -.02em; margin: 0 32px 8px 0; }
+#sheet[data-id=phone] h2 { margin-right: 0; }
+.sheet .lede, #sheet[data-id=evidence] .lede, #sheet[data-id=cases] .lede, #sheet[data-id=phone] .lede { font-size: 15px; line-height: 1.5; color: var(--muted); max-width: 60ch; margin: 0 0 24px !important; }
+#sheet[data-id=phone] .lede { margin: 0 auto 24px !important; }
+.sheet h3, #sheet[data-id=evidence] h3 { margin: 24px 0 8px; font-size: 16px; font-weight: 800; letter-spacing: -.005em; line-height: 1.3; }
+.sheet p { font-size: 15px; line-height: 1.5; }
+.sheet .note, #sheet[data-id=evidence] .note, #sheet[data-id=cases] .note, #sheet[data-id=phone] .note { font-size: 12px; line-height: 1.5; color: var(--muted); margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line); }
+#sheet[data-id=phone] .note { border-top: 0; padding-top: 0; margin-top: 16px; }
+.sheet .kicker, .cs-head .kicker, .answer .kicker, .cf-res .kicker, .sim .kicker { font-size: 12px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+.sheet .kicker, .cs-head .kicker, .answer .kicker, .cf-res .kicker { color: var(--muted); }
+.sim .kicker { color: var(--accent); }
+.sec h2 { font-size: 12px; font-weight: 700; }
+
+/* buttons: .cta (primary, red), .chip (secondary), .answer, .tag; links styled as buttons too */
+a.cta, a.chip { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.cta { border-radius: calc(var(--radius) * .4); min-height: 44px; padding: 0 16px; font: 800 15px/1 var(--font); transition: filter 150ms, transform 120ms var(--ease-out); }
+.cta:hover { filter: brightness(1.08); }
+.cta:focus-visible, .chip:focus-visible, .answer:focus-visible { outline: 2px solid var(--data); outline-offset: 2px; }
+.sheet .cta { width: auto; margin-top: 0; }
+#cfGo { width: 100%; margin-top: 16px; }
+.chip { min-height: 36px; }
+.sheet .chip { color: var(--ink); }
+#flagFromSheet { margin-top: 8px; }
+.answer { background: var(--ctl-bg); border-radius: calc(var(--radius) * .4); }
+
+/* evidence: one hero number, facts as hairline rows, bars in --data, chance tick in --accent */
+.ev-hero { gap: 16px; padding: 16px 0 24px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.ev-big { gap: 16px; }
+.ev-big b { font: 800 64px/1 var(--num-font); letter-spacing: -.03em; color: var(--data); }
+.ev-big span { font-size: 15px; line-height: 1.4; font-weight: 600; max-width: 32ch; }
+.ev-facts { gap: 0 24px; }
+.ev-facts div { background: none; border-radius: 0; padding: 8px 0; border-top: 1px solid var(--line); }
+.ev-facts dt { font-size: 12px; font-weight: 700; margin: 0 0 4px; }
+.ev-facts dd { font-size: 15px; }
+.ev-key { font-size: 12px; gap: 8px 16px; margin: 0 0 8px; }
+.ev-row { font-size: 14px; padding: 8px 0; }
+.ev-track { height: 8px; border-radius: 4px; }
+.ev-bar { border-radius: 4px; }
+.ev-total { border-top: 1px solid var(--line); margin-top: 0; }
+
+/* case studies: rows separated by hairlines, no filled cards */
+.cs-list { gap: 0; border-bottom: 1px solid var(--line); }
+.cs-card { padding: 24px 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: none; column-gap: 16px; row-gap: 16px; }
+.cs-head h3 { font-size: 16px; line-height: 1.3; margin: 0 0 4px; letter-spacing: -.005em; }
+.cs-head p:last-child { font-size: 14px; opacity: 1; color: var(--muted); }
+.cs-thumb { width: 96px; height: 96px; border-radius: calc(var(--radius) * .4); }
+.cs-stats { padding-top: 16px; }
+.cs-stats div + div { padding-left: 16px; }
+.cs-stats dt { font-size: 12px; margin: 4px 0 0; }
+.cs-stats dd { font-size: 22px; color: var(--ink); }
+
+/* phone */
+#sheet[data-id=phone] .qr { box-shadow: none; border-radius: calc(var(--radius) * .6); padding: 12px; margin: 0 auto 16px; }
+#sheet[data-id=phone] .mono { font-size: 14px; }
+
+/* new sites: hairline rows instead of bordered cards; new-candidate marks in --accent */
+.ns-cards { gap: 0; margin: 16px 0 8px; border-bottom: 1px solid var(--line); }
+.ns-card { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 16px 0; }
+.ns-card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 800; }
+.ns-card p { font-size: 14px; margin: 0 0 8px; }
+.ns-row span { font-size: 12px; }
+.ns-row b { font-size: 15px; }
+.ns-meta, .ns-dims, .ns-why { font-size: 14px !important; }
+.ns-meta { color: var(--muted); }
+.ns-top { gap: 0; margin: 8px 0 16px; }
+.ns-top li { border-bottom: 1px solid var(--line); padding: 8px 0; }
+.ns-top li:first-child { border-top: 1px solid var(--line); }
+.ns-top .ns-t b { font-size: 14px; }
+.ns-top .ns-t small { font-size: 12px; }
+.tag.gem { background: var(--accent); color: #fff; }
+.layer-key .k-di { background: var(--accent); box-shadow: 0 0 0 1.5px #fff; }
+
+/* tables and stats in sheets */
+.tbl { font-size: 14px; }
+.tbl th { font-size: 12px; color: var(--muted); }
+.case h3 { font-size: 16px; font-weight: 800; }
+.case p { font-size: 14px; }
+
+/* simulation: panel from the look's tokens; the "why zero" box reads as a compact note */
+.sim { background: rgba(var(--panel-rgb), calc(var(--panel-alpha) + .4)); border: 1px solid var(--card-line); border-radius: var(--radius); padding: 16px 24px; -webkit-backdrop-filter: blur(var(--panel-blur)); backdrop-filter: blur(var(--panel-blur)); }
+.sim-count b { color: var(--data); }
+.sim-why { margin: 8px 0; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 15px; line-height: 1.5; max-width: 60ch; max-height: 32vh; overflow-y: auto; }
+.sim-why > b { display: block; margin: 0 0 4px; font-size: 15px; font-weight: 800; }
+.sim-why p { margin: 0 0 8px; }
+.sim-why p:last-child { margin-bottom: 0; }
+.sim-best small { display: block; margin: 4px 0 8px; font-size: 12px; }
+#simEnd { margin-top: 8px; border-color: var(--line); }
+
+/* no coloured glow on the home button */
+.play { box-shadow: none; }
+
+/* phones */
+@media (max-width: 900px) {
+  .sheet { padding: 0; place-items: end stretch; }
+  .sheet-in, #sheet[data-id=evidence] .sheet-in, #sheet[data-id=cases] .sheet-in, #sheet[data-id=phone] .sheet-in { width: 100%; max-height: 100dvh; border-radius: var(--radius) var(--radius) 0 0; padding: 24px 16px; }
+  .sheet h2, #sheet[data-id=evidence] h2, #sheet[data-id=cases] h2, #sheet[data-id=phone] h2 { font-size: 24px; }
+  .sheet .x { width: 44px; height: 44px; top: 8px; right: 8px; }
+  .chip, .tag.jump, .step, .sim .x { min-height: 40px; }
+  .step { min-width: 40px; }
+}
+@media (max-width: 520px) {
+  .ev-big b { font-size: 56px; }
+  .ev-facts { grid-template-columns: 1fr; }
+  .cs-card { padding: 16px 0; }
+  .cs-thumb { width: 72px; height: 72px; }
+  .cs-stats dd { font-size: 18px; }
+  .sheet .cta { width: 100%; }
+  .sim { padding: 16px; border-radius: var(--radius) var(--radius) 0 0; }
+  .sim-why { max-height: 28vh; }
+}
