@@ -11,7 +11,12 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: #04060c; color: var(--ink); font: 15px/1.45 Inter, system-ui, sans-serif; overflow: hidden; }
 canvas#lab { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-.top { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 14px; padding: 16px 22px; pointer-events: none; }
+.top { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 14px; padding: 16px 22px; pointer-events: none; z-index: 6; }
+.backlink { pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px 7px 11px; border-radius: 999px; border: 1px solid rgba(255,255,255,.28); background: rgba(10,14,24,.65); color: #fff; font: 600 13px Inter, system-ui, sans-serif; text-decoration: none; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.backlink:hover { background: rgba(10,14,24,.9); border-color: rgba(255,255,255,.5); }
+.backlink:focus-visible { outline: 2px solid #fc3d21; outline-offset: 2px; }
+body .cover { padding-top: 70px; }
+@media (max-width: 600px) { .top .brand { display: none; } body .top .pts { white-space: nowrap; margin-left: auto; } }
 .brand { font-weight: 900; letter-spacing: .28em; font-size: 15px; }
 .brand i { display: inline-block; width: 9px; height: 18px; background: var(--accent); border-radius: 2px; margin-right: 10px; vertical-align: -3px; }
 .top .round { margin-left: auto; font-size: 13px; color: var(--muted); font-weight: 700; letter-spacing: .06em; }
@@ -63,6 +68,7 @@ p { margin: 0 0 8px; }
 #final .panel { animation: boardIn 450ms cubic-bezier(.2,.8,.2,1) both; }
 @keyframes boardIn { from { opacity: 0; transform: translateY(14px) scale(.97); } }
 #final .verdict { margin-bottom: 14px; }
+#final .board-h { margin: 16px 0 0; font-size: 20px; }
 .cover h1 { font-size: 34px; }
 .cover h2.howto { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; margin: 16px 0 6px; }
 .steps { margin: 14px 0 6px; padding-left: 20px; color: var(--muted); }
@@ -153,7 +159,7 @@ kbd { font: 700 11px Inter, sans-serif; border: 1px solid var(--line); border-ra
 </head>
 <body>
 <canvas id="lab"></canvas>
-<header class="top"><a class="brand back" href="../index.html" style="pointer-events:auto;color:inherit;text-decoration:none" title="Back to Zenith"><i></i>ZENITH ANALOG LAB</a><span class="round" id="round"></span><span class="pts" id="pts">0.0 m</span></header>
+<header class="top"><a class="backlink" href="../index.html" title="Back to the Zenith app"><span aria-hidden="true">←</span> Back</a><a class="brand back" href="../index.html" style="pointer-events:auto;color:inherit;text-decoration:none" title="Back to Zenith"><i></i>ZENITH ANALOG LAB</a><span class="round" id="round"></span><span class="pts" id="pts">0.0 m</span></header>
 
 <section class="panel brief" id="brief"></section>
 <section class="panel inspect" id="inspect" hidden></section>
@@ -178,7 +184,7 @@ kbd { font: 700 11px Inter, sans-serif; border: 1px solid var(--line); border-ra
     <ol class="steps">
       <li><b>Compare</b> the two real places' numbers (rain, cold, slope, rock, sunlight) with Mars.</li>
       <li><b>Pick</b> the place closest to Mars's conditions, just like a real mission team would. Tap it or press 1 or 2.</li>
-      <li><b>Drill.</b> Tap <b>DRILL</b> or press Space as fast as you can for 8 seconds. Reach 30 m to finish.</li>
+      <li><b>Drill.</b> Tap <b>DRILL</b> or press Space as fast as you can for 10 seconds. Reach 20 m to finish.</li>
       <li><b>See your rank.</b> The ranking board opens by itself.</li>
     </ol>
     <p><b>Tip:</b> looks can fool you. Trust the numbers.</p>
@@ -479,9 +485,10 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
   function reveal() { /* after locking, clicking a site does nothing more */ }
 
   /* ---------- drill challenge: tap fast; a better-matched site digs deeper per tap ---------- */
-  // metres per tap from the engine score: Atacama 0.81 -> 0.65 m, Iceland 0.21 -> 0.16 m.
-  // Reaching the 30 m finish in 8 s needs about 47 taps (6 a second) at the better site, and is impossible at the worse one.
-  const SECS = 8, GOAL = 30, eff = sc => 0.12 + 0.8 * sc * sc;
+  // metres per tap from the engine score: Atacama 0.81 -> 0.90 m, Iceland 0.21 -> 0.20 m.
+  // Reaching the 20 m finish in 10 s needs about 23 taps (just over 2 a second) at the better site; at the worse one it needs
+  // about 100 taps (10 a second), so picking the right place still decides who finishes.
+  const SECS = 10, GOAL = 20, eff = sc => 0.15 + 1.15 * sc * sc;
   let X = null, lastDepth = 0, total = 0, player = "", lastFinish = null, verdict = "";
   function startDrill(k) {
     if (X || locked) return;
@@ -717,6 +724,7 @@ window.addEventListener("error", e => { const d = document.createElement("p"); d
     $("#finalIn").innerHTML = `${verdict}<p class="kicker">${r.shared ? "Live ranking board" : "Ranking board"} · ${esc(name)}</p><h1>${lastFinish ? `Finished in ${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m drilled`}</h1>
       <p>You are <b>#${r.place}</b> of ${r.total} participant${r.total === 1 ? "" : "s"}${r.shared ? " so far, on every phone and screen playing" : ""}. The more Mars-like your place, the deeper every tap went. Finishers rank by time.</p>
       ${r.note ? `<p class="muted">${esc(r.note)}</p>` : ""}
+      <h2 class="board-h">Top drillers</h2>
       ${chart(r.rows, r.me)}
       ${r.place > 10 ? `<p class="muted">You: #${r.place}, ${lastFinish ? `${lastFinish.toFixed(1)} s` : `${total.toFixed(1)} m`}.</p>` : ""}
       <ol class="steps"><li><b>Looks can fool you.</b> Iceland looks like Mars, but rain and a low Sun make it a poor match. The Atacama is almost rainless, like Mars.</li>
